@@ -1,0 +1,14 @@
+#N canvas 227 453 450 300 12;
+#X obj 100 30 inlet;
+#X obj 100 120 fc_process 1;
+#X obj 100 90 list trim;
+#X obj 180 180 outlet;
+#X obj 100 150 route ERROR;
+#X obj 30 180 print FreeCAD Error;
+#X obj 100 60 list prepend Part create Loft;
+#X connect 0 0 6 0;
+#X connect 1 0 4 0;
+#X connect 2 0 1 0;
+#X connect 4 0 5 0;
+#X connect 4 1 3 0;
+#X connect 6 0 2 0;

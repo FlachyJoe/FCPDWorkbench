@@ -1,0 +1,12 @@
+#N canvas 826 344 445 281 12;
+#X obj 0 0 cnv 15 445 31 empty empty fc_process 20 12 0 14 #e0e0e0
+#404040 0;
+#X text 10 40 Send a message to FreeCAD and retrieve the response;
+#X text 10 200 outlet : callback message from FreeCAD;
+#X text 10 80 1st argument : if 1 request a recompute after process
+complete;
+#X text 10 130 1st inlet : message to send to FreeCAD;
+#X obj 120 250 helplink FCPD;
+#X text 10 250 library info :;
+#X obj 360 10 fc_process;
+#X text 10 160 2d inlet : set the recompute flag;

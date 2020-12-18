@@ -1,0 +1,13 @@
+#N canvas 337 351 450 392 12;
+#X obj 0 -7 cnv 15 445 31 empty empty fc_client 20 12 0 14 #e0e0e0
+#404040 0;
+#X text 10 70 1st argument : server address;
+#X text 10 100 2d argument : server port;
+#X text 11 160 4th argument : if 1 try to connect every second;
+#X text 10 130 3d argument : local port to get info back;
+#X text 10 30 Create a connection with FreeCAD pdserver;
+#X text 15 311 more :;
+#X obj 65 312 helplink FCPD;
+#X text 10 200 no inlet;
+#X text 10 240 1 outlet : last max process time (usefull to calibrate
+animation);

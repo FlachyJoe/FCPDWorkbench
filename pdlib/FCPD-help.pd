@@ -1,0 +1,21 @@
+#N canvas 772 301 551 516 12;
+#X obj 11 80 helplink fc_client;
+#X text 150 80 client/server connection with FreeCAD;
+#X obj 10 110 helplink fc_process;
+#X text 150 110 send message to FreeCAD;
+#X obj 10 140 helplink fc_recompute;
+#X text 150 140 ask FreeCAD to recompute ActiveDocument;
+#X text 10 50 BASE;
+#X text 10 190 VECTOR & PLACEMENT;
+#X obj 10 250 helplink fc_vectorXYZ;
+#X obj 0 0 cnv 15 550 50 empty empty FCPD 20 12 0 16 #e0e0e0 #404040
+0;
+#X obj 10 310 helplink fc_PlacementPosRot;
+#X obj 10 340 helplink fc_setPlacementPos;
+#X text 10 390 PROPERTIES & CONSTRAINTS;
+#X obj 10 420 helplink fc_getObjectProperty;
+#X obj 10 450 helplink fc_setObjectProperty;
+#X obj 10 280 helplink fc_isVector;
+#X obj 10 220 helplink fc_vector;
+#X text 120 6 a framework to connect FreeCAD and PureData \; (c)2020
+flachyjoe and contributors;

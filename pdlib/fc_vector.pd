@@ -1,0 +1,13 @@
+#N canvas 445 338 450 375 12;
+#X obj 40 80 inlet;
+#X obj 98 80 inlet;
+#X obj 157 81 inlet;
+#X obj 47 204 outlet;
+#X msg 43 145 Vector \$1 \$2 \$3;
+#X obj 44 112 pack \$1 \$2 \$3;
+#X connect 0 0 5 0;
+#X connect 1 0 5 1;
+#X connect 2 0 5 2;
+#X connect 4 0 3 0;
+#X connect 5 0 4 0;
+#X coords 0 0 1 1 85 60 0;

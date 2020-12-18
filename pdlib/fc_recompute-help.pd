@@ -1,0 +1,10 @@
+#N canvas 906 200 446 238 12;
+#X obj 0 -60 cnv 15 445 31 empty empty fc_recompute 20 12 0 16 #e0e0e0
+#404040 0;
+#X text 10 20 no argument;
+#X text 10 60 inlet : any input trigger a recompute request;
+#X text 10 -20 Ask FreeCAD to recompute the active document;
+#X obj 120 150 helplink FCPD;
+#X text 10 150 library info :;
+#X text 10 100 no outlet;
+#X obj 350 -50 fc_recompute;

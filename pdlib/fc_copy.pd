@@ -1,0 +1,11 @@
+#N struct draw-image-struct float x float y float w float h;
+#N canvas 642 413 606 375 12;
+#X obj 10 10 inlet;
+#X obj 10 39 list prepend copy;
+#X obj 10 70 fc_process;
+#X obj 10 100 outlet;
+#X scalar draw-image-struct 310 70 0 0 \;;
+#X connect 0 0 1 0;
+#X connect 1 0 2 0;
+#X connect 2 0 3 0;
+#X coords 0 0 1 1 53 48 0;

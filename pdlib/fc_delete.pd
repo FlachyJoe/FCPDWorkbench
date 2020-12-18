@@ -1,0 +1,6 @@
+#N canvas 843 559 450 300 12;
+#X obj 10 10 inlet;
+#X obj 10 39 list prepend delete;
+#X obj 10 68 fc_process 1;
+#X connect 0 0 1 0;
+#X connect 1 0 2 0;

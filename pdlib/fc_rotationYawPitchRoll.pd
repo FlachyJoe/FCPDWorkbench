@@ -1,0 +1,15 @@
+#N canvas 775 374 450 325 12;
+#X obj 100 40 inlet;
+#X obj 100 120 unpack f f f;
+#X obj 100 160 outlet;
+#X obj 150 160 outlet;
+#X obj 200 160 outlet;
+#X obj 100 80 route Rotation;
+#X obj 210 80 route Yaw-Pitch-Roll;
+#X connect 0 0 5 0;
+#X connect 0 0 6 0;
+#X connect 1 0 2 0;
+#X connect 1 1 3 0;
+#X connect 1 2 4 0;
+#X connect 5 0 1 0;
+#X connect 6 0 1 0;

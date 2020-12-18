@@ -1,0 +1,13 @@
+#N canvas 498 412 446 300 12;
+#X obj 0 0 cnv 15 445 31 empty empty fc_vector 20 12 0 14 #e0e0e0 #404040
+0;
+#X text 10 150 2d inlet : Y;
+#X text 10 180 3rd inlet : Z;
+#X obj 120 270 helplink FCPD;
+#X text 10 220 outlet : the vector message;
+#X text 10 270 library info :;
+#X text 10 40 Create a FreeCAD-compatible vector message from coordinates
+;
+#X obj 370 10 fc_vector;
+#X text 10 80 3 arguments to intialize X \, Y and Z;
+#X text 10 120 1st inlet : X or bang to output the last vector;
