@@ -18,8 +18,10 @@ class PureDataServer:
         self.remote_address = ""
         self.listen_address = listen_address
         self.listen_port = listen_port
-        self.message_handler_list={}
+        self.message_handler_list = {}
         self.message_box = False
+        self.write_buffer = ""
+        self.objects_store = {}
 
     def terminate(self):
         # send close message to PD
@@ -69,15 +71,15 @@ class PureDataServer:
                 #is words[1] registered ?
                 try :
                     if words[1] in self.message_handler_list:
-                        ret = self.message_handler_list[words[1]](words)
+                        ret = self.message_handler_list[words[1]](self, words)
                     else:
                         ret = self.default_message_handler(words)
                     if type(ret) != str:
                         ret = str(ret)
                 except :
                     ret = self.error_handler(words)
-                #callback include current patch id ($0 in PD) to route the message and a trailing semicolon
-                #quotes, bracket and other are removed by spacer function
+                # callback include current patch id ($0 in PD) to route the message and a trailing semicolon
+                # quotes, bracket and other are removed by spacer function
                 returnValue.append("%s %s;" % (words[0], self._spacer(ret)) )
         return returnValue
 
@@ -113,7 +115,7 @@ class PureDataServer:
             Log("PDServer : Listening on port %i\r\n" % self.listen_port)
 
             read_list = [self.input_socket]
-            write_list = []
+            write_list = [self.output_socket]
             readBuffer = ""
             while self.is_running:
                 FreeCADGui.updateGui()
@@ -149,6 +151,12 @@ class PureDataServer:
                             s.close()
                             Log("PDServer : close connection\r\n")
                             read_list.remove(s)
+
+                for s in writable:
+                    if self.write_buffer:
+                        n=self.output_socket.send(bytes(self.write_buffer, "utf8"))
+                        Log("PDServer (buffered) : >>> %s\r\n" % self.write_buffer)
+                        self.write_buffer = ""
 
         except ValueError:
             import sys

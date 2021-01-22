@@ -22,6 +22,7 @@
 #
 #
 ###################################################################################
+import FreeCAD as App
 
 def value_from_str(words):
     "return a FreeCAD value from a string"
@@ -50,6 +51,8 @@ def registerToolList(pd_server):
                 ("copy", pdCopy),
                 ("delete", pdDelete),
                 ("recompute", pdRecompute),
+                ("selobserver", pdSelObserver),
+                ("remobserver", pdRemObserver),
                 ("Part", pdPart)]
 
     for word,func in toolList:
@@ -61,9 +64,9 @@ def pdElse(words):
     pass
 
 
-def pdGet(words):
+def pdGet(pd_server, words):
     if words[2] == "selection":
-        sel = Gui.Selection.getSelection()
+        sel = App.Gui.Selection.getSelection()
         objList = [obj.Name for obj in sel]
         return objList
     elif words[2] == "property":
@@ -74,7 +77,7 @@ def pdGet(words):
         return skc.getDatum(words[4])
 
 
-def pdSet(words):
+def pdSet(pd_server, words):
     if words[2] == "property":
         obj = App.ActiveDocument.getObject(words[3])
         return setattr(obj,words[4], value_from_str(words[5:]))
@@ -83,7 +86,7 @@ def pdSet(words):
         return skc.setDatum(words[4],  value_from_str(words[5:]))
 
 
-def pdCopy(words):
+def pdCopy(pd_server, words):
     obj = App.ActiveDocument.getObject(words[2])
     obj2 = App.ActiveDocument.copyObject(obj, False, False)
     for prt in [tpl[0] for tpl in obj.Parents]:
@@ -91,16 +94,50 @@ def pdCopy(words):
     return obj2.Name
 
 
-def pdDelete(words):
+def pdDelete(pd_server, words):
     for obj in words[2:]:
         App.ActiveDocument.removeObject(obj)
 
 
-def pdRecompute(words):
+def pdRecompute(pd_server, words):
         App.ActiveDocument.recompute()
 
+def pdSelObserver(pd_server, words):
+    # See https://wiki.freecadweb.org/Code_snippets#Function_resident_with_the_mouse_click_action
+    class SelObserver:
+        def __init__(self, pd_server, uid):
+            self.pd_server = pd_server
+            self.uid = uid
 
-def pdPart(words):
+        def send(self):
+            sel = App.Gui.Selection.getSelection()
+            objList = [obj.Name for obj in sel]
+            self.pd_server.write_buffer += "%s %s;" %(self.uid, self.pd_server._spacer(str(objList)))
+
+        def addSelection(self,doc,obj,sub,pnt):
+            self.send()
+
+        def removeSelection(self,doc,obj,sub):
+            self.send()
+
+        def setSelection(self,doc):
+            self.send()
+
+        def clearSelection(self,doc):
+            self.send()
+
+    s=SelObserver(pd_server, words[0])
+    pd_server.objects_store[words[0]] = s # store the observer to allow removing later
+    App.Gui.Selection.addObserver(s)
+    return 'OK'
+
+def pdRemObserver(pd_server, words):
+    # Uninstall the resident function
+    App.Gui.Selection.removeObserver(pd_server.objects_store[words[0]])
+    del pd_server.objects_store[words[0]]
+    return 'OK'
+
+def pdPart(pd_server, words):
     if words[2] == "create":
         if words[3] == "Loft":
             doc = App.ActiveDocument
