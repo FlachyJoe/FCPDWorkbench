@@ -1,4 +1,4 @@
-#N canvas 24 71 1418 839 12;
+#N canvas 29 72 1418 839 12;
 #X obj 1230 230 cnv 15 165 95 empty empty System\ message 20 12 0 14
 #e0e0e0 #404040 0;
 #X obj 264 253 cnv 15 154 57 empty empty empty 20 12 0 14 #84dcff #404040
@@ -9,7 +9,7 @@
 20 12 0 14 #e0e0e0 #404040 0;
 #X obj 16 16 cnv 15 476 198 empty empty Auto-connect 20 12 0 14 #e0e0e0
 #404040 0;
-#X obj 440 510 cnv 15 188 69 empty empty Close\ message 20 12 0 14
+#X obj 440 480 cnv 15 188 90 empty empty Close\ message 20 12 0 14
 #e0e0e0 #404040 0;
 #X obj 18 375 cnv 15 407 299 empty empty Initial\ messages 20 12 0
 14 #e0e0e0 #404040 0;
@@ -21,7 +21,7 @@
 #404040 0;
 #X obj 440 710 netsend;
 #X obj 284 260 tgl 20 0 empty empty Connect 22 10 0 10 #fcfcfc #00a008
-#000000 0 1;
+#000000 1 1;
 #X msg 264 503 connect \$1 \$2;
 #X msg 455 542 send close \, disconnect;
 #X obj 306 326 select 1;
@@ -92,6 +92,7 @@
 #X obj 1160 100 t a b;
 #X text 62 221 Change switch \; to follow connection status;
 #X obj 833 201 list prepend send;
+#X obj 480 510 closebang;
 #X connect 10 0 41 0;
 #X connect 10 0 42 0;
 #X connect 11 0 14 0;
@@ -160,4 +161,5 @@
 #X connect 76 0 75 0;
 #X connect 76 1 50 0;
 #X connect 78 0 53 0;
+#X connect 79 0 13 0;
 #X coords 0 -1 1 1 339 80 1 263 231;
