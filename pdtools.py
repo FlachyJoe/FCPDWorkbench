@@ -24,6 +24,11 @@
 ###################################################################################
 import FreeCAD as App
 
+#shortcuts of FreeCAD console
+Log = App.Console.PrintLog
+Msg = App.Console.PrintMessage
+Err = App.Console.PrintError
+
 def value_from_str(words):
     "return a FreeCAD value from a string"
 
@@ -52,6 +57,7 @@ def registerToolList(pd_server):
                 ("delete", pdDelete),
                 ("recompute", pdRecompute),
                 ("selobserver", pdSelObserver),
+                ("objobserver", pdObjObserver),
                 ("remobserver", pdRemObserver),
                 ("Part", pdPart)]
 
@@ -112,7 +118,7 @@ def pdSelObserver(pd_server, words):
         def send(self):
             sel = App.Gui.Selection.getSelection()
             objList = [obj.Name for obj in sel]
-            self.pd_server.write_buffer += "%s %s;" %(self.uid, self.pd_server._spacer(str(objList)))
+            self.pd_server.send("%s %s;" %(self.uid, self.pd_server._spacer(str(objList))))
 
         def addSelection(self,doc,obj,sub,pnt):
             self.send()
@@ -126,10 +132,28 @@ def pdSelObserver(pd_server, words):
         def clearSelection(self,doc):
             self.send()
 
-    s=SelObserver(pd_server, words[0])
+    s = SelObserver(pd_server, words[0])
     pd_server.objects_store[words[0]] = s # store the observer to allow removing later
     App.Gui.Selection.addObserver(s)
     return 'OK'
+
+
+def pdObjObserver(pd_server, words):
+    '''bang when mouse enter the object'''
+    class PreSelObserver:
+        def __init__(self, pd_server, uid, obj):
+            self.pd_server = pd_server
+            self.uid = uid
+            self.obj = obj
+
+        def setPreselection(self,doc,obj,sub):
+            if obj == self.obj:
+                self.pd_server.send("%s %s;" %(self.uid, 'bang'))
+    s = PreSelObserver(pd_server, words[0], words[2])
+    pd_server.objects_store[words[0]] = s # store the observer to allow removing later
+    App.Gui.Selection.addObserver(s)
+    return 'OK'
+
 
 def pdRemObserver(pd_server, words):
     # Uninstall the resident function

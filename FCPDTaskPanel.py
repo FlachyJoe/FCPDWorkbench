@@ -22,24 +22,31 @@ Err = App.Console.PrintError
 def runStopServer(widget):
     global FCPDwb
     if FCPDwb.pd_server.is_running:
-        widget.btnRunStop.setText('Lancer le serveur')
+        widget.btnRunStop.setText('Server Start')
         FCPDwb.pd_server.terminate()
     else:
-        widget.btnRunStop.setText('Stopper le serveur')
+        widget.btnRunStop.setText('Server Stop')
         FCPDwb.pd_server.run(with_dialog=False)
+        # WARNING Doesn't return until server termination !
+        widget.btnRunStop.setText('Server Start')
 
 
 def launchPureData(widget):
     global FCPDwb
     global fcpdWBpath
 
-    initMsg = "pd filename new FCPD; #N canvas; #X pop 1;"
-    initMsg += "pd-new obj 0 0 fc_client localhost "
+    # initial message creates the client canvas
+    initMsg = "pd filename FCPD Client; #N canvas; #X pop 1;"
+    initMsg += "pd-FCPD obj 0 0 fc_client localhost "
     initMsg += "%i " % (FCPDwb.user_pref.GetInt('fc_listenport'))
     initMsg += "%i " % (FCPDwb.user_pref.GetInt('pd_defaultport'))
     initMsg += " 1; "
-    initMsg += "pd-new loadbang"
+    initMsg += "pd-FCPD text 10 90 This patch is auto-created by FCPD Workbench don't close it.; "
+    initMsg += "pd-FCPD text 10 120 help :; "
+    initMsg += "pd-FCPD obj 60 120 helplink FCPD; "
+    initMsg += "pd-FCPD loadbang"
 
+    # pd command line
     FCPDwb.pdProcess = subprocess.Popen([FCPDwb.user_pref.GetString('pd_path'),
                                  '-path', os.path.join(fcpdWBpath, 'pdlib'),
                                  '-send', initMsg])
@@ -47,7 +54,7 @@ def launchPureData(widget):
     import time
     time.sleep(2)
 
-    # ~ # window embedding
+    # ~ # window embedding doesn't work (yet ?)
     # ~ import sys
     # ~ if sys.platform.startswith('linux'):
         # ~ mw = FreeCADGui.getMainWindow()
@@ -70,7 +77,9 @@ def launchPureData(widget):
             # ~ Log('Unable to embed')
 
     runStopServer(widget)
-    # Don't return until server termination !
+    # WARNING Doesn't return until server termination !
+
+    widget.btnRunStop.setText('Server Start')
 
 def getPanel():
     global fcpdWBpath

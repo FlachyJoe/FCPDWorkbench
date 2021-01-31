@@ -26,7 +26,7 @@ class PureDataServer:
     def terminate(self):
         # send close message to PD
         try :
-            self.output_socket.send(b"CLOSE")
+            self.output_socket.send(b"0 close")
         except BrokenPipeError:
             # output_socket already disconnected
             pass
@@ -95,6 +95,9 @@ class PureDataServer:
         mb.show()
         self.message_box = mb
 
+    def send(self, data):
+        self.write_buffer += data
+
     def run(self, with_dialog=True):
         self.is_running = True
         self.input_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
@@ -154,10 +157,12 @@ class PureDataServer:
 
                 for s in writable:
                     if self.write_buffer:
-                        n=self.output_socket.send(bytes(self.write_buffer, "utf8"))
-                        Log("PDServer (buffered) : >>> %s\r\n" % self.write_buffer)
-                        self.write_buffer = ""
-
+                        try :
+                            n=self.output_socket.send(bytes(self.write_buffer, "utf8"))
+                            Log("PDServer (buffered) : >>> %s\r\n" % self.write_buffer)
+                            self.write_buffer = ""
+                        except BrokenPipeError:
+                            Log("PDServer : nowhere to write, keep in buffer")
         except ValueError:
             import sys
             Err("PDServer : %s\r\n" % sys.exc_info()[1])

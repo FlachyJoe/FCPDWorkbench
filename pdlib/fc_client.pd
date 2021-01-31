@@ -1,4 +1,4 @@
-#N canvas 29 72 1418 839 12;
+#N canvas 39 74 1418 839 12;
 #X obj 1230 230 cnv 15 165 95 empty empty System\ message 20 12 0 14
 #e0e0e0 #404040 0;
 #X obj 264 253 cnv 15 154 57 empty empty empty 20 12 0 14 #84dcff #404040
@@ -9,7 +9,7 @@
 20 12 0 14 #e0e0e0 #404040 0;
 #X obj 16 16 cnv 15 476 198 empty empty Auto-connect 20 12 0 14 #e0e0e0
 #404040 0;
-#X obj 440 480 cnv 15 188 90 empty empty Close\ message 20 12 0 14
+#X obj 440 480 cnv 15 189 170 empty empty Close\ message 20 12 0 14
 #e0e0e0 #404040 0;
 #X obj 18 375 cnv 15 407 299 empty empty Initial\ messages 20 12 0
 14 #e0e0e0 #404040 0;
@@ -23,7 +23,7 @@
 #X obj 284 260 tgl 20 0 empty empty Connect 22 10 0 10 #fcfcfc #00a008
 #000000 1 1;
 #X msg 264 503 connect \$1 \$2;
-#X msg 455 542 send close \, disconnect;
+#X msg 460 550 send close \, disconnect;
 #X obj 306 326 select 1;
 #X obj 386 347 bng 15 250 50 0 empty empty empty 17 7 0 10 #fcfcfc
 #000000 #000000;
@@ -87,18 +87,21 @@
 #X obj 460 380 outlet;
 #X msg 1240 290 0;
 #X text 530 170 activity bang;
-#X obj 1240 260 route close;
 #X obj 1160 130 route 0;
 #X obj 1160 100 t a b;
 #X text 62 221 Change switch \; to follow connection status;
 #X obj 833 201 list prepend send;
 #X obj 480 510 closebang;
+#X obj 460 580 t b a;
+#X msg 530 590 \; pd quit \;;
+#X obj 1290 290 s pd;
+#X obj 1240 260 route close pd;
 #X connect 10 0 41 0;
 #X connect 10 0 42 0;
 #X connect 11 0 14 0;
 #X connect 11 0 37 0;
 #X connect 12 0 27 0;
-#X connect 13 0 10 0;
+#X connect 13 0 79 0;
 #X connect 14 0 36 0;
 #X connect 14 1 15 0;
 #X connect 15 0 13 0;
@@ -111,11 +114,11 @@
 #X connect 26 0 18 0;
 #X connect 27 0 30 0;
 #X connect 27 1 10 0;
-#X connect 28 0 78 0;
+#X connect 28 0 77 0;
 #X connect 30 0 31 0;
 #X connect 31 0 43 0;
 #X connect 32 0 37 0;
-#X connect 32 0 76 0;
+#X connect 32 0 75 0;
 #X connect 33 0 11 0;
 #X connect 35 0 36 1;
 #X connect 36 0 16 0;
@@ -155,11 +158,14 @@
 #X connect 69 0 64 0;
 #X connect 70 0 66 0;
 #X connect 72 0 11 0;
-#X connect 74 0 72 0;
+#X connect 74 0 82 0;
+#X connect 74 1 29 0;
 #X connect 75 0 74 0;
-#X connect 75 1 29 0;
-#X connect 76 0 75 0;
-#X connect 76 1 50 0;
-#X connect 78 0 53 0;
-#X connect 79 0 13 0;
+#X connect 75 1 50 0;
+#X connect 77 0 53 0;
+#X connect 78 0 13 0;
+#X connect 79 0 80 0;
+#X connect 79 1 10 0;
+#X connect 82 0 72 0;
+#X connect 82 1 81 0;
 #X coords 0 -1 1 1 339 80 1 263 231;
