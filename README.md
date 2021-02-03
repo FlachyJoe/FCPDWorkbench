@@ -28,7 +28,7 @@ This workbench is under development. Feel free to test, report bugs, provide fee
 
 ## Feedback
 
-Bugs, feature requests, and inquiries? Please open tickets in the repo's issue queue. You can also follow progressvia the [dicussion thread](https://forum.freecadweb.org/viewtopic.php?f=24&t=51429) on the FreeCAD forum.
+Bugs, feature requests, and inquiries? Please open tickets in the repo's issue queue. You can also follow progress via the [dicussion thread](https://forum.freecadweb.org/viewtopic.php?f=24&t=51429) on the FreeCAD forum.
 
 ## License
 
