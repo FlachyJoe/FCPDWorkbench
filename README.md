@@ -1,14 +1,13 @@
 ## PureData connection workbench for FreeCAD
 
-[FCPD](https://github.com/FlachyJoe/FCPD) is a set of [FreeCAD](https://github.com/FreeCAD/FreeCAD) python macros and [Pure-Data](https://github.com/pure-data/pure-data) (aka PD) patches to link the two softwares. This workbench makes its use easier.
+The [FCPD](https://github.com/FlachyJoe/FCPD) workbench bridges [FreeCAD](https://github.com/FreeCAD/FreeCAD) (FC), an open source CAD program with [Pure-Data](-data/pure-data) (PD), a real-time computer music system.
 
-## What is it for ?
+## Aim
 
-FreeCAD is more than a CAD and Pure-Data is more than *"a free real-time computer music system"*.
-Using a real-time visual programming language to control FreeCAD can results in an orchestrated animation system or a procedural modeling one.
-Or the reverse, imagine a real-time performance with visual/musical effects controlled by FreeCAD virtual objects.
+FreeCAD is more than just a CAD program and Pure-Data is more than just *"a free real-time computer music system"*.
+Using a real-time visual programming language to control FreeCAD can results in an orchestrated animation system or a procedural modeling one. Vice-versa, imagine a real-time performance with visual/musical effects controlled by FreeCAD virtual objects.
 
-As you can start to see, imagination and  programming skill are one's only limitation when using FCPD.
+As you can start to see, imagination and programming skills are one's only limitation when using FCPD.
 
 <p align=center>
     <i>Sample</i></br>
@@ -23,13 +22,13 @@ External libraries are needed for Pure-Data :
 
 See Pure-Data documentation to install them or use an already populated distribution as [Purr-Data](http://l2ork.music.vt.edu/main/make-your-own-l2ork/software/).
 
-## Work in progress !
+## Status: WIP
 
-This workbench is under development. Feel free to critic and participate. Thank you !
+This workbench is under development. Feel free to test, report bugs, provide feedback, and participate. Thank you!
 
 ## Feedback
 
-Bugs, feature requests, and inquiries ? Please open tickets in the repo's issue queue.
+Bugs, feature requests, and inquiries? Please open tickets in the repo's issue queue. You can also follow progress via the [dicussion thread](https://forum.freecadweb.org/viewtopic.php?f=24&t=51429) on the FreeCAD forum.
 
 ## License
 
