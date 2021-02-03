@@ -15,7 +15,7 @@
 14 #e0e0e0 #404040 0;
 #X obj 644 275 cnv 15 551 261 empty empty Wait\ for\ callback\ (synchronize\ FC\ and\ PD)
 20 12 0 14 #e0e0e0 #404040 0;
-#X obj 790 130 cnv 15 217 101 empty empty Incomming\ message 20 12
+#X obj 790 130 cnv 15 217 101 empty empty Incoming\ message 20 12
 0 14 #e0e0e0 #404040 0;
 #X obj 1140 40 cnv 15 240 150 empty empty Callback 20 12 0 14 #e0e0e0
 #404040 0;

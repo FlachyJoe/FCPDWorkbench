@@ -50,7 +50,7 @@ class FCPD_CommandRun():
         return
 
     def IsActive(self):
-        """Here you can define if the command must be active or not (greyed) if certain conditions
+        """Here you can define if the command must be active or not (grayed) if certain conditions
         are met or not. This function is optional."""
         # return FCPDwb.pd_server.is_running
         return True
@@ -72,7 +72,7 @@ class FCPD_CommandStop():
         return
 
     def IsActive(self):
-        """Here you can define if the command must be active or not (greyed) if certain conditions
+        """Here you can define if the command must be active or not (grayed) if certain conditions
         are met or not. This function is optional."""
         # return FCPDwb.pd_server.is_running
         return True
