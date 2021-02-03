@@ -9,5 +9,5 @@
 #X text 15 311 more :;
 #X obj 65 312 helplink FCPD;
 #X text 10 200 no inlet;
-#X text 10 240 1 outlet : last max process time (usefull to calibrate
+#X text 10 240 1 outlet : last max process time (useful to calibrate
 animation);

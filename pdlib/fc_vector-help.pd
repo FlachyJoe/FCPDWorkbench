@@ -9,5 +9,5 @@
 #X text 10 40 Create a FreeCAD-compatible vector message from coordinates
 ;
 #X obj 370 10 fc_vector;
-#X text 10 80 3 arguments to intialize X \, Y and Z;
+#X text 10 80 3 arguments to initialize X \, Y and Z;
 #X text 10 120 1st inlet : X or bang to output the last vector;
