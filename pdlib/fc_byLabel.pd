@@ -1,0 +1,8 @@
+#N canvas 580 378 450 300 12;
+#X obj 130 60 inlet;
+#X obj 130 90 list prepend bylabel;
+#X obj 130 120 fc_process;
+#X obj 130 150 outlet;
+#X connect 0 0 1 0;
+#X connect 1 0 2 0;
+#X connect 2 0 3 0;

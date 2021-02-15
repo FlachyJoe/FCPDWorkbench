@@ -1,0 +1,10 @@
+#N canvas 607 340 450 300 12;
+#X obj 110 50 inlet;
+#X obj 110 79 list prepend link;
+#X obj 110 108 list trim;
+#X obj 110 137 fc_process;
+#X obj 110 166 outlet;
+#X connect 0 0 1 0;
+#X connect 1 0 2 0;
+#X connect 2 0 3 0;
+#X connect 3 0 4 0;

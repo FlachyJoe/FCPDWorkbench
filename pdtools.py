@@ -59,7 +59,9 @@ def registerToolList(pd_server):
                 ("selobserver", pdSelObserver),
                 ("objobserver", pdObjObserver),
                 ("remobserver", pdRemObserver),
-                ("Part", pdPart)]
+                ("Part", pdPart),
+                ("link", pdLink),
+                ("bylabel", pdByLabel)]
 
     for word,func in toolList:
         pd_server.register_message_handler([word], func)
@@ -169,3 +171,17 @@ def pdPart(pd_server, words):
             loft.Sections=[doc.getObject(name) for name in words[4:]]
             loft.Solid = True
             return loft.Name
+
+def pdLink (pd_server, words):
+    doc = App.ActiveDocument
+    obj = doc.getObject(words[2])
+    lnk = doc.addObject('App::Link','Link')
+    lnk.setLink(obj)
+    lnk.Label = obj.Label
+    return lnk.Name
+
+def pdByLabel (pd_server, words):
+    doc = App.ActiveDocument
+    Log("ask for %s \n" % words[2])
+    lst = doc.getObjectsByLabel(words[2])
+    return [o.Name for o in lst]
