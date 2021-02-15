@@ -1,17 +1,24 @@
+## @package pdserver
+
 import FreeCAD as App
 import FreeCADGui
 import select
 import socket
 import sys
 
-#shortcuts of FreeCAD console
+# shortcuts of FreeCAD console
 Log = App.Console.PrintLog
 Msg = App.Console.PrintMessage
+Wrn = App.Console.PrintWarning
 Err = App.Console.PrintError
 
-
+## Deal with PureData connection
 class PureDataServer:
 
+    ## PureDataServer constructor
+    #  @param self
+    #  @param listen_address the local interface to listen
+    #  @param listen_port the local port to listen
     def __init__(self, listen_address, listen_port):
         self.is_running = False
         self.is_waiting = False
@@ -23,27 +30,47 @@ class PureDataServer:
         self.write_buffer = ""
         self.objects_store = {}
 
+    ## Ask the server to terminate
+    #  @param self
     def terminate(self):
-        # send close message to PD
         try :
+            # send close message to PD
             self.output_socket.send(b"0 close")
         except BrokenPipeError:
             # output_socket already disconnected
             pass
         self.is_running = False
 
+    ## remove quotes, brackets and others
+    #  @param self
+    #  @param strMessage a string to clean
+    #  @return a valid PureData message
     def _spacer(self, strMessage):
-        '''remove quotes, brackets and others'''
         return strMessage.translate(str.maketrans(',=', '  ', ';()[]{}"\'' ))
 
+    ## this function is called when a unregistred message incomes
+    #  do nothing and can be overwritten if needed
+    #  @param self
+    #  @param msg the incomming message as a list of words
+    #  @return Nothing
     def default_message_handler(self, msg):
-        '''can be overwriten'''
         pass
 
+    ## this function is called when an error occurs in incomming message processing
+    #  can be overwritten if needed
+    #  @param self
+    #  @param msg the incomming message as a list of words
+    #  @return the string "ERROR" followed by the error description
     def error_handler(self, msg):
         '''can be overwriten'''
         return "ERROR %s" % sys.exc_info()[1]
 
+    ## stores a message processing function for specific first words
+    #  @param self
+    #  @param first_words list of first words for which the function is called
+    #  @param handler the function to call
+    #  handler is called with 2 parameters : the PureDataServer object and the incomming message as a list of words
+    #  @return Nothing
     def register_message_handler(self, first_words, handler):
         if not callable(handler):
             raise ValueError("handler must be callable")
@@ -95,10 +122,18 @@ class PureDataServer:
         mb.show()
         self.message_box = mb
 
+    ## send a message to the PureData client
+    #  @param self
+    #  @param data the message as a string
+    #  @return Nothing
     def send(self, data):
         self.write_buffer += data
 
-    def run(self, with_dialog=True):
+    ## launch the server
+    #  @param self
+    #  @param with_dialog if True show a dialog to let the user stops the server
+    #  @return Nothing but only when the server stops
+    def run(self, with_dialog=False):
         self.is_running = True
         self.input_socket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
         self.input_socket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
