@@ -32,56 +32,56 @@ Err = App.Console.PrintError
 
 def value_from_str(words):
     "return a FreeCAD value from a string"
-
     return_value = None
     used_words = 0
-    try:
-        return_value = float(words[0])
-        used_words = 1
-    except ValueError:
-        if words[0] in ["Vector", "Pos"]:
-            return_value = App.Vector(float(words[1]),float(words[2]),float(words[3]))
-            used_words = 4
-        elif words[0] in ["Rotation", "Yaw-Pitch-Roll", "Rot"]:
-            return_value = App.Rotation(float(words[1]),float(words[2]),float(words[3]))
-            used_words = 4
-        elif words[0]=="Placement":
-            return_value = App.Placement(value_from_str(words[1:5]), value_from_str(words[5:]))
-            used_words = 9
-        elif words[0]=="List":
-            return_value = []
-            count = words[1]
-            used_words = 2
-            for i in range(0, count):
-                val, cnt = value_from_str(words[used_words:])
-                return_value.append(val)
-                used_words += cnt
-        elif words[0]=="True":
-            return_value = True
+    if words :
+        try:
+            return_value = float(words[0])
             used_words = 1
-        elif words[0]=="False":
-            return_value = False
-            used_words = 1
-        elif words[0]=="None":
-            return_value = None
-            used_words = 1
-        else:
-            try :
-                return_value = App.Units.parseQuantity(''.join(words))
-                used_words = len(words)
-            except:
-                Log(sys.exc_info())
-                Log("[%s] \r\n" % words[0])
-    finally:
-        return (return_value, used_words)
+        except ValueError:
+            if words[0] in ["Vector", "Pos"]:
+                return_value = App.Vector(float(words[1]),float(words[2]),float(words[3]))
+                used_words = 4
+            elif words[0] in ["Rotation", "Yaw-Pitch-Roll", "Rot"]:
+                return_value = App.Rotation(float(words[1]),float(words[2]),float(words[3]))
+                used_words = 4
+            elif words[0]=="Placement":
+                return_value = App.Placement(value_from_str(words[1:5])[0], value_from_str(words[5:])[0])
+                used_words = 9
+            elif words[0]=="List":
+                return_value = []
+                count = words[1]
+                used_words = 2
+                for i in range(0, count):
+                    val, cnt = value_from_str(words[used_words:])
+                    return_value.append(val)
+                    used_words += cnt
+            elif words[0]=="True":
+                return_value = True
+                used_words = 1
+            elif words[0]=="False":
+                return_value = False
+                used_words = 1
+            elif words[0]=="None":
+                return_value = None
+                used_words = 1
+            else:
+                try :
+                    return_value = App.Units.parseQuantity(''.join(words))
+                    used_words = len(words)
+                except:
+                    Log(sys.exc_info())
+                    Log(" value_from_str [%s] \r\n" % words)
+    return (return_value, used_words)
 
 
 def pop_values(words, count):
     "use words to get values"
     values = []
-    val, cnt = value_from_str(words)
-    values.append(val)
-    words = words[cnt:]
+    for i in range(count):
+        val, cnt = value_from_str(words)
+        values.append(val)
+        words = words[cnt:]
     return (words, values)
 
 
