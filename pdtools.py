@@ -27,27 +27,62 @@ import FreeCAD as App
 #shortcuts of FreeCAD console
 Log = App.Console.PrintLog
 Msg = App.Console.PrintMessage
+Wrn = App.Console.PrintWarning
 Err = App.Console.PrintError
 
 def value_from_str(words):
     "return a FreeCAD value from a string"
 
     return_value = None
+    used_words = 0
+    try:
+        return_value = float(words[0])
+        used_words = 1
+    except ValueError:
+        if words[0] in ["Vector", "Pos"]:
+            return_value = App.Vector(float(words[1]),float(words[2]),float(words[3]))
+            used_words = 4
+        elif words[0] in ["Rotation", "Yaw-Pitch-Roll", "Rot"]:
+            return_value = App.Rotation(float(words[1]),float(words[2]),float(words[3]))
+            used_words = 4
+        elif words[0]=="Placement":
+            return_value = App.Placement(value_from_str(words[1:5]), value_from_str(words[5:]))
+            used_words = 9
+        elif words[0]=="List":
+            return_value = []
+            count = words[1]
+            used_words = 2
+            for i in range(0, count):
+                val, cnt = value_from_str(words[used_words:])
+                return_value.append(val)
+                used_words += cnt
+        elif words[0]=="True":
+            return_value = True
+            used_words = 1
+        elif words[0]=="False":
+            return_value = False
+            used_words = 1
+        elif words[0]=="None":
+            return_value = None
+            used_words = 1
+        else:
+            try :
+                return_value = App.Units.parseQuantity(''.join(words))
+                used_words = len(words)
+            except:
+                Log(sys.exc_info())
+                Log("[%s] \r\n" % words[0])
+    finally:
+        return (return_value, used_words)
 
-    if words[0] in ["Vector", "Pos"]:
-        return_value = App.Vector(float(words[1]),float(words[2]),float(words[3]))
-    elif words[0] in ["Rotation", "Yaw-Pitch-Roll", "Rot"]:
-        return_value = App.Rotation(float(words[1]),float(words[2]),float(words[3]))
-    elif words[0]=="Placement":
-        return_value = App.Placement(value_from_str(words[1:5]), value_from_str(words[5:]))
-    else:
-        try :
-            return_value = App.Units.parseQuantity(''.join(words))
-        except:
-            Log(sys.exc_info())
-            Log("[%s] \r\n" % words[0])
 
-    return return_value
+def pop_values(words, count):
+    "use words to get values"
+    values = []
+    val, cnt = value_from_str(words)
+    values.append(val)
+    words = words[cnt:]
+    return (words, values)
 
 
 def registerToolList(pd_server):
@@ -59,9 +94,11 @@ def registerToolList(pd_server):
                 ("selobserver", pdSelObserver),
                 ("objobserver", pdObjObserver),
                 ("remobserver", pdRemObserver),
-                ("Part", pdPart),
                 ("link", pdLink),
-                ("bylabel", pdByLabel)]
+                ("bylabel", pdByLabel),
+                ("Part", pdPart),
+                ("Draft", pdDraft),
+                ]
 
     for word,func in toolList:
         pd_server.register_message_handler([word], func)
@@ -88,7 +125,7 @@ def pdGet(pd_server, words):
 def pdSet(pd_server, words):
     if words[2] == "property":
         obj = App.ActiveDocument.getObject(words[3])
-        return setattr(obj,words[4], value_from_str(words[5:]))
+        return setattr(obj, words[4], value_from_str(words[5:]))
     elif words[2] == "constraint":
         skc = App.ActiveDocument.getObject(words[3])
         return skc.setDatum(words[4],  value_from_str(words[5:]))
@@ -163,15 +200,6 @@ def pdRemObserver(pd_server, words):
     del pd_server.objects_store[words[0]]
     return 'OK'
 
-def pdPart(pd_server, words):
-    if words[2] == "create":
-        if words[3] == "Loft":
-            doc = App.ActiveDocument
-            loft = doc.addObject('Part::Loft','Loft')
-            loft.Sections=[doc.getObject(name) for name in words[4:]]
-            loft.Solid = True
-            return loft.Name
-
 def pdLink (pd_server, words):
     doc = App.ActiveDocument
     obj = doc.getObject(words[2])
@@ -182,6 +210,54 @@ def pdLink (pd_server, words):
 
 def pdByLabel (pd_server, words):
     doc = App.ActiveDocument
-    Log("ask for %s \n" % words[2])
     lst = doc.getObjectsByLabel(words[2])
     return [o.Name for o in lst]
+
+
+###################################################
+# PART WORKBENCH                                  #
+def pdPart(pd_server, words):
+    if words[2] == "loft":
+        doc = App.ActiveDocument
+        loft = doc.addObject('Part::Loft','Loft')
+        loft.Sections=[doc.getObject(name) for name in words[4:]]
+        loft.Solid = True
+        return loft.Name
+    else:
+        shape = None
+        func_name = "make"+ words[2]
+        if hasattr(Part, func_name):
+            func = getattr(Part, func_name)
+            import inspect
+            pcount = len(inspect.signature(func).parameters)
+            _, args = pop_values(words[3:], pcount)
+            shape = func(*args)
+
+        if hasattr(shape, 'Name'):
+            return shape.Name
+        else:
+            return str(shape)
+
+#                                  PART WORKBENCH #
+###################################################
+
+
+###################################################
+# DRAFT WORKBENCH                                 #
+def pdDraft(pd_server, words):
+    import Draft
+    shape = None
+    func_name = "make_"+ words[2]
+    if hasattr(Draft, func_name):
+        func = getattr(Draft, func_name)
+        import inspect
+        pcount = len(inspect.signature(func).parameters)
+        _, args = pop_values(words[3:], pcount)
+        shape = func(*args)
+
+    if hasattr(shape, 'Name'):
+        return shape.Name
+    else:
+        return str(shape)
+#                                 DRAFT WORKBENCH #
+###################################################

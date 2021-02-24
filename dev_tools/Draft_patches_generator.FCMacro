@@ -1,0 +1,63 @@
+
+def text(x, y, text):
+	return "#X text %i %i %s;\n" %(x, y , text)
+
+def simple_obj(x, y, typ):
+	return "#X obj %i %i %s;\n" %(x, y, typ)
+
+def trigger_ab(x, y, count):
+	return  "#X obj %i %i t a %s;\n" %(x, y, "b " * count)
+
+def connect(id1, outlet, id2, inlet):
+	return "#X connect %i %i %i %i;\n" %(id1, outlet, id2, inlet)
+	
+def generate(dirname):
+	import Draft
+	import inspect
+	func_list = inspect.getmembers(Draft, inspect.isfunction)
+	for func_name, func in func_list:
+		if func_name.startswith("make_"):
+			pdname = func_name.replace("make_","")
+			params = list(inspect.signature(func).parameters.keys())
+			pcount = len(params)
+			#Log("%s %i\n" % (func_name, pcount))
+			cnv = "#N canvas 750 350 500 500 12;"			#obj id
+			cnv += text(10, 10, params[0])					# 0
+			cnv += simple_obj(10, 30, "inlet")					# 1
+			if pcount > 1:
+				cnv += trigger_ab(10, 60, pcount-1)			# 2
+				for i, p in enumerate(params[1:]):
+					cnv += text(100*(i+1), 10, p)			# 3+4*i
+					cnv += simple_obj(100*(i+1), 30, "inlet")	# 4+4*i
+					cnv += simple_obj(100*(i+1), 90+30*i, "any")	# 5+4*i
+					cnv += simple_obj(100*(i+1), 120+30*i, "list append")	# 6+4*i
+					
+			cnv += simple_obj(10, 300, "list prepend Draft %s" %pdname )	# 3+4*(pcount-1) or 2 = last +1
+			cnv += simple_obj(10, 330, "fc_process 1")			# 4+4*(pcount-1) or 3 = last +2
+			cnv += simple_obj(10, 360, "route ERROR")			# 5+4*(pcount-1) or 4 = last +3
+			cnv += simple_obj(10, 390, "print FreeCAD Error")	# 6+4*(pcount-1) or 5 = last +4
+			cnv += simple_obj(120, 390, "outlet")				# 7+4*(pcount-1) or 6 = last +5
+
+			cnv += connect(1, 0, 2, 0)
+			last = 1
+			if  pcount > 1:
+				for i in range(pcount-1):
+					cnv += connect(2, i+1, 5+4*i, 0)
+					cnv += connect(4+4*i, 0, 5+4*i, 1)
+					cnv += connect(5+4*i, 0, 6+4*i, 1)
+					if i==0:
+						cnv += connect(2, 0, 6+4*i, 0)
+					else:
+						cnv += connect(6+4*(i-1), 0, 6+4*i, 0)
+				last = 2+4*(pcount-1)
+				cnv += connect(last, 0, last+1, 0)
+			cnv += connect(last+1, 0, last+2, 0)
+			cnv += connect(last+2, 0, last+3, 0)
+			cnv += connect(last+3, 0, last+4, 0)
+			cnv += connect(last+3, 1, last+5, 0)
+			import os
+			with open(os.path.join(dirname, pdname) + ".pd", 'w') as file:
+				file.write(cnv)
+where = os.path.realpath(os.path.join(os.path.dirname(__file__),"../pdlib/Draft"))
+generate(where)
+Msg("Pure-Data patches for Draft have been written in %s\n" %where)

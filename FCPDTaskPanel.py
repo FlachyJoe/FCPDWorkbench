@@ -17,6 +17,7 @@ import FreeCAD as App
 #shortcuts of FreeCAD console
 Log = App.Console.PrintLog
 Msg = App.Console.PrintMessage
+Wrn = App.Console.PrintWarning
 Err = App.Console.PrintError
 
 def runStopServer(widget):
