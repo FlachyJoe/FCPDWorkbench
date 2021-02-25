@@ -50,6 +50,7 @@ def launchPureData(widget):
     # pd command line
     FCPDwb.pdProcess = subprocess.Popen([FCPDwb.user_pref.GetString('pd_path'),
                                  '-path', os.path.join(fcpdWBpath, 'pdlib'),
+                                 '-helppath', os.path.join(fcpdWBpath, 'pdhelp'),
                                  '-send', initMsg])
     # wait for pd launch
     import time
