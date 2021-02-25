@@ -1,0 +1,8 @@
+#N canvas 438 465 450 300 12;
+#X obj 10 70 fc_process 1;
+#X obj 10 40 list prepend Object \$1 \$2;
+#X obj 10 10 inlet;
+#X obj 10 100 outlet;
+#X connect 0 0 3 0;
+#X connect 1 0 0 0;
+#X connect 2 0 1 0;

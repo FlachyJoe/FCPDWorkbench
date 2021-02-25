@@ -96,6 +96,7 @@ def registerToolList(pd_server):
                 ("remobserver", pdRemObserver),
                 ("link", pdLink),
                 ("bylabel", pdByLabel),
+                ("Object", pdObject),
                 ("Part", pdPart),
                 ("Draft", pdDraft),
                 ]
@@ -125,10 +126,10 @@ def pdGet(pd_server, words):
 def pdSet(pd_server, words):
     if words[2] == "property":
         obj = App.ActiveDocument.getObject(words[3])
-        return setattr(obj, words[4], value_from_str(words[5:]))
+        return setattr(obj, words[4], value_from_str(words[5:])[0])
     elif words[2] == "constraint":
         skc = App.ActiveDocument.getObject(words[3])
-        return skc.setDatum(words[4],  value_from_str(words[5:]))
+        return skc.setDatum(words[4],  value_from_str(words[5:])[0])
 
 
 def pdCopy(pd_server, words):
@@ -200,7 +201,8 @@ def pdRemObserver(pd_server, words):
     del pd_server.objects_store[words[0]]
     return 'OK'
 
-def pdLink (pd_server, words):
+
+def pdLink(pd_server, words):
     doc = App.ActiveDocument
     obj = doc.getObject(words[2])
     lnk = doc.addObject('App::Link','Link')
@@ -208,36 +210,60 @@ def pdLink (pd_server, words):
     lnk.Label = obj.Label
     return lnk.Name
 
-def pdByLabel (pd_server, words):
+
+def pdByLabel(pd_server, words):
     doc = App.ActiveDocument
     lst = doc.getObjectsByLabel(words[2])
     return [o.Name for o in lst]
 
 
+def pdObject(pd_server, words):
+        doc = App.ActiveDocument
+        objMod = words[2].title()
+        objType = words[3].title()
+        obj = doc.addObject('%s::%s' %(objMod,objType), objType)
+        current = 4
+        while current < len(words):
+            propName = words[current]
+            propValue, used = value_from_str(words[current+1:])
+            current += used+1
+            if hasattr(obj, propName):
+                setattr(obj, propName, propValue)
+        return obj.Name
+
+
+def getParametersCount(func):
+    try :
+        import inspect
+        params = list(inspect.signature(func).parameters.keys())
+    except ValueError:
+        #parse __doc__
+        docstr = func.__doc__
+        if docstr:
+            leftpar = docstr.find("(")+1
+            rightpar = docstr.find(")", leftpar)
+            paramstr = docstr[leftpar:rightpar]
+            paramstr = paramstr.replace("[","")
+            paramstr = paramstr.replace("]","")
+            paramstr = paramstr.replace("\n","")
+            params = paramstr.split(",")
+    return len(params)
+
+
 ###################################################
 # PART WORKBENCH                                  #
 def pdPart(pd_server, words):
-    if words[2] == "loft":
-        doc = App.ActiveDocument
-        loft = doc.addObject('Part::Loft','Loft')
-        loft.Sections=[doc.getObject(name) for name in words[4:]]
-        loft.Solid = True
-        return loft.Name
-    else:
+    import Part
+    if words[2].startswith('make'):
         shape = None
-        func_name = "make"+ words[2]
+        func_name = words[2]
         if hasattr(Part, func_name):
             func = getattr(Part, func_name)
-            import inspect
-            pcount = len(inspect.signature(func).parameters)
+            pcount = getParametersCount(func)
             _, args = pop_values(words[3:], pcount)
             shape = func(*args)
-
-        if hasattr(shape, 'Name'):
-            return shape.Name
-        else:
-            return str(shape)
-
+            Part.show(shape)
+            return App.ActiveDocument.ActiveObject.Name
 #                                  PART WORKBENCH #
 ###################################################
 
@@ -250,8 +276,7 @@ def pdDraft(pd_server, words):
     func_name = "make_"+ words[2]
     if hasattr(Draft, func_name):
         func = getattr(Draft, func_name)
-        import inspect
-        pcount = len(inspect.signature(func).parameters)
+        pcount = getParametersCount(func)
         _, args = pop_values(words[3:], pcount)
         shape = func(*args)
 
