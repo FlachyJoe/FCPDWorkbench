@@ -16,7 +16,9 @@
 #X text 100 350 Name of the created FreeCAD object;
 #X obj 0 410 cnv 3 550 3 empty empty arguments 8 12 0 13 #dcdcdc #000000 0;
 #X obj 0 470 cnv 3 550 3 empty empty more_info 8 12 0 13 #dcdcdc #000000 0;
-#X text 10 500 This object is part of the ;
-#X obj 170 500  helplink FCPD;
-#X text 200 500  library.;
+#X text 10 500 This object is in the ;
+#X obj 140 500  helplink part;
+#X text 175 500  part of the ;
+#X obj 245 500  helplink FCPD;
+#X text 275 500  library.;
 #X obj 0 600 cnv 15 550 15 empty empty empty 20 12 0 14 #dcdcdc #404040 0;

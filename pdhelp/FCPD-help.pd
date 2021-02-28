@@ -1,4 +1,4 @@
-#N canvas 772 301 551 516 12;
+#N canvas 779 205 551 516 12;
 #X obj 11 80 helplink fc_client;
 #X text 150 80 client/server connection with FreeCAD;
 #X obj 10 110 helplink fc_process;
@@ -19,3 +19,6 @@
 #X obj 10 220 helplink fc_vector;
 #X text 120 6 a framework to connect FreeCAD and PureData \; (c)2020
 flachyjoe and contributors;
+#X obj 300 220 helplink part;
+#X obj 300 250 helplink draft;
+#X text 300 190 WORKBENCHES;

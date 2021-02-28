@@ -39,7 +39,7 @@ def get_parameters(func):
 def getCleanDoc(func):
         docstr = func.__doc__
         dash = docstr.find("--")+3
-        return docstr[dash:].replace(",", " \, ")
+        return docstr[dash:].replace(",", " \, ").replace("\n", " \; ")
 
 def generate(dirname):
     func_list = inspect.getmembers(Part, inspect.isroutine)
@@ -93,6 +93,7 @@ Msg("Pure-Data patches for Part have been written in %s\n" %where)
 
 def generateHelp(dirname):
     func_list = inspect.getmembers(Part, inspect.isroutine)
+    index=[]
     for func_name, func in func_list:
         if func_name.startswith("make"):
             pdname = func_name #.replace("make","")
@@ -102,12 +103,14 @@ def generateHelp(dirname):
             hlp +="#X obj 0 0 cnv 15 550 40 empty empty part/%s 3 12 0 18 #c4dcdc #000000 0;\n" % pdname
             hlp +=simple_obj(400, 10, "part/%s" %pdname)
             # DESC
-            hlp += text(10, 50, getCleanDoc(func))
+            doc = getCleanDoc(func)
+            hlp += text(10, 50, doc)
+            index.append(('part/%s' %pdname, doc.split("\;")[0]))
             # INLETS
             hlp +="#X obj 0 180 cnv 3 550 3 empty empty inlets 8 12 0 13 #dcdcdc #000000 0;\n"
             for i, p in enumerate(params):
-                cnv +="#X obj 78 %i cnv 17 3 17 empty \$0-pddp.cnv.let.1 %i 5 9 0 16 #dcdcdc #9c9c9c 0;\n" % (200 + 30*i, i)
-                cnv += text(100, 200 + 30*i, p)
+                hlp +="#X obj 78 %i cnv 17 3 17 empty \$0-pddp.cnv.let.1 %i 5 9 0 16 #dcdcdc #9c9c9c 0;\n" % (200 + 30*i, i)
+                hlp += text(100, 200 + 30*i, p)
             # OUTLETS
             hlp +="#X obj 0 %i cnv 3 550 3 empty empty outlets 8 12 0 13 #dcdcdc #000000 0;\n" % (200 + 30*pcount)
             hlp +="#X obj 78 %i cnv 17 3 17 empty empty 0 5 9 0 16 #dcdcdc #9c9c9c 0;\n" % (230 + 30*pcount)
@@ -116,15 +119,27 @@ def generateHelp(dirname):
             hlp +="#X obj 0 %i cnv 3 550 3 empty empty arguments 8 12 0 13 #dcdcdc #000000 0;\n" % (290 + 30*pcount)
             # MORE INFO
             hlp +="#X obj 0 %i cnv 3 550 3 empty empty more_info 8 12 0 13 #dcdcdc #000000 0;\n" % (350 + 30*pcount)
-            hlp += text(10, 380 + 30*pcount, "This object is part of the ")
-            hlp += simple_obj(170, 380 + 30*pcount," helplink FCPD")
-            hlp += text(200, 380 + 30*pcount, " library.")
+            hlp += text(10, 380 + 30*pcount, "This object is in the ")
+            hlp += simple_obj(140, 380 + 30*pcount," helplink part")
+            hlp += text(175, 380 + 30*pcount, " part of the ")
+            hlp += simple_obj(245, 380 + 30*pcount," helplink FCPD")
+            hlp += text(275, 380 + 30*pcount, " library.")
             # FOOTER
             hlp +="#X obj 0 %i cnv 15 550 15 empty empty empty 20 12 0 14 #dcdcdc #404040 0;\n" % (410 + 30*pcount if pcount>6 else 600)
 
             import os
             with open(os.path.join(dirname, pdname) + "-help.pd", 'w') as file:
                 file.write(hlp)
+
+        # INDEX
+        hlp = "#N canvas 436 36 600 620 10;\n"
+        hlp +=simple_obj(0, 0, "cnv 15 600 40 empty empty part_index 3 12 0 18 #c4dcdc #000000 0")
+        for i,(f,d) in enumerate(index):
+            hlp +=simple_obj(10, 50+30*i, f)
+            hlp += text(200, 50+30*i, d)
+        import os
+        with open(os.path.join(dirname, "part-help.pd"), 'w') as file:
+            file.write(hlp)
 
 where = os.path.realpath(os.path.join(os.path.dirname(__file__),"../pdhelp/part"))
 generateHelp(where)

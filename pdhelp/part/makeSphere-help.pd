@@ -1,8 +1,7 @@
 #N canvas 436 36 550 620 10;
 #X obj 0 0 cnv 15 550 40 empty empty part/makeSphere 3 12 0 18 #c4dcdc #000000 0;
 #X obj 400 10 part/makeSphere;
-#X text 10 50 Make a sphere with a given radius
-By default pnt=Vector(0 \, 0 \, 0) \,  dir=Vector(0 \, 0 \, 1) \,  angle1=0 \,  angle2=90 and angle3=360;
+#X text 10 50 Make a sphere with a given radius \; By default pnt=Vector(0 \, 0 \, 0) \,  dir=Vector(0 \, 0 \, 1) \,  angle1=0 \,  angle2=90 and angle3=360;
 #X obj 0 180 cnv 3 550 3 empty empty inlets 8 12 0 13 #dcdcdc #000000 0;
 #X obj 78 200 cnv 17 3 17 empty \$0-pddp.cnv.let.1 0 5 9 0 16 #dcdcdc #9c9c9c 0;
 #X text 100 200 radius;
@@ -21,7 +20,9 @@ By default pnt=Vector(0 \, 0 \, 0) \,  dir=Vector(0 \, 0 \, 1) \,  angle1=0 \,  
 #X text 100 410 Name of the created FreeCAD object;
 #X obj 0 470 cnv 3 550 3 empty empty arguments 8 12 0 13 #dcdcdc #000000 0;
 #X obj 0 530 cnv 3 550 3 empty empty more_info 8 12 0 13 #dcdcdc #000000 0;
-#X text 10 560 This object is part of the ;
-#X obj 170 560  helplink FCPD;
-#X text 200 560  library.;
+#X text 10 560 This object is in the ;
+#X obj 140 560  helplink part;
+#X text 175 560  part of the ;
+#X obj 245 560  helplink FCPD;
+#X text 275 560  library.;
 #X obj 0 600 cnv 15 550 15 empty empty empty 20 12 0 14 #dcdcdc #404040 0;
