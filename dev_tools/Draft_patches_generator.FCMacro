@@ -92,22 +92,24 @@ Msg("Pure-Data patches for Draft have been written in %s\n" %where)
 def getCleanDoc(func):
         docstr = func.__doc__
         docstr = docstr.split("\n")
-        return docstr[0]
+        return docstr[0].replace(",", " \, ")
 
 
 def generateHelp(dirname):
     import Draft
     func_list = inspect.getmembers(Draft, inspect.isroutine)
+    index = []
     for func_name, func in func_list:
         if func_name.startswith("make_"):
             pdname = func_name.replace("make_","")
             params = get_parameters(func)
             pcount = len(params)
             hlp = "#N canvas 436 36 550 620 10;\n"
-            hlp +="#X obj 0 0 cnv 15 550 40 empty empty draft/%s 3 12 0 18 #c4dcdc #000000 0;\n" % pdname
+            hlp +=simple_obj(0, 0, "cnv 15 550 40 empty empty draft/%s 3 12 0 18 #c4dcdc #000000 0" % pdname)
             hlp +=simple_obj(400, 10, "draft/%s" %pdname)
             # DESC
             doc = getCleanDoc(func)
+            index.append(("draft/%s" %pdname, doc))
             hlp += text(10, 50, doc)
             docEnd = 50 + (len(doc) // 60)*12
             Log( "%s %i %i\n" % (pdname, len(doc), docEnd))
@@ -125,15 +127,28 @@ def generateHelp(dirname):
             hlp +=simple_obj(0, inletsEnd+90,"cnv 3 550 3 empty empty arguments 8 12 0 13 #dcdcdc #000000 0" )
             # MORE INFO
             hlp +=simple_obj(0, inletsEnd+120,"cnv 3 550 3 empty empty more_info 8 12 0 13 #dcdcdc #000000 0")
-            hlp += text(10, inletsEnd+150, "This object is part of the ")
-            hlp += simple_obj(170, inletsEnd+150," helplink FCPD")
-            hlp += text(200, inletsEnd+150, " library.")
+            hlp += text(10, inletsEnd+150, "This object is in the ")
+            hlp += simple_obj(140, inletsEnd+150," helplink draft")
+            hlp += text(175, inletsEnd+150, " part of the ")
+            hlp += simple_obj(245, inletsEnd+150," helplink FCPD")
+            hlp += text(275, inletsEnd+150, " library.")
             # FOOTER
             hlp +="#X obj 0 %i cnv 15 550 15 empty empty empty 20 12 0 14 #dcdcdc #404040 0;\n" % max(inletsEnd+180,600)
 
             import os
             with open(os.path.join(dirname, pdname) + "-help.pd", 'w') as file:
                 file.write(hlp)
+
+        hlp = "#N canvas 436 36 600 620 10;\n"
+        hlp +=simple_obj(0, 0, "cnv 15 600 40 empty empty draft_index 3 12 0 18 #c4dcdc #000000 0")
+        for i,(f,d) in enumerate(index):
+            hlp +=simple_obj(10, 50+30*i, f)
+            hlp += text(200, 50+30*i, d)
+        import os
+        with open(os.path.join(dirname, "draft-help.pd"), 'w') as file:
+            file.write(hlp)
+
+
 
 where = os.path.realpath(os.path.join(os.path.dirname(__file__),"../pdhelp/draft"))
 generateHelp(where)
