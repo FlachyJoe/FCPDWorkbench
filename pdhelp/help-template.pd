@@ -1,0 +1,13 @@
+#N canvas 436 36 555 619 10;
+#X obj 0 645 cnv 15 552 21 empty \$0-pddp.cnv.footer empty 20 12 0
+14 #dcdcdc #404040 0;
+#X obj 0 0 cnv 15 552 40 empty \$0-pddp.cnv.header trigger 3 12 0 18
+#c4dcdc #000000 0;
+#X obj 0 269 cnv 3 550 3 empty \$0-pddp.cnv.inlets inlets 8 12 0 13
+#dcdcdc #000000 0;
+#X obj 0 306 cnv 3 550 3 empty \$0-pddp.cnv.outlets outlets 8 12 0
+13 #dcdcdc #000000 0;
+#X obj 0 359 cnv 3 550 3 empty \$0-pddp.cnv.argument arguments 8 12
+0 13 #dcdcdc #000000 0;
+#X obj 0 547 cnv 3 550 3 empty \$0-pddp.cnv.more_info more_info 8 12
+0 13 #dcdcdc #000000 0;
