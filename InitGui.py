@@ -24,13 +24,10 @@
 ###################################################################################
 
 import fcpdwb_locator
-global fcpdWBpath
 fcpdWBpath = os.path.dirname(fcpdwb_locator.__file__)
 
-global fcpdWB_icons_path
 fcpdWB_icons_path =  os.path.join( fcpdWBpath, 'Icons')
 
-global fcpdWB_main_icon
 fcpdWB_main_icon = os.path.join( fcpdWB_icons_path , 'FCPDLogo.svg')
 
 class FCPDWorkbench (Workbench):

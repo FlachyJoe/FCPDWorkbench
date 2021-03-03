@@ -69,7 +69,7 @@ def value_from_str(words):
                 try :
                     return_value = App.Units.parseQuantity(''.join(words))
                     used_words = len(words)
-                except:
+                except Exception:
                     Log(sys.exc_info())
                     Log(" value_from_str [%s] \r\n" % words)
     return (return_value, used_words)

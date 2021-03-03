@@ -30,7 +30,6 @@ import fcpdwb_locator
 fcpdWBpath = os.path.dirname(fcpdwb_locator.__file__)
 fcpdWB_icons_path =  os.path.join( fcpdWBpath, 'Icons')
 
-global FCPDwb
 FCPDwb = FreeCADGui.getWorkbench('FCPDWorkbench')
 
 class FCPD_CommandRun():

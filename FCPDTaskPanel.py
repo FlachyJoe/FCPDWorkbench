@@ -1,16 +1,13 @@
 
 import os
-from PySide import QtGui
 from PySide.QtUiTools import QUiLoader
-from PySide.QtCore import QFile, QIODevice
+from PySide.QtCore import QFile
 import FreeCADGui
 import subprocess
 
-global FCPDwb
 FCPDwb = FreeCADGui.getWorkbench('FCPDWorkbench')
 
 import fcpdwb_locator
-global fcpdWBpath
 fcpdWBpath = os.path.dirname(fcpdwb_locator.__file__)
 
 import FreeCAD as App
@@ -58,6 +55,7 @@ def launchPureData(widget):
 
     # ~ # window embedding doesn't work (yet ?)
     # ~ import sys
+    # ~ from PySide import QtGui
     # ~ if sys.platform.startswith('linux'):
         # ~ mw = FreeCADGui.getMainWindow()
         # ~ mdi = mw.findChild(QtGui.QMdiArea)

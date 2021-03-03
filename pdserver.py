@@ -103,7 +103,7 @@ class PureDataServer:
                         ret = self.default_message_handler(words)
                     if type(ret) != str:
                         ret = str(ret)
-                except :
+                except Exception:
                     ret = self.error_handler(words)
                 # callback include current patch id ($0 in PD) to route the message and a trailing semicolon
                 # quotes, bracket and other are removed by spacer function
@@ -183,7 +183,7 @@ class PureDataServer:
                             if retList:
                                 for ret in retList:
                                     bret=bytes(ret, "utf8")
-                                    n=self.output_socket.send(bret)
+                                    self.output_socket.send(bret)
                                     Log("PDServer : >>> %s\r\n" % ret)
                         else:
                             s.close()
@@ -193,7 +193,7 @@ class PureDataServer:
                 for s in writable:
                     if self.write_buffer:
                         try :
-                            n=self.output_socket.send(bytes(self.write_buffer, "utf8"))
+                            self.output_socket.send(bytes(self.write_buffer, "utf8"))
                             Log("PDServer (buffered) : >>> %s\r\n" % self.write_buffer)
                             self.write_buffer = ""
                         except BrokenPipeError:
