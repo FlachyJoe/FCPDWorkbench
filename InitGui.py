@@ -26,11 +26,12 @@
 import fcpdwb_locator
 fcpdWBpath = os.path.dirname(fcpdwb_locator.__file__)
 
-fcpdWB_icons_path =  os.path.join( fcpdWBpath, 'Icons')
+fcpdWB_icons_path = os.path.join(fcpdWBpath, 'Icons')
 
-fcpdWB_main_icon = os.path.join( fcpdWB_icons_path , 'FCPDLogo.svg')
+fcpdWB_main_icon = os.path.join(fcpdWB_icons_path, 'FCPDLogo.svg')
 
-class FCPDWorkbench (Workbench):
+
+class FCPDWorkbench(Workbench):
 
     global fcpdWB_main_icon
     global fcpdWB_icons_path
@@ -45,12 +46,12 @@ class FCPDWorkbench (Workbench):
         # command list
         import fcpdwb_commands
         self.command_list = ["FCPD_Run", "FCPD_Stop"]
-        self.appendToolbar("FCPD",self.command_list) # creates a new toolbar with your commands
-        self.appendMenu("FCPD",self.command_list) # creates a new menu
+        self.appendToolbar("FCPD", self.command_list)   # creates a new toolbar with your commands
+        self.appendMenu("FCPD", self.command_list)      # creates a new menu
 
         # prefs UI
         FreeCADGui.addIconPath(fcpdWB_icons_path)
-        FreeCADGui.addPreferencePage (os.path.join(fcpdWBpath,"FCPDwb_pref.ui"), "FCPD")
+        FreeCADGui.addPreferencePage(os.path.join(fcpdWBpath, "FCPDwb_pref.ui"), "FCPD")
 
         # get prefs
         self.user_pref = FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Mod/FCPD")
@@ -73,7 +74,6 @@ class FCPDWorkbench (Workbench):
         awidget.setWidget(FCPDTaskPanel.getPanel())
         mw.addDockWidget(QtCore.Qt.LeftDockWidgetArea, awidget)
 
-
     def Activated(self):
         "This function is executed when the workbench is activated"
         return
@@ -85,10 +85,11 @@ class FCPDWorkbench (Workbench):
     def ContextMenu(self, recipient):
         "This is executed whenever the user right-clicks on screen"
         # "recipient" will be either "view" or "tree"
-        self.appendContextMenu("FCPD", self.command_list) # add commands to the context menu
+        self.appendContextMenu("FCPD", self.command_list)   # add commands to the context menu
 
     def GetClassName(self):
         # this function is mandatory if this is a full python workbench
         return "Gui::PythonWorkbench"
+
 
 Gui.addWorkbench(FCPDWorkbench())

@@ -28,9 +28,10 @@ import os
 
 import fcpdwb_locator
 fcpdWBpath = os.path.dirname(fcpdwb_locator.__file__)
-fcpdWB_icons_path =  os.path.join( fcpdWBpath, 'Icons')
+fcpdWB_icons_path = os.path.join(fcpdWBpath, 'Icons')
 
 FCPDwb = FreeCADGui.getWorkbench('FCPDWorkbench')
+
 
 class FCPD_CommandRun():
     """Run PDServer"""
@@ -38,9 +39,9 @@ class FCPD_CommandRun():
     global FCPDwb
 
     def GetResources(self):
-        return {'Pixmap'  : os.path.join(fcpdWB_icons_path , 'start.png'),
+        return {'Pixmap': os.path.join(fcpdWB_icons_path, 'start.png'),
                 'MenuText': "Run Pure-Data server",
-                'ToolTip' : "Run the internal server and let Pure-Data to connect to."}
+                'ToolTip': "Run the internal server and let Pure-Data to connect to."}
 
     def Activated(self):
         """Do something here"""
@@ -54,15 +55,16 @@ class FCPD_CommandRun():
         # return FCPDwb.pd_server.is_running
         return True
 
+
 class FCPD_CommandStop():
     """Stop PDServer"""
 
     global FCPDwb
 
     def GetResources(self):
-        return {'Pixmap'  : os.path.join(fcpdWB_icons_path , 'stop.png'),
+        return {'Pixmap': os.path.join(fcpdWB_icons_path, 'stop.png'),
                 'MenuText': "Stop Pure-Data server",
-                'ToolTip' : "Stop the internal Pure-Data server."}
+                'ToolTip': "Stop the internal Pure-Data server."}
 
     def Activated(self):
         """Do something here"""
