@@ -1,21 +1,23 @@
 
 import os
+import subprocess
 from PySide.QtUiTools import QUiLoader
 from PySide.QtCore import QFile
+import FreeCAD as App
 import FreeCADGui
-import subprocess
+
+import fcpdwb_locator
 
 FCPDwb = FreeCADGui.getWorkbench('FCPDWorkbench')
 
-import fcpdwb_locator
 fcpdWBpath = os.path.dirname(fcpdwb_locator.__file__)
 
-import FreeCAD as App
-#shortcuts of FreeCAD console
+# shortcuts of FreeCAD console
 Log = App.Console.PrintLog
 Msg = App.Console.PrintMessage
 Wrn = App.Console.PrintWarning
 Err = App.Console.PrintError
+
 
 def runStopServer(widget):
     global FCPDwb
@@ -46,9 +48,9 @@ def launchPureData(widget):
 
     # pd command line
     FCPDwb.pdProcess = subprocess.Popen([FCPDwb.user_pref.GetString('pd_path'),
-                                 '-path', os.path.join(fcpdWBpath, 'pdlib'),
-                                 '-helppath', os.path.join(fcpdWBpath, 'pdhelp'),
-                                 '-send', initMsg])
+                                         '-path', os.path.join(fcpdWBpath, 'pdlib'),
+                                         '-helppath', os.path.join(fcpdWBpath, 'pdhelp'),
+                                         '-send', initMsg])
     # wait for pd launch
     import time
     time.sleep(2)
@@ -81,6 +83,7 @@ def launchPureData(widget):
 
     widget.btnRunStop.setText('Server Start')
 
+
 def getPanel():
     global fcpdWBpath
 
@@ -91,7 +94,7 @@ def getPanel():
     ui_file.close()
 
     # connection
-    widget.btnLaunch.clicked.connect(lambda : launchPureData(widget))
-    widget.btnRunStop.clicked.connect(lambda : runStopServer(widget))
+    widget.btnLaunch.clicked.connect(lambda: launchPureData(widget))
+    widget.btnRunStop.clicked.connect(lambda: runStopServer(widget))
 
     return widget
