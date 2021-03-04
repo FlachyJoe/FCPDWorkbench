@@ -1,4 +1,5 @@
 ## PureData connection workbench for FreeCAD
+[![Total alerts](https://img.shields.io/lgtm/alerts/g/FlachyJoe/FCPDWorkbench.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/FlachyJoe/FCPDWorkbench/alerts/) [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/FlachyJoe/FCPDWorkbench.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/FlachyJoe/FCPDWorkbench/context:python)
 
 The [FCPD](https://github.com/FlachyJoe/FCPD) workbench bridges [FreeCAD](https://github.com/FreeCAD/FreeCAD) (FC), an open source CAD program with [Pure-Data](-data/pure-data) (PD), a real-time computer music system.
 
