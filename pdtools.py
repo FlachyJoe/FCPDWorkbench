@@ -31,61 +31,6 @@ Wrn = App.Console.PrintWarning
 Err = App.Console.PrintError
 
 
-def value_from_str(words):
-    "return a FreeCAD value from a string"
-    return_value = None
-    used_words = 0
-    if words:
-        try:
-            return_value = float(words[0])
-            used_words = 1
-        except ValueError:
-            if words[0] in ["Vector", "Pos"]:
-                return_value = App.Vector(float(words[1]), float(words[2]), float(words[3]))
-                used_words = 4
-            elif words[0] in ["Rotation", "Yaw-Pitch-Roll", "Rot"]:
-                return_value = App.Rotation(float(words[1]), float(words[2]), float(words[3]))
-                used_words = 4
-            elif words[0] == "Placement":
-                return_value = App.Placement(value_from_str(words[1:5])[0], value_from_str(words[5:])[0])
-                used_words = 9
-            elif words[0] == "List":
-                return_value = []
-                count = words[1]
-                used_words = 2
-                for i in range(0, count):
-                    val, cnt = value_from_str(words[used_words:])
-                    return_value.append(val)
-                    used_words += cnt
-            elif words[0] == "True":
-                return_value = True
-                used_words = 1
-            elif words[0] == "False":
-                return_value = False
-                used_words = 1
-            elif words[0] == "None":
-                return_value = None
-                used_words = 1
-            else:
-                try:
-                    return_value = App.Units.parseQuantity(''.join(words))
-                    used_words = len(words)
-                except Exception:
-                    Log(sys.exc_info())
-                    Log(" value_from_str [%s] \r\n" % words)
-    return (return_value, used_words)
-
-
-def pop_values(words, count):
-    "use words to get values"
-    values = []
-    for i in range(count):
-        val, cnt = value_from_str(words)
-        values.append(val)
-        words = words[cnt:]
-    return (words, values)
-
-
 def registerToolList(pd_server):
     toolList = [("get", pdGet),
                 ("set", pdSet),
@@ -117,24 +62,30 @@ def pdGet(pd_server, words):
         objList = [obj.Name for obj in sel]
         return objList
     elif words[2] == "property":
-        obj = App.ActiveDocument.getObject(words[3])
+        obj = pd_server.value_from_str(words[3])[0]
         return obj.getPropertyByName(words[4])
     elif words[2] == "constraint":
-        skc = App.ActiveDocument.getObject(words[3])
+        skc = pd_server.value_from_str(words[3])[0]
         return skc.getDatum(words[4])
+    elif words[2] == "reference":
+        return App.ActiveDocument.getObject(words[3])
+
 
 
 def pdSet(pd_server, words):
     if words[2] == "property":
-        obj = App.ActiveDocument.getObject(words[3])
-        return setattr(obj, words[4], value_from_str(words[5:])[0])
+        obj = pd_server.value_from_str(words[3])[0]
+        val = pd_server.value_from_str(words[5:])[0]
+        return setattr(obj, words[4], val)
+
     elif words[2] == "constraint":
-        skc = App.ActiveDocument.getObject(words[3])
-        return skc.setDatum(words[4],  value_from_str(words[5:])[0])
+        skc = pd_server.value_from_str(words[3])[0]
+        return skc.setDatum(words[4],  pd_server.value_from_str(words[5:])[0])
 
 
 def pdCopy(pd_server, words):
-    obj = App.ActiveDocument.getObject(words[2])
+    ''' copy Object --> NewObjectName '''
+    obj = pd_server.value_from_str(words[2])[0]
     obj2 = App.ActiveDocument.copyObject(obj, False, False)
     for prt in [tpl[0] for tpl in obj.Parents]:
         prt.addObject(obj2)
@@ -142,15 +93,19 @@ def pdCopy(pd_server, words):
 
 
 def pdDelete(pd_server, words):
+    ''' delete ObjectName --> bang '''
     for obj in words[2:]:
         App.ActiveDocument.removeObject(obj)
 
 
 def pdRecompute(pd_server, words):
+    ''' recompute --> bang '''
     App.ActiveDocument.recompute()
 
 
 def pdSelObserver(pd_server, words):
+    '''selobserver --> "OK" at creation
+            --> list of selected objects when selection changes'''
     # See https://wiki.freecadweb.org/Code_snippets#Function_resident_with_the_mouse_click_action
     class SelObserver:
         def __init__(self, pd_server, uid):
@@ -160,7 +115,7 @@ def pdSelObserver(pd_server, words):
         def send(self):
             sel = App.Gui.Selection.getSelection()
             objList = [obj.Name for obj in sel]
-            self.pd_server.send("%s %s;" % (self.uid, self.pd_server._spacer(str(objList))))
+            self.pd_server.send(self.uid, objList)
 
         def addSelection(self, doc, obj, sub, pnt):
             self.send()
@@ -175,13 +130,14 @@ def pdSelObserver(pd_server, words):
             self.send()
 
     s = SelObserver(pd_server, words[0])
-    pd_server.objects_store[words[0]] = s   # store the observer to allow removing later
+    pd_server.observers_store[words[0]] = s   # store the observer to allow removing later
     App.Gui.Selection.addObserver(s)
     return 'OK'
 
 
 def pdObjObserver(pd_server, words):
-    '''bang when mouse enter the object'''
+    '''objobserver ObjectName   --> "OK" at creation
+                         --> bang when mouse enter the object'''
     class PreSelObserver:
         def __init__(self, pd_server, uid, obj):
             self.pd_server = pd_server
@@ -192,21 +148,23 @@ def pdObjObserver(pd_server, words):
             if obj == self.obj:
                 self.pd_server.send("%s %s;" % (self.uid, 'bang'))
     s = PreSelObserver(pd_server, words[0], words[2])
-    pd_server.objects_store[words[0]] = s   # store the observer to allow removing later
+    pd_server.observers_store[words[0]] = s   # store the observer to allow removing later
     App.Gui.Selection.addObserver(s)
     return 'OK'
 
 
 def pdRemObserver(pd_server, words):
+    '''remobserver --> "OK" '''
     # Uninstall the resident function
-    App.Gui.Selection.removeObserver(pd_server.objects_store[words[0]])
-    del pd_server.objects_store[words[0]]
+    App.Gui.Selection.removeObserver(pd_server.observers_store[words[0]])
+    del pd_server.observers_store[words[0]]
     return 'OK'
 
 
 def pdLink(pd_server, words):
+    ''' link Object --> NewObjectName '''
     doc = App.ActiveDocument
-    obj = doc.getObject(words[2])
+    obj = pd_server.value_from_str(words[2])[0]
     lnk = doc.addObject('App::Link', 'Link')
     lnk.setLink(obj)
     lnk.Label = obj.Label
@@ -214,12 +172,14 @@ def pdLink(pd_server, words):
 
 
 def pdByLabel(pd_server, words):
+    ''' bylabel Label  --> [Objects] '''
     doc = App.ActiveDocument
     lst = doc.getObjectsByLabel(words[2])
     return [o.Name for o in lst]
 
 
 def pdObject(pd_server, words):
+    ''' Object Module Type [Property1 Value1 Property2 Value2 ...]  --> NewObjectName '''
     doc = App.ActiveDocument
     objMod = words[2].title()
     objType = words[3].title()
@@ -227,13 +187,13 @@ def pdObject(pd_server, words):
     current = 4
     while current < len(words):
         propName = words[current]
-        propValue, used = value_from_str(words[current+1:])
+        propValue, used = pd_server.value_from_str(words[current+1:])
         current += used+1
         if hasattr(obj, propName):
             setattr(obj, propName, propValue)
     return obj.Name
 
-
+# return the count of parameters of the given function
 def getParametersCount(func):
     try:
         import inspect
@@ -262,7 +222,7 @@ def pdPart(pd_server, words):
         if hasattr(Part, func_name):
             func = getattr(Part, func_name)
             pcount = getParametersCount(func)
-            _, args = pop_values(words[3:], pcount)
+            _, args = pd_server.pop_values(words[3:], pcount)
             shape = func(*args)
             Part.show(shape)
             return App.ActiveDocument.ActiveObject.Name
@@ -279,12 +239,12 @@ def pdDraft(pd_server, words):
     if hasattr(Draft, func_name):
         func = getattr(Draft, func_name)
         pcount = getParametersCount(func)
-        _, args = pop_values(words[3:], pcount)
+        _, args = pd_server.pop_values(words[3:], pcount)
         shape = func(*args)
 
     if hasattr(shape, 'Name'):
         return shape.Name
-    else:
-        return str(shape)
+    #if no Name return a reference
+    return shape
 #                                 DRAFT WORKBENCH #
 ###################################################

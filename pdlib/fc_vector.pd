@@ -1,15 +1,13 @@
-#N canvas 450 339 450 375 12;
+#N canvas 455 340 450 375 12;
 #X obj 110 50 inlet;
 #X obj 168 50 inlet;
 #X obj 227 51 inlet;
 #X obj 117 174 outlet;
 #X msg 113 115 Vector \$1 \$2 \$3;
 #X obj 114 82 pack \$1 \$2 \$3;
-#X obj 40 50 loadbang;
 #X connect 0 0 5 0;
 #X connect 1 0 5 1;
 #X connect 2 0 5 2;
 #X connect 4 0 3 0;
 #X connect 5 0 4 0;
-#X connect 6 0 5 0;
 #X coords 0 0 1 1 85 60 0;

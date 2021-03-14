@@ -29,7 +29,114 @@ class PureDataServer:
         self.message_handler_list = {}
         self.message_box = False
         self.write_buffer = ""
-        self.objects_store = {}
+        self.observers_store = {}
+        self.objects_store = []
+
+    ## Return a string representation of a value
+    #  @param self
+    #  @param val the value to convert
+    #  @return a valid PureData message
+    def str_from_value(self, val):
+        if isinstance(val, list):
+            if len(val) > 1:
+                string = "list %i" % len(val)
+                for v in val:
+                    string += " %s" % self.str_from_value(v)
+            elif len(val) == 1:
+                # don't send list with one element
+                string = self.str_from_value(val[0])
+            else:
+                # empty list
+                string = 'None'
+        else:
+            string = str(val)
+            if string.startswith("<") and string.endswith(">"):
+                if val in self.objects_store:
+                    return "^%i" % self.objects_store.index(val)
+                # store this object and return a ref
+                self.objects_store.append(val)
+                return "^%i" % (len(self.objects_store)-1)
+
+        return string.translate(str.maketrans(',=', '  ', ';()[]{}"\''))
+
+    ## Return a value from a PureData message
+    #  @param self
+    #  @param words a PureData message splits by words
+    #  @return a value
+    def value_from_str(self, words):
+        return_value = None
+        used_words = 0
+        if words:
+            if not isinstance(words, list):
+                words = [words]
+            try:
+                # float...
+                return_value = float(words[0])
+                if int(return_value) == return_value :
+                    # ...or int
+                    return_value = int(return_value)
+                used_words = 1
+            except ValueError:
+                if words[0] in ["Vector", "Pos"]:
+                    return_value = App.Vector(float(words[1]), float(words[2]), float(words[3]))
+                    used_words = 4
+                elif words[0] in ["Rotation", "Yaw-Pitch-Roll", "Rot"]:
+                    return_value = App.Rotation(float(words[1]), float(words[2]), float(words[3]))
+                    used_words = 4
+                elif words[0] == "Placement":
+                    return_value = App.Placement(self.value_from_str(words[1:5])[0], self.value_from_str(words[5:])[0])
+                    used_words = 9
+                elif words[0] == "list":
+                    return_value = []
+                    count = int(words[1])
+                    used_words = 2
+                    for i in range(0, count):
+                        val, cnt = self.value_from_str(words[used_words:])
+                        return_value.append(val)
+                        used_words += cnt
+                elif words[0] == "True":
+                    return_value = True
+                    used_words = 1
+                elif words[0] == "False":
+                    return_value = False
+                    used_words = 1
+                elif words[0] == "None":
+                    return_value = None
+                    used_words = 1
+                elif words[0].startswith("^"):
+                    # reference to a stored object
+                    index = int(words[0][1:])
+                    if index >= len(self.objects_store):
+                        raise IndexError("Out of bounds")
+                    return_value = self.objects_store[index]
+                    Log("%s refers to %s\n" % (words[0], str(return_value)))
+                    used_words = 1
+                elif App.ActiveDocument.getObject(words[0]):
+                    return_value = App.ActiveDocument.getObject(words[0])
+                    used_words = 1
+                else:
+                    #
+                    try:
+                        return_value = App.Units.parseQuantity(''.join(words))
+                        used_words = len(words)
+                    except OSError:
+                        Log(App.ActiveDocument.getObject(words[0]))
+                        Log(" [%s] is not a quantity \r\n" % ', '.join(words))
+        return (return_value, used_words)
+
+    ## Extract a given number of values from a PureData message
+    #  @param self
+    #  @param words a PureData message splits by words
+    #  @param count number of value to extract
+    #  @return a couple (remaining words, extracted values)
+    def pop_values(self, words, count):
+        "use words to get values"
+        values = []
+        for i in range(count):
+            val, cnt = self.value_from_str(words)
+            values.append(val)
+            words = words[cnt:]
+        return (words, values)
 
     ## Ask the server to terminate
     #  @param self
@@ -41,13 +148,6 @@ class PureDataServer:
             # output_socket already disconnected
             pass
         self.is_running = False
-
-    ## remove quotes, brackets and others
-    #  @param self
-    #  @param strMessage a string to clean
-    #  @return a valid PureData message
-    def _spacer(self, strMessage):
-        return strMessage.translate(str.maketrans(',=', '  ', ';()[]{}"\''))
 
     ## this function is called when a unregistred message incomes
     #  do nothing and can be overwritten if needed
@@ -102,13 +202,10 @@ class PureDataServer:
                         ret = self.message_handler_list[words[1]](self, words)
                     else:
                         ret = self.default_message_handler(words)
-                    if type(ret) != str:
-                        ret = str(ret)
                 except Exception:
                     ret = self.error_handler(words)
-                # callback include current patch id ($0 in PD) to route the message and a trailing semicolon
-                # quotes, bracket and other are removed by spacer function
-                returnValue.append("%s %s;" % (words[0], self._spacer(ret)))
+                # callback include current patch id ($0 in PD) to route the message
+                returnValue.append("%s %s;" % (words[0], self.str_from_value(ret)))
         return returnValue
 
     def _showDialog(self):
@@ -127,8 +224,10 @@ class PureDataServer:
     #  @param self
     #  @param data the message as a string
     #  @return Nothing
-    def send(self, data):
-        self.write_buffer += data
+    def send(self, *data):
+        for d in data:
+            self.write_buffer += " %s" % self.str_from_value(d)
+        self.write_buffer += ";\n"
 
     ## launch the server
     #  @param self
