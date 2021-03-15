@@ -227,7 +227,6 @@ def pdPart(pd_server, words):
             Part.show(shape)
             return App.ActiveDocument.ActiveObject.Name
     else:
-        result = None
         func_name = words[2]
         if hasattr(Part, func_name):
             func = getattr(Part, func_name)
