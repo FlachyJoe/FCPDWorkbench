@@ -37,15 +37,24 @@ def get_parameters(func):
             raise ValueError("no signature nor __doc__ ")
     return clean_params
 
+def getCleanDoc(func):
+    docstr = func.__doc__
+    if not docstr:
+        return ""
+    docstr = docstr.split("\n")
+    return docstr[0].replace(",", " \, ")
 
 def generate(dirname):
     import Draft
     import inspect
     func_list = inspect.getmembers(Draft, inspect.isfunction)
     for func_name, func in func_list:
-        if func_name.startswith("make_"):
-            pdname = func_name.replace("make_","")
+        if not func_name.startswith("_"):
+            pdname = func_name #.replace("make_","")
             params = get_parameters(func)
+            if not params:
+                Log("%s have no parameters, skipped\n" % pdname)
+                continue
             pcount = len(params)
             cnv = "#N canvas 750 350 500 500 12;"           #obj id
             cnv += text(10, 10, params[0])                  # 0
@@ -84,25 +93,17 @@ def generate(dirname):
             import os
             with open(os.path.join(dirname, pdname) + ".pd", 'w') as file:
                 file.write(cnv)
-where = os.path.realpath(os.path.join(os.path.dirname(__file__),"../pdlib/draft"))
-generate(where)
-Msg("Pure-Data patches for Draft have been written in %s\n" %where)
-
-
-def getCleanDoc(func):
-        docstr = func.__doc__
-        docstr = docstr.split("\n")
-        return docstr[0].replace(",", " \, ")
-
 
 def generateHelp(dirname):
     import Draft
     func_list = inspect.getmembers(Draft, inspect.isroutine)
     index = []
     for func_name, func in func_list:
-        if func_name.startswith("make_"):
-            pdname = func_name.replace("make_","")
+        if not func_name.startswith("_"):
+            pdname = func_name #.replace("make_","")
             params = get_parameters(func)
+            if not params:
+                continue
             pcount = len(params)
             hlp = "#N canvas 436 36 550 620 10;\n"
             hlp +=simple_obj(0, 0, "cnv 15 550 40 empty empty draft/%s 3 12 0 18 #c4dcdc #000000 0" % pdname)
@@ -112,7 +113,6 @@ def generateHelp(dirname):
             index.append(("draft/%s" %pdname, doc))
             hlp += text(10, 50, doc)
             docEnd = 50 + (len(doc) // 60)*12
-            Log( "%s %i %i\n" % (pdname, len(doc), docEnd))
             # INLETS
             hlp +=simple_obj(0, docEnd+30, "cnv 3 550 3 empty empty inlets 8 12 0 13 #dcdcdc #000000 0")
             for i, p in enumerate(params):
@@ -148,8 +148,13 @@ def generateHelp(dirname):
         with open(os.path.join(dirname, "draft-help.pd"), 'w') as file:
             file.write(hlp)
 
+def main():
+	where = os.path.realpath(os.path.join(os.path.dirname(__file__),"../pdlib/draft"))
+	generate(where)
+	Msg("Pure-Data patches for Draft have been written in %s\n" %where)
+	
+	where = os.path.realpath(os.path.join(os.path.dirname(__file__),"../pdhelp/draft"))
+	generateHelp(where)
+	Msg("Pure-Data help for Draft have been written in %s\n" %where)
 
-
-where = os.path.realpath(os.path.join(os.path.dirname(__file__),"../pdhelp/draft"))
-generateHelp(where)
-Msg("Pure-Data help for Draft have been written in %s\n" %where)
+main()

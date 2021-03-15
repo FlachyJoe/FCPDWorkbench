@@ -44,11 +44,13 @@ def getCleanDoc(func):
 def generate(dirname):
     func_list = inspect.getmembers(Part, inspect.isroutine)
     for func_name, func in func_list:
-        if func_name.startswith("make"):
+        if not func_name.startswith("_"):
             pdname = func_name #.replace("make","")
             params = get_parameters(func)
+            if not params:
+                Log("%s have no parameters, skipped\n" % pdname)
+                continue
             pcount = len(params)
-            Log("%s %s\n"%(pdname, params))
             cnv = "#N canvas 750 350 500 500 12;"           #obj id
             cnv += text(10, 10, params[0])                  # 0
             cnv += simple_obj(10, 30, "inlet")                  # 1
@@ -86,18 +88,16 @@ def generate(dirname):
             import os
             with open(os.path.join(dirname, pdname) + ".pd", 'w') as file:
                 file.write(cnv)
-where = os.path.realpath(os.path.join(os.path.dirname(__file__),"../pdlib/part"))
-generate(where)
-Msg("Pure-Data patches for Part have been written in %s\n" %where)
-
 
 def generateHelp(dirname):
     func_list = inspect.getmembers(Part, inspect.isroutine)
     index=[]
     for func_name, func in func_list:
-        if func_name.startswith("make"):
+        if not func_name.startswith("_"):
             pdname = func_name #.replace("make","")
             params = get_parameters(func)
+            if not params:
+                continue
             pcount = len(params)
             hlp = "#N canvas 436 36 550 620 10;\n"
             hlp +="#X obj 0 0 cnv 15 550 40 empty empty part/%s 3 12 0 18 #c4dcdc #000000 0;\n" % pdname
@@ -141,6 +141,13 @@ def generateHelp(dirname):
         with open(os.path.join(dirname, "part-help.pd"), 'w') as file:
             file.write(hlp)
 
-where = os.path.realpath(os.path.join(os.path.dirname(__file__),"../pdhelp/part"))
-generateHelp(where)
-Msg("Pure-Data help for Part have been written in %s\n" %where)
+def main():
+    where = os.path.realpath(os.path.join(os.path.dirname(__file__),"../pdlib/part"))
+    generate(where)
+    Msg("Pure-Data patches for Part have been written in %s\n" %where)
+
+    where = os.path.realpath(os.path.join(os.path.dirname(__file__),"../pdhelp/part"))
+    generateHelp(where)
+    Msg("Pure-Data help for Part have been written in %s\n" %where)
+
+main()
