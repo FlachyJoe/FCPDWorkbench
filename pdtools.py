@@ -226,6 +226,15 @@ def pdPart(pd_server, words):
             shape = func(*args)
             Part.show(shape)
             return App.ActiveDocument.ActiveObject.Name
+    else:
+        result = None
+        func_name = words[2]
+        if hasattr(Part, func_name):
+            func = getattr(Part, func_name)
+            pcount = getParametersCount(func)
+            _, args = pd_server.pop_values(words[3:], pcount)
+            return func(*args)
+
 #                                  PART WORKBENCH #
 ###################################################
 
@@ -235,16 +244,15 @@ def pdPart(pd_server, words):
 def pdDraft(pd_server, words):
     import Draft
     shape = None
-    func_name = "make_" + words[2]
+    func_name = words[2]
     if hasattr(Draft, func_name):
         func = getattr(Draft, func_name)
         pcount = getParametersCount(func)
         _, args = pd_server.pop_values(words[3:], pcount)
         shape = func(*args)
-
-    if hasattr(shape, 'Name'):
-        return shape.Name
-    #if no Name return a reference
-    return shape
+        if hasattr(shape, 'Name'):
+            return shape.Name
+        #if no Name return a reference
+        return shape
 #                                 DRAFT WORKBENCH #
 ###################################################
