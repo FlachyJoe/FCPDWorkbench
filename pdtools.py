@@ -71,7 +71,6 @@ def pdGet(pd_server, words):
         return App.ActiveDocument.getObject(words[3])
 
 
-
 def pdSet(pd_server, words):
     if words[2] == "property":
         obj = pd_server.value_from_str(words[3])[0]
@@ -193,6 +192,7 @@ def pdObject(pd_server, words):
             setattr(obj, propName, propValue)
     return obj.Name
 
+
 # return the count of parameters of the given function
 def getParametersCount(func):
     try:
@@ -252,7 +252,7 @@ def pdDraft(pd_server, words):
         shape = func(*args)
         if hasattr(shape, 'Name'):
             return shape.Name
-        #if no Name return a reference
+        # if no Name return a reference
         return shape
 #                                 DRAFT WORKBENCH #
 ###################################################

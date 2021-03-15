@@ -45,7 +45,7 @@ class FCPDWorkbench(Workbench):
         "This function is executed when FreeCAD starts"
         # command list
         import fcpdwb_commands
-        self.command_list = ["FCPD_Run", "FCPD_Stop"]
+        self.command_list = ["FCPD_Run", "FCPD_Stop", "FCPD_Launch"]
         self.appendToolbar("FCPD", self.command_list)   # creates a new toolbar with your commands
         self.appendMenu("FCPD", self.command_list)      # creates a new menu
 
@@ -71,7 +71,8 @@ class FCPDWorkbench(Workbench):
         import FCPDTaskPanel
         mw = FreeCADGui.getMainWindow()
         awidget = QtGui.QDockWidget("FCPDTaskPanel", mw)
-        awidget.setWidget(FCPDTaskPanel.getPanel())
+        self.widget = FCPDTaskPanel.getPanel()
+        awidget.setWidget(self.widget)
         mw.addDockWidget(QtCore.Qt.LeftDockWidgetArea, awidget)
 
     def Activated(self):
