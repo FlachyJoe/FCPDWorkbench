@@ -49,7 +49,7 @@ def generate(dirname):
     import inspect
     func_list = inspect.getmembers(Draft, inspect.isfunction)
     for func_name, func in func_list:
-        if func_name.startswith("make_") or True:
+        if not func_name.startswith("_"):
             pdname = func_name #.replace("make_","")
             params = get_parameters(func)
             if not params:
@@ -99,7 +99,7 @@ def generateHelp(dirname):
     func_list = inspect.getmembers(Draft, inspect.isroutine)
     index = []
     for func_name, func in func_list:
-        if func_name.startswith("make_") or True:
+        if not func_name.startswith("_"):
             pdname = func_name #.replace("make_","")
             params = get_parameters(func)
             if not params:
