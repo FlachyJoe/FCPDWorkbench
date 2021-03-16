@@ -24,10 +24,9 @@
 ###################################################################################
 
 import fcpdwb_locator
-fcpdWBpath = os.path.dirname(fcpdwb_locator.__file__)
 
+fcpdWBpath = fcpdwb_locator.PATH
 fcpdWB_icons_path = os.path.join(fcpdWBpath, 'Icons')
-
 fcpdWB_main_icon = os.path.join(fcpdWB_icons_path, 'FCPDLogo.svg')
 
 
