@@ -1,22 +1,16 @@
 
 import os
-import subprocess
+
 from PySide.QtUiTools import QUiLoader
 from PySide.QtCore import QFile
-import FreeCAD as App
+
 import FreeCADGui
 
 import fcpdwb_locator
 
 FCPDwb = FreeCADGui.getWorkbench('FCPDWorkbench')
 
-fcpdWBpath = os.path.dirname(fcpdwb_locator.__file__)
-
-# shortcuts of FreeCAD console
-Log = App.Console.PrintLog
-Msg = App.Console.PrintMessage
-Wrn = App.Console.PrintWarning
-Err = App.Console.PrintError
+fcpdWBpath = fcpdwb_locator.PATH
 
 
 def runStopServer():
