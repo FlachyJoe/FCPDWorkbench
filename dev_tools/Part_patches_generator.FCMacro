@@ -63,7 +63,7 @@ def generate(dirname):
                     cnv += simple_obj(100*(i+1), 120+30*i, "list append")   # 6+4*i
 
             cnv += simple_obj(10, 300, "list prepend Part %s" %pdname ) # 3+4*(pcount-1) or 2 = last +1
-            cnv += simple_obj(10, 330, "fc_process 1")          # 4+4*(pcount-1) or 3 = last +2
+            cnv += simple_obj(10, 330, "fc_process 0")          # 4+4*(pcount-1) or 3 = last +2
             cnv += simple_obj(10, 360, "route ERROR")           # 5+4*(pcount-1) or 4 = last +3
             cnv += simple_obj(10, 390, "print FreeCAD Error")   # 6+4*(pcount-1) or 5 = last +4
             cnv += simple_obj(120, 390, "outlet")               # 7+4*(pcount-1) or 6 = last +5
@@ -138,7 +138,7 @@ def generateHelp(dirname):
             hlp +=simple_obj(10, 50+30*i, f)
             hlp += text(200, 50+30*i, d)
         import os
-        with open(os.path.join(dirname, "part-help.pd"), 'w') as file:
+        with open(os.path.join(dirname, os.path.join("..", "part-help.pd")), 'w') as file:
             file.write(hlp)
 
 def main():
