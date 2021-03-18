@@ -1,0 +1,18 @@
+#N canvas 436 36 550 620 10;
+#X obj 0 0 cnv 15 550 40 empty empty shape/makeFillet 3 12 0 18 #c4dcdc #000000 0;
+#X obj 400 10 shape/makeFillet;
+#X text 10 50 Make fillet.;
+#X obj 0 70 cnv 3 550 3 empty empty inlets 8 12 0 13 #dcdcdc #000000 0;
+#X obj 78 90 cnv 17 3 17 empty \$0-pddp.cnv.let.1 0 5 9 0 16 #dcdcdc #9c9c9c 0;
+#X text 100 90 Shape;
+#X obj 0 120 cnv 3 550 3 empty empty outlets 8 12 0 13 #dcdcdc #000000 0;
+#X obj 78 150 cnv 17 3 17 empty empty 0 5 9 0 16 #dcdcdc #9c9c9c 0;
+#X text 100 150 Result of the operation;
+#X obj 0 210 cnv 3 550 3 empty empty arguments 8 12 0 13 #dcdcdc #000000 0;
+#X obj 0 270 cnv 3 550 3 empty empty more_info 8 12 0 13 #dcdcdc #000000 0;
+#X text 10 290 This object is in the ;
+#X obj 140 290  helplink shape;
+#X text 175 290  part of the ;
+#X obj 245 290  helplink FCPD;
+#X text 275 290  library.;
+#X obj 0 330 cnv 15 550 15 empty empty empty 20 12 0 14 #dcdcdc #404040 0;
