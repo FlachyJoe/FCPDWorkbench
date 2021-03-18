@@ -103,25 +103,32 @@ class PureDataServer:
                 elif words[0] == "None":
                     return_value = None
                     used_words = 1
+                elif words[0].startswith('"'):
+                    # String
+                    # find closing quote
+                    str_len = [i for (i, w) in enumerate(words[1:]) if isinstance(w, str) and w.endswith('"')][0] + 2
+                    # create the string
+                    return_value = ' '.join(map(str, words[:str_len])).replace('"','')
+                    used_words = str_len
                 elif words[0].startswith("^"):
-                    # reference to a stored object
+                    # Reference to a stored object
                     index = int(words[0][1:])
-                    if index >= len(self.objects_store):
-                        raise IndexError("Out of bounds")
                     return_value = self.objects_store[index]
                     Log("%s refers to %s\n" % (words[0], str(return_value)))
                     used_words = 1
                 elif App.ActiveDocument.getObject(words[0]):
+                    # ActiveDocument Object
                     return_value = App.ActiveDocument.getObject(words[0])
                     used_words = 1
                 else:
-                    #
+                    # Quantity
                     try:
-                        return_value = App.Units.parseQuantity(''.join(words))
-                        used_words = len(words)
+                        return_value = App.Units.parseQuantity(words[0])
+                        used_words = 1
                     except OSError:
-                        Log(App.ActiveDocument.getObject(words[0]))
-                        Log(" [%s] is not a quantity \r\n" % ', '.join(words))
+                        # String
+                        return_value = words[0]
+                        used_words = 1
         return (return_value, used_words)
 
     ## Extract a given number of values from a PureData message
@@ -253,10 +260,15 @@ class PureDataServer:
             Log("PDServer : Listening on port %i\r\n" % self.listen_port)
 
             read_list = [self.input_socket]
-            write_list = [self.output_socket]
             readBuffer = ""
             while self.is_running:
                 FreeCADGui.updateGui()
+
+                if self.write_buffer:
+                    write_list = [self.output_socket]
+                else:
+                    write_list = []
+
                 readable, writable, errored = select.select(read_list, write_list, [], 0.05)
                 for s in readable:
                     if s is self.input_socket:
@@ -282,22 +294,19 @@ class PureDataServer:
                             retList = self._pdMsgListProcessor(msgList)
                             if retList:
                                 for ret in retList:
-                                    bret = bytes(ret, "utf8")
-                                    self.output_socket.send(bret)
-                                    Log("PDServer : >>> %s\r\n" % ret)
+                                    self.send(ret)
                         else:
                             s.close()
                             Log("PDServer : close connection\r\n")
                             read_list.remove(s)
 
                 for s in writable:
-                    if self.write_buffer:
-                        try:
-                            self.output_socket.send(bytes(self.write_buffer, "utf8"))
-                            Log("PDServer (buffered) : >>> %s\r\n" % self.write_buffer)
-                            self.write_buffer = ""
-                        except BrokenPipeError:
-                            Log("PDServer : nowhere to write, keep in buffer")
+                    try:
+                        self.output_socket.send(bytes(self.write_buffer, "utf8"))
+                        Log("PDServer : >>> %s\r\n" % self.write_buffer)
+                        self.write_buffer = ""
+                    except BrokenPipeError:
+                        Log("PDServer : nowhere to write, kept in the buffer")
         except ValueError:
             Err("PDServer : %s\r\n" % sys.exc_info()[1])
         finally:
