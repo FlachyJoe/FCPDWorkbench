@@ -44,6 +44,7 @@ def registerToolList(pd_server):
                 ("bylabel", pdByLabel),
                 ("Object", pdObject),
                 ("Part", pdPart),
+                ("Shape", pdShape),
                 ("Draft", pdDraft),
                 ]
 
@@ -180,8 +181,8 @@ def pdByLabel(pd_server, words):
 def pdObject(pd_server, words):
     ''' Object Module Type [Property1 Value1 Property2 Value2 ...]  --> NewObjectName '''
     doc = App.ActiveDocument
-    objMod = words[2].title()
-    objType = words[3].title()
+    objMod = words[2] # .title()
+    objType = words[3] # .title()
     obj = doc.addObject('%s::%s' % (objMod, objType), objType)
     current = 4
     while current < len(words):
@@ -204,11 +205,14 @@ def getParametersCount(func):
         if docstr:
             leftpar = docstr.find("(")+1
             rightpar = docstr.find(")", leftpar)
-            paramstr = docstr[leftpar:rightpar]
-            paramstr = paramstr.replace("[", "")
-            paramstr = paramstr.replace("]", "")
-            paramstr = paramstr.replace("\n", "")
-            params = paramstr.split(",")
+            if rightpar>0:
+                paramstr = docstr[leftpar:rightpar]
+                paramstr = paramstr.replace("[", "")
+                paramstr = paramstr.replace("]", "")
+                paramstr = paramstr.replace("\n", "")
+                params = paramstr.split(",")
+            else:
+                params=[]
     return len(params)
 
 
@@ -216,7 +220,7 @@ def getParametersCount(func):
 # PART WORKBENCH                                  #
 def pdPart(pd_server, words):
     import Part
-    if words[2].startswith('make'):
+    if words[2].startswith('make_'):
         shape = None
         func_name = words[2]
         if hasattr(Part, func_name):
@@ -233,6 +237,17 @@ def pdPart(pd_server, words):
             pcount = getParametersCount(func)
             _, args = pd_server.pop_values(words[3:], pcount)
             return func(*args)
+
+
+def pdShape(pd_server, words):
+    import Part
+    func_name = words[2]
+    if hasattr(Part.Shape, func_name):
+        theShape = pd_server.value_from_str(words[3])[0]
+        func = theShape.__getattribute__(func_name)
+        pcount = getParametersCount(func)
+        _, args = pd_server.pop_values(words[4:], pcount)
+        return func(*args)
 
 #                                  PART WORKBENCH #
 ###################################################
