@@ -145,7 +145,7 @@ def generateHelp(dirname):
             hlp +=simple_obj(10, 50+30*i, f)
             hlp += text(200, 50+30*i, d)
         import os
-        with open(os.path.join(dirname, "draft-help.pd"), 'w') as file:
+        with open(os.path.join(dirname, os.path.join("..", "draft-help.pd")), 'w') as file:
             file.write(hlp)
 
 def main():

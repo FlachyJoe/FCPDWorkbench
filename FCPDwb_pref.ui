@@ -6,14 +6,21 @@
    <rect>
     <x>0</x>
     <y>0</y>
-    <width>485</width>
-    <height>300</height>
+    <width>524</width>
+    <height>343</height>
    </rect>
   </property>
   <property name="windowTitle">
    <string>Form</string>
   </property>
   <layout class="QFormLayout" name="formLayout">
+   <item row="0" column="0">
+    <widget class="QLabel" name="label">
+     <property name="text">
+      <string>Executable Pure-Data</string>
+     </property>
+    </widget>
+   </item>
    <item row="0" column="1">
     <widget class="Gui::PrefFileChooser" name="fileChooser">
      <property name="fileName">
@@ -27,14 +34,34 @@
      </property>
     </widget>
    </item>
-   <item row="0" column="0">
-    <widget class="QLabel" name="label">
+   <item row="1" column="0">
+    <widget class="QLabel" name="label_3">
      <property name="text">
-      <string>Executable Pure-Data</string>
+      <string>Adresse d'écoute</string>
      </property>
     </widget>
    </item>
-   <item row="4" column="1">
+   <item row="1" column="1">
+    <widget class="Gui::PrefLineEdit" name="lineEdit">
+     <property name="text">
+      <string>localhost</string>
+     </property>
+     <property name="prefEntry" stdset="0">
+      <cstring>fc_listenaddress</cstring>
+     </property>
+     <property name="prefPath" stdset="0">
+      <cstring>Mod/FCPD</cstring>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="0">
+    <widget class="QLabel" name="label_2">
+     <property name="text">
+      <string>Port d'écoute</string>
+     </property>
+    </widget>
+   </item>
+   <item row="2" column="1">
     <widget class="Gui::PrefSpinBox" name="spinBox">
      <property name="minimum">
       <number>1024</number>
@@ -53,34 +80,14 @@
      </property>
     </widget>
    </item>
-   <item row="4" column="0">
-    <widget class="QLabel" name="label_2">
+   <item row="3" column="0">
+    <widget class="QLabel" name="label_4">
      <property name="text">
-      <string>Port d'écoute</string>
+      <string>Port de retour</string>
      </property>
     </widget>
    </item>
    <item row="3" column="1">
-    <widget class="Gui::PrefLineEdit" name="lineEdit">
-     <property name="text">
-      <string>localhost</string>
-     </property>
-     <property name="prefEntry" stdset="0">
-      <cstring>fc_listenaddress</cstring>
-     </property>
-     <property name="prefPath" stdset="0">
-      <cstring>Mod/FCPD</cstring>
-     </property>
-    </widget>
-   </item>
-   <item row="3" column="0">
-    <widget class="QLabel" name="label_3">
-     <property name="text">
-      <string>Adresse d'écoute</string>
-     </property>
-    </widget>
-   </item>
-   <item row="8" column="1">
     <widget class="Gui::PrefSpinBox" name="spinBox_2">
      <property name="toolTip">
       <string>Port d'écoute de Pure-Data pour le client chargé au lancement</string>
@@ -102,55 +109,19 @@
      </property>
     </widget>
    </item>
-   <item row="8" column="0">
-    <widget class="QLabel" name="label_4">
-     <property name="text">
-      <string>Port de retour</string>
-     </property>
-    </widget>
-   </item>
-   <item row="6" column="1">
-    <widget class="Gui::PrefCheckBox" name="checkBox_2">
+   <item row="4" column="1">
+    <widget class="Gui::PrefCheckBox" name="ckAllowRaw">
      <property name="toolTip">
-      <string>Au lancment de Pure-Data, un canevas contenant le client est ouvert automatiquement.</string>
+      <string>Si coché le serveur interne accepte toutes les commandes python et non seulement celles codées dans l'atelier.</string>
      </property>
      <property name="text">
-      <string>Charger le client de connection</string>
-     </property>
-     <property name="checked">
-      <bool>true</bool>
+      <string>Autoriser toutes les commandes python</string>
      </property>
      <property name="prefEntry" stdset="0">
-      <cstring>run_client</cstring>
+      <cstring>fc_allowRaw</cstring>
      </property>
      <property name="prefPath" stdset="0">
       <cstring>Mod/FCPD</cstring>
-     </property>
-    </widget>
-   </item>
-   <item row="7" column="1">
-    <widget class="Gui::PrefCheckBox" name="checkBox">
-     <property name="toolTip">
-      <string>Le client se connectera automaitquement à FreeCAD dés qu'il sera lancé.</string>
-     </property>
-     <property name="text">
-      <string>Connection automatique</string>
-     </property>
-     <property name="checked">
-      <bool>true</bool>
-     </property>
-     <property name="prefEntry" stdset="0">
-      <cstring>autoconnect</cstring>
-     </property>
-     <property name="prefPath" stdset="0">
-      <cstring>Mod/FCPD</cstring>
-     </property>
-    </widget>
-   </item>
-   <item row="5" column="1">
-    <widget class="Line" name="line">
-     <property name="orientation">
-      <enum>Qt::Horizontal</enum>
      </property>
     </widget>
    </item>
