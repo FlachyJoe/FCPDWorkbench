@@ -25,7 +25,6 @@
 
 import os
 import subprocess
-import re
 import FreeCAD as App
 import FreeCADGui
 
