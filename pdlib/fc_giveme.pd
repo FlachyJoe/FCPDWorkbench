@@ -1,0 +1,22 @@
+#N canvas 896 219 570 320 12;
+#X obj 10 71 fc_process;
+#X obj 10 41 list prepend giveme;
+#X obj 10 100 route ERROR;
+#X obj 10 210 symbol;
+#X text 70 190 create and select and cut the object in the \$0-magic
+subpatch;
+#X obj 10 11 inlet;
+#X obj 10 290 sendcanvas 1;
+#X msg 10 240 obj 1000 1000 \$1 \, editmode 1 \, mouse 999 999 0 0
+0 \, mouseup 1100 1100 0 \, cut \, editmode 0;
+#X obj 90 130 t a b;
+#X obj 120 160 outlet;
+#X connect 0 0 2 0;
+#X connect 1 0 0 0;
+#X connect 2 1 8 0;
+#X connect 3 0 7 0;
+#X connect 5 0 1 0;
+#X connect 7 0 6 0;
+#X connect 8 0 3 0;
+#X connect 8 1 9 0;
+#X coords 0 0 1 1 175 44 0;
