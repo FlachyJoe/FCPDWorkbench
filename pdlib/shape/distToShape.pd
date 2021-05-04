@@ -1,7 +1,7 @@
 #N canvas 750 350 500 500 12;#X text 10 10 Shape;
 #X obj 10 30 inlet;
 #X obj 10 60 t a b ;
-#X text 100 10 Shape s;
+#X text 100 10 shape;
 #X obj 100 30 inlet;
 #X obj 100 90 any;
 #X obj 100 120 list append;

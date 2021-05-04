@@ -5,7 +5,7 @@
 #X obj 100 30 inlet;
 #X obj 100 90 any;
 #X obj 100 120 list append;
-#X text 200 10  shape type;
+#X text 200 10 shape type;
 #X obj 200 30 inlet;
 #X obj 200 120 any;
 #X obj 200 150 list append;

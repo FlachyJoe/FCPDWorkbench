@@ -3,12 +3,12 @@
 #X obj 400 10 shape/importBrepFromString;
 #X text 10 50 Load the shape from a string that keeps the content in BREP format. \; importBrepFromString(str \, False) to not display a progress bar. \;         ;
 #X obj 0 110 cnv 3 550 3 empty empty inlets 8 12 0 13 #dcdcdc #000000 0;
-#X obj 78 130 cnv 17 3 17 empty \$0-pddp.cnv.let.1 0 5 9 0 16 #dcdcdc #9c9c9c 0;
+#X obj 78 130 cnv 17 3 17 empty \$0-pddp.cnv.let.0 0 5 9 0 16 #dcdcdc #9c9c9c 0;
 #X text 100 130 Shape;
 #X obj 78 160 cnv 17 3 17 empty \$0-pddp.cnv.let.1 1 5 9 0 16 #dcdcdc #9c9c9c 0;
-#X text 100 160 str;
-#X obj 78 190 cnv 17 3 17 empty \$0-pddp.cnv.let.1 2 5 9 0 16 #dcdcdc #9c9c9c 0;
-#X text 100 190 False;
+#X text 100 160 string;
+#X obj 78 190 cnv 17 3 17 empty \$0-pddp.cnv.let.2 2 5 9 0 16 #dcdcdc #9c9c9c 0;
+#X text 100 190 displayProgressBar;
 #X obj 0 220 cnv 3 550 3 empty empty outlets 8 12 0 13 #dcdcdc #000000 0;
 #X obj 78 250 cnv 17 3 17 empty empty 0 5 9 0 16 #dcdcdc #9c9c9c 0;
 #X text 100 250 Result of the operation;

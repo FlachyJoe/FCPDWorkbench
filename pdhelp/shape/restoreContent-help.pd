@@ -1,9 +1,9 @@
 #N canvas 436 36 550 620 10;
 #X obj 0 0 cnv 15 550 40 empty empty shape/restoreContent 3 12 0 18 #c4dcdc #000000 0;
 #X obj 400 10 shape/restoreContent;
-#X text 10 50 - restores from the given byte array \;                 ;
+#X text 10 50 Restore the content of the object from a byte representation as stored by "dumpContent". restores from the given byte array \;                 ;
 #X obj 0 90 cnv 3 550 3 empty empty inlets 8 12 0 13 #dcdcdc #000000 0;
-#X obj 78 110 cnv 17 3 17 empty \$0-pddp.cnv.let.1 0 5 9 0 16 #dcdcdc #9c9c9c 0;
+#X obj 78 110 cnv 17 3 17 empty \$0-pddp.cnv.let.0 0 5 9 0 16 #dcdcdc #9c9c9c 0;
 #X text 100 110 Shape;
 #X obj 78 140 cnv 17 3 17 empty \$0-pddp.cnv.let.1 1 5 9 0 16 #dcdcdc #9c9c9c 0;
 #X text 100 140 buffer;

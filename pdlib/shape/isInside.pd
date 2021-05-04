@@ -1,15 +1,15 @@
 #N canvas 750 350 500 500 12;#X text 10 10 Shape;
 #X obj 10 30 inlet;
 #X obj 10 60 t a b b b ;
-#X text 100 10 App.Vector;
+#X text 100 10 point;
 #X obj 100 30 inlet;
 #X obj 100 90 any;
 #X obj 100 120 list append;
-#X text 200 10  float;
+#X text 200 10 tolerance;
 #X obj 200 30 inlet;
 #X obj 200 120 any;
 #X obj 200 150 list append;
-#X text 300 10  Boolean;
+#X text 300 10 checkFace;
 #X obj 300 30 inlet;
 #X obj 300 150 any;
 #X obj 300 180 list append;

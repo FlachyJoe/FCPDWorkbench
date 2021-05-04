@@ -1,13 +1,13 @@
 #N canvas 436 36 550 620 10;
 #X obj 0 0 cnv 15 550 40 empty empty shape/isCoplanar 3 12 0 18 #c4dcdc #000000 0;
 #X obj 400 10 shape/isCoplanar;
-#X text 10 50 - Checks if this shape is coplanar with the given shape.;
+#X text 10 50 Checks if this shape is coplanar with the given shape.;
 #X obj 0 70 cnv 3 550 3 empty empty inlets 8 12 0 13 #dcdcdc #000000 0;
-#X obj 78 90 cnv 17 3 17 empty \$0-pddp.cnv.let.1 0 5 9 0 16 #dcdcdc #9c9c9c 0;
+#X obj 78 90 cnv 17 3 17 empty \$0-pddp.cnv.let.0 0 5 9 0 16 #dcdcdc #9c9c9c 0;
 #X text 100 90 Shape;
 #X obj 78 120 cnv 17 3 17 empty \$0-pddp.cnv.let.1 1 5 9 0 16 #dcdcdc #9c9c9c 0;
 #X text 100 120 shape;
-#X obj 78 150 cnv 17 3 17 empty \$0-pddp.cnv.let.1 2 5 9 0 16 #dcdcdc #9c9c9c 0;
+#X obj 78 150 cnv 17 3 17 empty \$0-pddp.cnv.let.2 2 5 9 0 16 #dcdcdc #9c9c9c 0;
 #X text 100 150 tol;
 #X obj 0 180 cnv 3 550 3 empty empty outlets 8 12 0 13 #dcdcdc #000000 0;
 #X obj 78 210 cnv 17 3 17 empty empty 0 5 9 0 16 #dcdcdc #9c9c9c 0;

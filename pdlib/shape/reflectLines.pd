@@ -5,11 +5,11 @@
 #X obj 100 30 inlet;
 #X obj 100 90 any;
 #X obj 100 120 list append;
-#X text 200 10  ViewPos;
+#X text 200 10 ViewPos;
 #X obj 200 30 inlet;
 #X obj 200 120 any;
 #X obj 200 150 list append;
-#X text 300 10  UpDir;
+#X text 300 10 UpDir;
 #X obj 300 30 inlet;
 #X obj 300 150 any;
 #X obj 300 180 list append;

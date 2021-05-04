@@ -1,11 +1,11 @@
 #N canvas 750 350 500 500 12;#X text 10 10 Shape;
 #X obj 10 30 inlet;
 #X obj 10 60 t a b b ;
-#X text 100 10 List of shapes;
+#X text 100 10 List of faces;
 #X obj 100 30 inlet;
 #X obj 100 90 any;
 #X obj 100 120 list append;
-#X text 200 10  Offset (Float;
+#X text 200 10 Offset (Float;
 #X obj 200 30 inlet;
 #X obj 200 120 any;
 #X obj 200 150 list append;
