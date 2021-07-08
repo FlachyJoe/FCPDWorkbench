@@ -41,7 +41,6 @@ class PDControler:
         if str(prop) == 'Group':
             fp.Group = [self.controlerInput, self.controlerOutput]
         # TODO load PD patch
-        pass
 
     # ~ def onDocumentRestored(self, obj):
         # ~ pass
@@ -79,7 +78,7 @@ class PDControlerInput:
     def setProperty(self, name, typ, value):
         try :
             setattr(self.Object, name, value)
-        except :
+        except AttributeError:
             self.Object.addProperty(typ, name, '', 'IncommingDataFlow')
             self.Object.setPropertyStatus(name, 'ReadOnly')
             setattr(self.Object, name, value)
