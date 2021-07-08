@@ -16,7 +16,16 @@ Err = App.Console.PrintError
 ## Deal with PureData connection
 class PureDataServer:
 
-    NOT_SET = "empty"
+    NOT_SET = 'empty'
+    FLOAT = 'App::PropertyFloat'
+    INT = 'App::PropertyInteger'
+    VECTOR = 'App::PropertyVector'
+    ROTATION = 'App::PropertyRotation'
+    PLACEMENT = 'App::PropertyPlacement'
+    LIST = 'list'
+    BOOL = 'App::PropertyBool'
+    STRING = 'App::PropertyString'
+    OBJECT = 'App::PropertyLink'
 
     ## PureDataServer constructor
     #  @param self
@@ -68,10 +77,11 @@ class PureDataServer:
     ## Return a value from a PureData message
     #  @param self
     #  @param words a PureData message splits by words
-    #  @return a value
-
+    #  @return ((value, type), used_words_count)
     def valueFromStr(self, words):
         return_value = self.NOT_SET
+        return_type = self.NOT_SET
+
         used_words = 0
         if words:
             if not isinstance(words, list):
@@ -79,22 +89,28 @@ class PureDataServer:
             try:
                 # float...
                 return_value = float(words[0])
+                return_type = self.FLOAT
                 if int(return_value) == return_value :
                     # ...or int
                     return_value = int(return_value)
+                    return_type = self.INT
                 used_words = 1
             except ValueError:
                 if words[0] in ["Vector", "Pos"]:
                     return_value = App.Vector(float(words[1]), float(words[2]), float(words[3]))
+                    return_type = self.VECTOR
                     used_words = 4
                 elif words[0] in ["Rotation", "Yaw-Pitch-Roll", "Rot"]:
                     return_value = App.Rotation(float(words[1]), float(words[2]), float(words[3]))
+                    return_type = self.ROTATION
                     used_words = 4
                 elif words[0] == "Placement":
                     return_value = App.Placement(self.valueFromStr(words[1:5])[0], self.valueFromStr(words[5:])[0])
+                    return_type = self.PLACEMENT
                     used_words = 9
                 elif words[0] == "list":
                     return_value = []
+                    return_type = self.LIST
                     count = int(words[1])
                     used_words = 2
                     for i in range(0, count):
@@ -103,9 +119,11 @@ class PureDataServer:
                         used_words += cnt
                 elif words[0] == "True":
                     return_value = True
+                    return_type = self.BOOL
                     used_words = 1
                 elif words[0] == "False":
                     return_value = False
+                    return_type = self.BOOL
                     used_words = 1
                 elif words[0] == "None":
                     return_value = None
@@ -116,27 +134,32 @@ class PureDataServer:
                     str_len = [i for (i, w) in enumerate(words) if isinstance(w, str) and w.endswith('"')][0] + 1
                     # create the string
                     return_value = ' '.join(map(str, words[:str_len])).replace('"','')
+                    return_type = self.STRING
                     used_words = str_len
                 elif words[0].startswith("^"):
                     # Reference to a stored object
                     index = int(words[0][1:])
                     return_value = self.objects_store[index]
+                    return_type = self.OBJECT
                     Log("%s refers to %s\n" % (words[0], str(return_value)))
                     used_words = 1
                 elif App.ActiveDocument is not None and App.ActiveDocument.getObject(words[0]):
                     # ActiveDocument Object
                     return_value = App.ActiveDocument.getObject(words[0])
+                    return_type = self.OBJECT
                     used_words = 1
                 else:
                     # Quantity
                     try:
                         return_value = App.Units.parseQuantity(words[0])
+                        return_type = self.QUANTITY
                         used_words = 1
                     except OSError:
                         # String
                         return_value = words[0]
+                        return_type = self.STRING
                         used_words = 1
-        return (return_value, used_words)
+        return ((return_value, return_type), used_words)
 
     ## Extract a given number of values from a PureData message
     #  @param self

@@ -42,7 +42,7 @@ class FCPDWorkbench(Workbench):
         "This function is executed when FreeCAD starts"
         # command list
         import fcpdwb_commands
-        self.commandList = ["FCPD_Run", "FCPD_Stop", "FCPD_Launch"]
+        self.commandList = ["FCPD_Run", "FCPD_Stop", "FCPD_Launch", "FCPD_AddPDControler", "FCPD_EditPDControler"]
         self.appendToolbar("FCPD", self.commandList)   # creates a new toolbar with your commands
         self.appendMenu("FCPD", self.commandList)      # creates a new menu
 
@@ -53,9 +53,13 @@ class FCPDWorkbench(Workbench):
         # prepare pdserver
         import pdserver
         self.pdServer = pdserver.PureDataServer()
+
         # register message handlers
         import pdtools
         pdtools.registerToolList(self.pdServer)
+        import pdcontrolertools
+        pdcontrolertools.registerToolList(self.pdServer)
+
         if self.userPref().GetBool('fc_allowRaw', False):
             import pdrawtools
             pdrawtools.registerToolList(self.pdServer)

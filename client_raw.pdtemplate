@@ -1,17 +1,18 @@
-#N canvas 626 248 530 304 12;
+#N struct display-struct symbol text float background float width float
+height;
+#N canvas 631 249 530 304 12;
 #X obj 0 0 fc_client localhost %FCLISTEN% %PDLISTEN% 1;
 #X text 10 90 This patch is auto-created by FCPD Workbench don't close
 it.;
 #X text 10 120 help :;
 #X obj 60 120 helplink FCPD;
-#N canvas 600 382 568 375 giveme 0;
+#N canvas 605 383 568 400 giveme 0;
 #X obj 40 110 fc_giveme;
 #X obj 36 76 commandline;
 #X msg 130 110 Done!;
 #X connect 0 0 2 0;
 #X connect 1 0 0 0;
-#X connect 2 0 1 0;
-#X coords 0 -1 1 1 428 24 2 35 76;
+#X coords 0 -1 1 1 207 25 2 35 76;
 #X restore 10 190 pd giveme;
 #X text 10 150 auto python creator : type module.function you want
 to link to. Result is ready to paste where you need it., f 65;

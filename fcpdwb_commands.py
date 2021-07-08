@@ -32,6 +32,9 @@ import fcpdwb_locator
 FCPD_PATH = fcpdwb_locator.PATH
 FCPD_ICONS_PATH = os.path.join(FCPD_PATH, 'Icons')
 
+
+import pdcontroler
+
 FCPD = FreeCADGui.getWorkbench('FCPDWorkbench')
 
 # shortcuts of FreeCAD console
@@ -72,8 +75,8 @@ class FCPD_CommandLaunch():
                 f.write(clientContents)
 
             FCPD.pdProcess = subprocess.Popen([pdBin]
-                                                + pdArgs
-                                                + ['-open', clientFilePath])
+                                              + pdArgs
+                                              + ['-open', clientFilePath])
 
             FreeCADGui.runCommand('FCPD_Run')
         else:
@@ -99,7 +102,7 @@ class FCPD_CommandRun():
         serv = FCPD.pdServer
         if not serv.is_running:
             serv.setConnectParameters(FCPD.userPref().GetString('fc_listenaddress', 'localhost'),
-                                                  FCPD.userPref().GetInt('fc_listenport', 8888))
+                                      FCPD.userPref().GetInt('fc_listenport', 8888))
             serv.run(with_dialog=False)
             # WARNING Doesn't return until server termination !
         return
@@ -129,6 +132,60 @@ class FCPD_CommandStop():
         return True
 
 
+class FCPD_CommandAddPDControler():
+    """Create a PDControler object in the document"""
+
+    def GetResources(self):
+        return {'Pixmap': os.path.join(FCPD_ICONS_PATH, 'insert-link.png'),
+                'MenuText': "Create the PDControler object",
+                'ToolTip': "Create an object to store PD-controllable properties"}
+
+    def Activated(self):
+        pdcontroler.create()
+        return
+
+    def IsActive(self):
+        return True
+
+
+class FCPD_CommandEditPDControler():
+    """Edit a PDControler file in Pure-Data"""
+
+    global FCPD
+
+    def GetResources(self):
+        return {'Pixmap': os.path.join(FCPD_ICONS_PATH, 'document-page-setup.png'),
+                'MenuText': "Edit a PDControler patch",
+                'ToolTip': "Open the PDControler patch in Pure-Data"}
+
+    def Activated(self):
+        curObj = App.ActiveDocument.ActiveObject
+        if curObj.Proxy.Type == "PDControler":
+            #copy file contents
+            from pathlib import Path
+            import tempfile
+            fcTempFile = curObj.PDPatch
+            contents = Path(fcTempFile).read_text()
+            _, cpFile = tempfile.mkstemp(text=True)
+            Path(cpFile).write_text(contents)
+            #open with PD
+            FreeCADGui.runCommand('FCPD_Launch')
+            #TODO wait until PD opened
+            FCPD.pdServer.send("0 pd open", os.path.basename(cpFile), os.path.dirname(cpFile))
+            #set PDPatch property to cpFile so change will be saved with FC file
+            #TODO have to be done AFTER file change, use watchdog
+            curObj.PDPatch = cpFile
+
+    def IsActive(self):
+        sel = FreeCADGui.Selection.getSelection()
+        if len(sel) == 1:
+            curObj = sel[0]
+            return pdcontroler.isPDControler(curObj)
+        return False
+
+
 FreeCADGui.addCommand('FCPD_Run', FCPD_CommandRun())
 FreeCADGui.addCommand('FCPD_Stop', FCPD_CommandStop())
 FreeCADGui.addCommand('FCPD_Launch', FCPD_CommandLaunch())
+FreeCADGui.addCommand('FCPD_AddPDControler', FCPD_CommandAddPDControler())
+FreeCADGui.addCommand('FCPD_EditPDControler', FCPD_CommandEditPDControler())
