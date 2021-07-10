@@ -23,9 +23,7 @@
 ###################################################################################
 
 import FreeCAD as App
-import fcpdwb_locator
-FCPD_PATH = fcpdwb_locator.PATH
-FCPD_ICONS_PATH = os.path.join(FCPD_PATH, 'Icons')
+import fcpdwb_locator as locator
 
 class PDControler:
     def __init__(self, obj, controlerInput, controlerOutput):
@@ -61,8 +59,7 @@ class PDControlerViewProvider:
         self.Object = vobj.Object
 
     def getIcon(self):
-        import fcpdwb_locator
-        return os.path.join(locator.ICONS_PATH, 'insert-link.png')
+        return locator.icon('insert-link.png')
 
 
 class PDControlerInput:

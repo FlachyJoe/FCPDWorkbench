@@ -132,7 +132,7 @@ class FCPD_CommandAddPDControler():
     """Create a PDControler object in the document"""
 
     def GetResources(self):
-        return {'Pixmap': locator.icon('insert-link.png')
+        return {'Pixmap': locator.icon('insert-link.png'),
                 'MenuText': "Create the PDControler object",
                 'ToolTip': "Create an object to store PD-controllable properties"}
 

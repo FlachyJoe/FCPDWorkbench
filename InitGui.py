@@ -23,12 +23,11 @@
 #
 ###################################################################################
 
-import fcpdwb_locator as locator
-
 class FCPDWorkbench(Workbench):
 
     MenuText = "FCPD"
     ToolTip = "Pure-Data connection"
+    import fcpdwb_locator as locator
     Icon = locator.icon('FCPDLogo.svg')
 
     def Initialize(self):
@@ -40,6 +39,7 @@ class FCPDWorkbench(Workbench):
         self.appendMenu("FCPD", self.commandList)      # creates a new menu
 
         # prefs UI
+        import fcpdwb_locator as locator
         FreeCADGui.addIconPath(locator.ICONS_PATH)
         FreeCADGui.addPreferencePage(os.path.join(locator.PATH, "FCPDwb_pref.ui"), "FCPD")
 
