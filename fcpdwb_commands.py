@@ -28,12 +28,8 @@ import subprocess
 import FreeCAD as App
 import FreeCADGui
 
-import fcpdwb_locator
-FCPD_PATH = fcpdwb_locator.PATH
-FCPD_ICONS_PATH = os.path.join(FCPD_PATH, 'Icons')
+import fcpdwb_locator as locator
 
-
-import pdcontroler
 
 FCPD = FreeCADGui.getWorkbench('FCPDWorkbench')
 
@@ -47,7 +43,7 @@ class FCPD_CommandLaunch():
     """Launch Pure-Data"""
 
     def GetResources(self):
-        return {'Pixmap': os.path.join(FCPD_ICONS_PATH, 'FCPDLogo.svg'),
+        return {'Pixmap': locator.icon('FCPDLogo.svg'),
                 'MenuText': "Launch Pure-Data",
                 'ToolTip': "Launch Pure-Data and connect it to the internal server."}
 
@@ -55,22 +51,22 @@ class FCPD_CommandLaunch():
         if FCPD.pdProcess is None or FCPD.pdProcess.poll() is not None:
             pdBin = FCPD.userPref().GetString('pd_path')
 
-            pdArgs = ['-path', os.path.join(FCPD_PATH, 'pdlib'),
-                      '-helppath', os.path.join(FCPD_PATH, 'pdhelp')]
+            pdArgs = ['-path', os.path.join(locator.PATH, 'pdlib'),
+                      '-helppath', os.path.join(locator.PATH, 'pdhelp')]
 
             if FCPD.userPref().GetBool('fc_allowRaw', False):
                 clientTemplate = "client_raw.pdtemplate"
-                pdArgs += ['-path', os.path.join(FCPD_PATH, 'pdautogen'),
-                           '-helppath', os.path.join(FCPD_PATH, 'pdautogenhelp')]
+                pdArgs += ['-path', os.path.join(locator.PATH, 'pdautogen'),
+                           '-helppath', os.path.join(locator.PATH, 'pdautogenhelp')]
             else:
                 clientTemplate = "client.pdtemplate"
 
-            with open(os.path.join(FCPD_PATH, clientTemplate), 'r') as f:
+            with open(os.path.join(locator.PATH, clientTemplate), 'r') as f:
                 clientContents = f.read()
             clientContents = clientContents.replace('%FCLISTEN%', str(FCPD.userPref().GetInt('fc_listenport')))
             clientContents = clientContents.replace('%PDLISTEN%', str(FCPD.userPref().GetInt('pd_defaultport')))
 
-            clientFilePath = os.path.join(FCPD_PATH, 'client.pd')
+            clientFilePath = os.path.join(locator.PATH, 'client.pd')
             with open(clientFilePath, 'w') as f:
                 f.write(clientContents)
 
@@ -94,21 +90,21 @@ class FCPD_CommandRun():
     global FCPD
 
     def GetResources(self):
-        return {'Pixmap': os.path.join(FCPD_ICONS_PATH, 'start.png'),
+        return {'Pixmap': locator.icon('start.png'),
                 'MenuText': "Run Pure-Data server",
                 'ToolTip': "Run the internal server and let Pure-Data to connect to."}
 
     def Activated(self):
         serv = FCPD.pdServer
-        if not serv.is_running:
+        if not serv.isRunning:
             serv.setConnectParameters(FCPD.userPref().GetString('fc_listenaddress', 'localhost'),
                                       FCPD.userPref().GetInt('fc_listenport', 8888))
-            serv.run(with_dialog=False)
+            serv.run(withDialog=False)
             # WARNING Doesn't return until server termination !
         return
 
     def IsActive(self):
-        # return not FCPD.pdServer.is_running
+        # return not FCPD.pdServer.isRunning
         return True
 
 
@@ -118,17 +114,17 @@ class FCPD_CommandStop():
     global FCPD
 
     def GetResources(self):
-        return {'Pixmap': os.path.join(FCPD_ICONS_PATH, 'stop.png'),
+        return {'Pixmap': locator.icon('stop.png'),
                 'MenuText': "Stop Pure-Data server",
                 'ToolTip': "Stop the internal Pure-Data server."}
 
     def Activated(self):
-        if FCPD.pdServer.is_running:
+        if FCPD.pdServer.isRunning:
             FCPD.pdServer.terminate()
         return
 
     def IsActive(self):
-        # return FCPD.pdServer.is_running
+        # return FCPD.pdServer.isRunning
         return True
 
 
@@ -136,11 +132,12 @@ class FCPD_CommandAddPDControler():
     """Create a PDControler object in the document"""
 
     def GetResources(self):
-        return {'Pixmap': os.path.join(FCPD_ICONS_PATH, 'insert-link.png'),
+        return {'Pixmap': locator.icon('insert-link.png'),
                 'MenuText': "Create the PDControler object",
                 'ToolTip': "Create an object to store PD-controllable properties"}
 
     def Activated(self):
+        import pdcontroler
         pdcontroler.create()
         return
 
@@ -154,27 +151,28 @@ class FCPD_CommandEditPDControler():
     global FCPD
 
     def GetResources(self):
-        return {'Pixmap': os.path.join(FCPD_ICONS_PATH, 'document-page-setup.png'),
+        return {'Pixmap': locator.icon('document-page-setup.png'),
                 'MenuText': "Edit a PDControler patch",
                 'ToolTip': "Open the PDControler patch in Pure-Data"}
 
     def Activated(self):
-        curObj = App.ActiveDocument.ActiveObject
-        if curObj.Proxy.Type == "PDControler":
-            #copy file contents
-            from pathlib import Path
-            import tempfile
-            fcTempFile = curObj.PDPatch
-            contents = Path(fcTempFile).read_text()
-            _, cpFile = tempfile.mkstemp(text=True)
-            Path(cpFile).write_text(contents)
-            #open with PD
-            FreeCADGui.runCommand('FCPD_Launch')
-            #TODO wait until PD opened
-            FCPD.pdServer.send("0 pd open", os.path.basename(cpFile), os.path.dirname(cpFile))
-            #set PDPatch property to cpFile so change will be saved with FC file
-            #TODO have to be done AFTER file change, use watchdog
-            curObj.PDPatch = cpFile
+        import pdcontroler
+        #get (existent) PDControler
+        curObj = pdcontroler.create()
+        #copy file contents
+        from pathlib import Path
+        import tempfile
+        fcTempFile = curObj.PDPatch
+        contents = Path(fcTempFile).read_text()
+        _, cpFile = tempfile.mkstemp(text=True)
+        Path(cpFile).write_text(contents)
+        #open with PD
+        FreeCADGui.runCommand('FCPD_Launch')
+        #TODO wait until PD opened
+        FCPD.pdServer.send("0 pd open", os.path.basename(cpFile), os.path.dirname(cpFile))
+        #set PDPatch property to cpFile so change will be saved with FC file
+        #TODO have to be done AFTER file change, use watchdog
+        curObj.PDPatch = cpFile
 
     def IsActive(self):
         sel = FreeCADGui.Selection.getSelection()

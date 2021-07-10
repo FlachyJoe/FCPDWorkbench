@@ -44,7 +44,7 @@
 #X text 100 239 any;
 #X text 170 200 - when a bang incomes \, the current property value
 is sent to the outlet.;
-#X text 170 239 - set the property with the incomming value;
+#X text 170 239 - set the property with the incoming value;
 #X text 100 300 object;
 #X obj 80 361 cnv 17 3 45 empty \$0-pddp.cnv.let.1 2 5 9 0 16 #dcdcdc
 #9c9c9c 0;

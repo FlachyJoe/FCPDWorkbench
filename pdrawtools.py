@@ -5,7 +5,7 @@ import re
 
 import FreeCAD as App
 
-import fcpdwb_locator
+import fcpdwb_locator as locator
 
 # shortcuts of FreeCAD console
 Log = App.Console.PrintLog
@@ -227,7 +227,7 @@ def pdRaw(pdServer, words):
 
 def pdGiveMe(pdServer, words):
     '''giveme Module.Object.Func [arg_count]
-    dynamicaly create a PD object to overlay a python function'''
+    dynamically create a PD object to overlay a python function'''
     args = words[2].split('.')
     moduleName = args[0]
     objectName = '/'.join(args[:-1])
@@ -238,8 +238,8 @@ def pdGiveMe(pdServer, words):
     else:
         paramCount = -1
 
-    pdLibPath = os.path.join(fcpdwb_locator.PATH, 'pdautogen')
-    pdHelpPath = os.path.join(fcpdwb_locator.PATH, 'pdautogenhelp')
+    pdLibPath = os.path.join(locator.PATH, 'pdautogen')
+    pdHelpPath = os.path.join(locator.PATH, 'pdautogenhelp')
     modulePath = os.path.join(pdLibPath, objectName.lower())
     moduleHelpPath = os.path.join(pdHelpPath, objectName.lower())
     filePath = os.path.join(modulePath, funcName)
