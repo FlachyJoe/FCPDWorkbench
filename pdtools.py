@@ -54,7 +54,7 @@ def registerToolList(pdServer):
 
 
 def pdElse(words):
-    return "ERROR unkown command"
+    return "ERROR unknown command"
 
 
 def pdGet(pdServer, words):
@@ -134,7 +134,7 @@ def pdSelObserver(pdServer, words):
             self.send()
 
     s = SelObserver(pdServer, words[0])
-    pdServer.observers_store[words[0]] = s   # store the observer to allow removing later
+    pdServer.observersStore[words[0]] = s   # store the observer to allow removing later
     App.Gui.Selection.addObserver(s)
     return 'OK'
 
@@ -152,7 +152,7 @@ def pdObjObserver(pdServer, words):
             if obj == self.obj:
                 self.pdServer.send("%s %s;" % (self.uid, 'bang'))
     s = PreSelObserver(pdServer, words[0], words[2])
-    pdServer.observers_store[words[0]] = s   # store the observer to allow removing later
+    pdServer.observersStore[words[0]] = s   # store the observer to allow removing later
     App.Gui.Selection.addObserver(s)
     return 'OK'
 
@@ -160,8 +160,8 @@ def pdObjObserver(pdServer, words):
 def pdRemObserver(pdServer, words):
     '''remobserver --> "OK" '''
     # Uninstall the resident function
-    App.Gui.Selection.removeObserver(pdServer.observers_store[words[0]])
-    del pdServer.observers_store[words[0]]
+    App.Gui.Selection.removeObserver(pdServer.observersStore[words[0]])
+    del pdServer.observersStore[words[0]]
     return 'OK'
 
 

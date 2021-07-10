@@ -23,20 +23,13 @@
 #
 ###################################################################################
 
-import fcpdwb_locator
-
-FCPD_PATH = fcpdwb_locator.PATH
-FCPD_ICONS_PATH = os.path.join(FCPD_PATH, 'Icons')
-FCPD_MAIN_ICON = os.path.join(FCPD_ICONS_PATH, 'FCPDLogo.svg')
-
+import fcpdwb_locator as locator
 
 class FCPDWorkbench(Workbench):
 
-    global FCPD_PATH, FCPD_ICONS_PATH, FCPD_MAIN_ICON
-
     MenuText = "FCPD"
     ToolTip = "Pure-Data connection"
-    Icon = FCPD_MAIN_ICON
+    Icon = locator.icon('FCPDLogo.svg')
 
     def Initialize(self):
         "This function is executed when FreeCAD starts"
@@ -47,8 +40,8 @@ class FCPDWorkbench(Workbench):
         self.appendMenu("FCPD", self.commandList)      # creates a new menu
 
         # prefs UI
-        FreeCADGui.addIconPath(FCPD_ICONS_PATH)
-        FreeCADGui.addPreferencePage(os.path.join(FCPD_PATH, "FCPDwb_pref.ui"), "FCPD")
+        FreeCADGui.addIconPath(locator.ICONS_PATH)
+        FreeCADGui.addPreferencePage(os.path.join(locator.PATH, "FCPDwb_pref.ui"), "FCPD")
 
         # prepare pdserver
         import pdserver

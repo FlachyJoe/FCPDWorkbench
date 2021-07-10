@@ -14,11 +14,12 @@ def connect(id1, outlet, id2, inlet):
 import inspect
 
 def get_parameters(func):
+    clean_params = None
     try :
         clean_params = list(inspect.signature(func).parameters.keys())
     except ValueError:
         #parse __doc__
-        docstr = func.__doc__
+        docstr = "\n".join(func.__doc__.split('\n')[1:]) # remove first line
         if docstr:
             leftpar = docstr.find("(")+1
             rightpar = docstr.find(")", leftpar)
@@ -28,6 +29,7 @@ def get_parameters(func):
 	            paramstr = paramstr.replace("]","")
 	            paramstr = paramstr.replace("\n","")
 	            params = paramstr.split(",")
+
             else:
                 params=[]
             clean_params = []
@@ -35,26 +37,36 @@ def get_parameters(func):
                 e=p.find("=")
                 if e>0:
                     p = p[:e]
-                clean_params.append(p)
+                p = p.strip()
+                if p:
+                    clean_params.append(p)
         else:
-            raise ValueError("no signature nor __doc__ ")
+            Log("no signature nor __doc__ for %s\n" % func.__name__)
     return clean_params
 
 def getCleanDoc(func):
+        ''' return PD printable func.__doc__'''
         docstr = func.__doc__
-        dash = docstr.find("--")+1
-        return docstr[dash:].replace(",", " \, ").replace("\n", " \; ")
+        dash = docstr.find("--")+2
+        docLines = docstr.split("\n")
+        if dash > 1:
+            docStart = docLines[0]
+            docEnd = docstr[dash:]
+            docstr = docStart + docEnd
+        else:
+            docstr = docLines[0]
+        return docstr.replace(",", " \, ").replace("\n", " \; ")
 
 def generate(dirname):
     func_list = inspect.getmembers(Part.Shape, inspect.isroutine)
     for func_name, func in func_list:
         if not func_name.startswith("_"):
             pdname = func_name
-            params = ["Shape"]
-            params += get_parameters(func)
-            if not params:
+            params = get_parameters(func)
+            if params is None:
                 Log("%s have no parameters, skipped\n" % pdname)
                 continue
+            params = ["Shape"] + params
             pcount = len(params)
             cnv = "#N canvas 750 350 500 500 12;"           #obj id
             cnv += text(10, 10, params[0])                  # 0
@@ -100,10 +112,10 @@ def generateHelp(dirname):
     for func_name, func in func_list:
         if not func_name.startswith("_"):
             pdname = func_name
-            params = ["Shape"]
-            params += get_parameters(func)
+            params = get_parameters(func)
             if not params:
                 continue
+            params = ["Shape"] + params
             pcount = len(params)
             hlp = "#N canvas 436 36 550 620 10;\n"
             hlp +="#X obj 0 0 cnv 15 550 40 empty empty shape/%s 3 12 0 18 #c4dcdc #000000 0;\n" % pdname
@@ -116,7 +128,7 @@ def generateHelp(dirname):
             # INLETS
             hlp +="#X obj 0 %i cnv 3 550 3 empty empty inlets 8 12 0 13 #dcdcdc #000000 0;\n" % descHeight
             for i, p in enumerate(params):
-                hlp +="#X obj 78 %i cnv 17 3 17 empty \$0-pddp.cnv.let.1 %i 5 9 0 16 #dcdcdc #9c9c9c 0;\n" % (descHeight + 20 + 30*i, i)
+                hlp +="#X obj 78 %i cnv 17 3 17 empty \$0-pddp.cnv.let.%i %i 5 9 0 16 #dcdcdc #9c9c9c 0;\n" % (descHeight + 20 + 30*i, i, i)
                 hlp += text(100, descHeight + 20 + 30*i, p)
             # OUTLETS
             hlp +="#X obj 0 %i cnv 3 550 3 empty empty outlets 8 12 0 13 #dcdcdc #000000 0;\n" % (descHeight + 20 + 30*pcount)
