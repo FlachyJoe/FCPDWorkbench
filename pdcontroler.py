@@ -25,30 +25,62 @@
 import FreeCAD as App
 import fcpdwb_locator as locator
 
+
 class PDControler:
     def __init__(self, obj, controlerInput, controlerOutput):
 
         obj.Proxy = self
-
         self.Type = "PDControler"
+
         self.controlerInput = controlerInput
         self.controlerOutput = controlerOutput
 
-        obj.addProperty('App::PropertyFileIncluded', 'PDPatch', '', 'The Pure-data patch').PDPatch =""
         obj.Group = [self.controlerInput, self.controlerOutput]
-        obj.setPropertyStatus('Group','ReadOnly')
+        obj.setPropertyStatus('Group', 'ReadOnly')
 
-    def onChanged(self, fp, prop):
+    def onChanged(self, obj, prop):
         if str(prop) == 'Group':
-            fp.Group = [self.controlerInput, self.controlerOutput]
-        # TODO load PD patch
+            obj.Group = [self.controlerInput, self.controlerOutput]
 
-    # ~ def onDocumentRestored(self, obj):
-        # ~ pass
+    def setIncommingPropertyType(self, ind, typ):
+        name = 'DataFlow_%i' % ind
+        # Check existence
+        if hasattr(App.ActiveDocument.IncommingData, name):
+            App.ActiveDocument.IncommingData.removeProperty(name)
 
-    def execute(self, obj):
-        pass
+        # App:PropertyRotation doesn't exist so store it in a placement
+        if typ == 'rotation':
+            typ = 'App::PropertyPlacement'
 
+        self.controlerInput.addProperty(typ, name, '', 'IncommingDataFlow')
+        self.controlerInput.setPropertyStatus(name, 'ReadOnly')
+
+
+    def setOutgoingPropertyType(self, ind, typ):
+        name = 'DataFlow_%i' % ind
+        # Check existence
+        if hasattr(App.ActiveDocument.OutgoingData, name):
+            App.ActiveDocument.OutgoingData.removeProperty(name)
+
+        # App:PropertyRotation doesn't exist so store it in a placement
+        if typ == 'rotation':
+            typ = 'App::PropertyPlacement'
+
+        self.controlerOutput.addProperty(typ, name, '', 'OutgoingDataFlow')
+
+    def setProperty(self, ind, typ, value):
+        name = 'DataFlow_%i' % ind
+
+        # App:PropertyRotation doesn't exist so store it in a placement
+        if typ == 'rotation':
+            value = App.Placement(App.Vector(0,0,0), value)
+
+        try :
+            setattr(self.controlerInput.Object, name, value)
+        except AttributeError:
+            self.controlerInput.Object.addProperty(typ, name, '', 'IncommingDataFlow')
+            self.controlerInput.Object.setPropertyStatus(name, 'ReadOnly')
+            setattr(self.Object, name, value)
 
 class PDControlerViewProvider:
     def __init__(self, vobj):
@@ -69,60 +101,52 @@ class PDControlerInput:
         self.Object = obj
         self.Type = "PDControlerInput"
 
-    def onChanged(self, fp, prop):
-        # No change accepted : read-only properties
-        pass
-
-    def execute(self, obj):
-        pass
-
-    def setProperty(self, name, typ, value):
-        try :
-            setattr(self.Object, name, value)
-        except AttributeError:
-            self.Object.addProperty(typ, name, '', 'IncommingDataFlow')
-            self.Object.setPropertyStatus(name, 'ReadOnly')
-            setattr(self.Object, name, value)
-
 
 class PDControlerOutput:
-    def __init__(self, obj):
+    def __init__(self, obj, pdServer, dollarZero):
 
         obj.Proxy = self
         self.Type = "PDControlerOutput"
 
-    def onChanged(self, fp, prop):
-        # TODO send data to PD
-        pass
+        self.pdServer = pdServer
+        self.dollarZero = dollarZero
 
-    def execute(self, obj):
-        pass
+    def onChanged(self, obj, prop):
+        if not prop[:8] == 'DataFlow':
+            return
+        ind = int(prop[9:])
+        self.pdServer.send(self.dollarZero, ind, getattr(obj, prop))
 
 
 def isPDControler(obj):
-    if hasattr(obj, 'Proxy') and  hasattr(obj.Proxy, 'Type'):
+    if hasattr(obj, 'Proxy') and hasattr(obj.Proxy, 'Type'):
         return obj.Proxy.Type == "PDControler"
     return False
 
-
-def create():
-    """
-    Object creation method
-    """
-
-    #Return the PDControler if it already exists
+def get():
+    # Return the PDControler if it already exists
     for obj in App.ActiveDocument.Objects:
         if isPDControler(obj):
             return obj
+    return None
 
-    #Create a new one
-    pdIn = App.ActiveDocument.addObject('App::FeaturePython', 'IncommingData')
-    pdOut = App.ActiveDocument.addObject('App::FeaturePython', 'OutgoingData')
-    obj = App.ActiveDocument.addObject('App::DocumentObjectGroupPython', 'PDControler')
+def create(pdServer, dollarZero):
+    """
+    Object creation method
+    """
+    curObj = get()
+    if get() is not None:
+        pdOut = curObj.Proxy.controlerOutput.Proxy
+        pdOut.pdServer = pdServer
+        pdOut.dollarZero = dollarZero
+        return curObj
+    else:
+        pdIn = App.ActiveDocument.addObject('App::FeaturePython', 'IncommingData')
+        pdOut = App.ActiveDocument.addObject('App::FeaturePython', 'OutgoingData')
+        obj = App.ActiveDocument.addObject('App::DocumentObjectGroupPython', 'PDControler')
 
-    PDControlerInput(pdIn)
-    PDControlerOutput(pdOut)
-    PDControler(obj, pdIn, pdOut)
-    PDControlerViewProvider(obj.ViewObject)
-
-    return obj
+        PDControlerInput(pdIn)
+        PDControlerOutput(pdOut, pdServer, dollarZero)
+        PDControler(obj, pdIn, pdOut)
+        PDControlerViewProvider(obj.ViewObject)
+        return obj

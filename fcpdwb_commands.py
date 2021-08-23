@@ -128,62 +128,6 @@ class FCPD_CommandStop():
         return True
 
 
-class FCPD_CommandAddPDControler():
-    """Create a PDControler object in the document"""
-
-    def GetResources(self):
-        return {'Pixmap': locator.icon('insert-link.png'),
-                'MenuText': "Create the PDControler object",
-                'ToolTip': "Create an object to store PD-controllable properties"}
-
-    def Activated(self):
-        import pdcontroler
-        pdcontroler.create()
-        return
-
-    def IsActive(self):
-        return True
-
-
-class FCPD_CommandEditPDControler():
-    """Edit a PDControler file in Pure-Data"""
-
-    global FCPD
-
-    def GetResources(self):
-        return {'Pixmap': locator.icon('document-page-setup.png'),
-                'MenuText': "Edit a PDControler patch",
-                'ToolTip': "Open the PDControler patch in Pure-Data"}
-
-    def Activated(self):
-        import pdcontroler
-        #get (existent) PDControler
-        curObj = pdcontroler.create()
-        #copy file contents
-        from pathlib import Path
-        import tempfile
-        fcTempFile = curObj.PDPatch
-        contents = Path(fcTempFile).read_text()
-        _, cpFile = tempfile.mkstemp(text=True)
-        Path(cpFile).write_text(contents)
-        #open with PD
-        FreeCADGui.runCommand('FCPD_Launch')
-        #TODO wait until PD opened
-        FCPD.pdServer.send("0 pd open", os.path.basename(cpFile), os.path.dirname(cpFile))
-        #set PDPatch property to cpFile so change will be saved with FC file
-        #TODO have to be done AFTER file change, use watchdog
-        curObj.PDPatch = cpFile
-
-    def IsActive(self):
-        sel = FreeCADGui.Selection.getSelection()
-        if len(sel) == 1:
-            curObj = sel[0]
-            return pdcontroler.isPDControler(curObj)
-        return False
-
-
 FreeCADGui.addCommand('FCPD_Run', FCPD_CommandRun())
 FreeCADGui.addCommand('FCPD_Stop', FCPD_CommandStop())
 FreeCADGui.addCommand('FCPD_Launch', FCPD_CommandLaunch())
-FreeCADGui.addCommand('FCPD_AddPDControler', FCPD_CommandAddPDControler())
-FreeCADGui.addCommand('FCPD_EditPDControler', FCPD_CommandEditPDControler())

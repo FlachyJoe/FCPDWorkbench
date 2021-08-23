@@ -24,6 +24,7 @@
 ###################################################################################
 import FreeCAD as App
 import pdcontroler
+from pdmsgtranslator import PDMsgTranslator
 
 # shortcuts of FreeCAD console
 Log = App.Console.PrintLog
@@ -33,7 +34,8 @@ Err = App.Console.PrintError
 
 
 def registerToolList(pdServer):
-    toolList = [("ctrlr", pdCtrlr)
+    toolList = [("ctrlr", pdCtrlr),
+                ("newctrlr", pdNewCtrlr)
                 ]
 
     for word, func in toolList:
@@ -41,7 +43,26 @@ def registerToolList(pdServer):
 
 
 def pdCtrlr(pdServer, words):
-    pdControler = pdcontroler.create()
-    _, values = pdServer.popValues(words[2:])
+    pdControler = pdcontroler.get()
+    _, values = PDMsgTranslator.popValues(words[2:])
+    ret = []
     for ind, (val, typ) in enumerate(values):
-        pdControler.Proxy.controlerInput.Proxy.setProperty('DataFlow_%i' % ind, typ, val)
+        ret += pdControler.Proxy.setProperty(ind, typ, val)
+    return '\n'.join(ret)
+
+
+def pdNewCtrlr(pdServer, words):
+    pdControler = pdcontroler.create(pdServer, words[0])
+    try:
+        outStart = words.index('|')
+    except ValueError:
+        outStart = len(words)
+    inTyp = [PDMsgTranslator.fcType(w) for w in words[2:outStart]]
+    outTyp = [PDMsgTranslator.fcType(w) for w in words[outStart+1:]]
+
+    for ind, t in enumerate(inTyp):
+        pdControler.Proxy.setIncommingPropertyType(ind, t)
+    for ind, t in enumerate(outTyp):
+        pdControler.Proxy.setOutgoingPropertyType(ind, t)
+
+    return 'SERVICE %i %i' % (len(inTyp), len(outTyp))
