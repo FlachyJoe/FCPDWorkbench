@@ -21,8 +21,6 @@ class PureDataServer:
 
     ## PureDataServer constructor
     #  @param self
-    #  @param listenAddress the local interface to listen
-    #  @param listenPort the local port to listen
     def __init__(self):
         self.isRunning = False
         self.isWaiting = False
@@ -38,6 +36,10 @@ class PureDataServer:
         self.valueFromStr = PDMsgTranslator.valueFromStr
         self.popValues = PDMsgTranslator.popValues
 
+    ## Update listenning address and port
+    #  @param self
+    #  @param listenAddress the local interface to listen
+    #  @param listenPort the local port to listen
     def setConnectParameters(self, listenAddress, listenPort):
         self.listenAddress = listenAddress
         self.listenPort = listenPort
@@ -47,7 +49,7 @@ class PureDataServer:
     def terminate(self):
         try:
             # send close message to PD
-            self.output_socket.send(b"0 close")
+            self.output_socket.send(b"0 close;")
         except BrokenPipeError:
             # output_socket already disconnected
             pass
