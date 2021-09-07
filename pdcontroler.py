@@ -98,7 +98,7 @@ class PDControlerInput:
     def __init__(self, obj):
 
         obj.Proxy = self
-        self.Object = obj
+        #self.Object = obj
         self.Type = "PDControlerInput"
 
 
@@ -111,11 +111,19 @@ class PDControlerOutput:
         self.pdServer = pdServer
         self.dollarZero = dollarZero
 
+        self.propToSend = []
+
     def onChanged(self, obj, prop):
         if not prop[:8] == 'DataFlow':
             return
-        ind = int(prop[9:])
-        self.pdServer.send(self.dollarZero, ind, getattr(obj, prop))
+        self.propToSend.append(prop)
+
+    def execute(self, obj):
+        # send changed properties right to left
+        for prop in sorted(set(self.propToSend), reverse=True):
+            ind = int(prop[9:])
+            self.pdServer.send(self.dollarZero, ind, getattr(obj, prop))
+        self.propToSend = []
 
 
 def isPDControler(obj):
