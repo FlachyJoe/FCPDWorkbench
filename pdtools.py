@@ -22,6 +22,9 @@
 #
 #
 ###################################################################################
+
+# this module translate pd message to action
+
 import FreeCAD as App
 
 # shortcuts of FreeCAD console
