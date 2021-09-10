@@ -22,6 +22,9 @@
 #
 #
 ###################################################################################
+
+# this module translate PD message to/from Python values
+
 import FreeCAD as App
 
 # shortcuts of FreeCAD console
@@ -50,7 +53,7 @@ class PDMsgTranslator:
     LONG_TYPES = ['empty', 'float', 'integer', 'vector', 'rotation', 'placement', 'list', 'boolean',
                   'string', 'object', 'quantity', 'angle']
 
-    objectsStore = []
+    objectsStore = [] # store binary untextable objects to get them back by reference
 
     ## Return a string representation of a value
     #  @param self
