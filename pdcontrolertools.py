@@ -22,6 +22,9 @@
 #
 #
 ###################################################################################
+
+# this module translate pd message to action for [fc_controler]
+
 import FreeCAD as App
 import pdcontroler
 from pdmsgtranslator import PDMsgTranslator
@@ -43,16 +46,20 @@ def registerToolList(pdServer):
 
 
 def pdCtrlr(pdServer, words):
-    pdControler = pdcontroler.get()
+    pdControler = pdcontroler.create(pdServer, words[0])
     _, values = PDMsgTranslator.popValues(words[2:])
-    ret = []
-    for ind, (val, typ) in enumerate(values):
-        ret += pdControler.Proxy.setProperty(ind, typ, val)
-    return '\n'.join(ret)
+    # create a list of ((ind, 'App::PropertyInteger'), (val, typ))
+    duplet = [(values[i], values[i+1]) for i in range(0,len(values),2)]
+
+    for (ind, _), (val, typ) in duplet:
+        pdControler.Proxy.setProperty(ind, typ, val)
 
 
 def pdNewCtrlr(pdServer, words):
     pdControler = pdcontroler.create(pdServer, words[0])
+    pdControler.Proxy.resetIncommingProperties()
+    pdControler.Proxy.resetOutgoingProperties()
+
     try:
         outStart = words.index('|')
     except ValueError:
@@ -65,4 +72,3 @@ def pdNewCtrlr(pdServer, words):
     for ind, t in enumerate(outTyp):
         pdControler.Proxy.setOutgoingPropertyType(ind, t)
 
-    return 'SERVICE %i %i' % (len(inTyp), len(outTyp))

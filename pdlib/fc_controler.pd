@@ -61,7 +61,7 @@
 #X connect 24 0 15 4;
 #X connect 26 0 21 0;
 #X restore 220 250 pd inlet-creator;
-#X obj 20 220 fc_process;
+#X obj 20 220 fc_process 1;
 #X obj 30 111 iemlib/dollarg;
 #X obj 30 180 list prepend newctrlr;
 #N canvas 416 29 1179 990 outlet-creator 0;
