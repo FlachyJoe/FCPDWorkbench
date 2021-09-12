@@ -196,7 +196,7 @@ def create(pdServer, dollarZero):
     if not hasattr(pdIn, "Proxy"):
         PDControlerInput(pdIn)
 
-    if not hasattr(pdOut, "Proxy"):
+    if not hasattr(pdOut, "propToSend"):
         PDControlerOutput(pdOut, pdServer, dollarZero)
 
     if not hasattr(obj, "controlerInput"):
