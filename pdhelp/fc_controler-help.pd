@@ -1,0 +1,62 @@
+#N canvas 710 73 552 747 10;
+#X obj 0 725 cnv 15 552 21 empty \$0-pddp.cnv.footer empty 20 12 0
+14 #dcdcdc #404040 0;
+#X obj 0 0 cnv 15 552 40 empty \$0-pddp.cnv.header fc_controler 3 12
+0 18 #c4dcdc #000000 0;
+#X obj 0 193 cnv 3 550 3 empty \$0-pddp.cnv.inlets inlets 8 12 0 13
+#dcdcdc #000000 0;
+#N canvas 474 335 332 236 META 0;
+#X text 12 45 LICENSE LGPL;
+#X text 12 105 OUTLET_0 any;
+#X text 12 125 LIBRARY FCPD;
+#X text 12 185 RELEASE_DATE 2021;
+#X text 12 205 HELP_PATCH_AUTHORS Flachy Joe;
+#X text 12 145 AUTHOR Flachy Joe;
+#X text 12 165 WEBSITE https://github.com/FlachyJoe/FCPDWorkbench;
+#X text 12 65 DESCRIPTION bidirectionnal pipe to FreeCAD;
+#X text 12 25 KEYWORDS fcpd freecad object controler;
+#X text 12 85 INLET_0 any;
+#X restore 500 727 pd META;
+#X obj 0 269 cnv 3 550 3 empty \$0-pddp.cnv.outlets outlets 8 12 0
+13 #dcdcdc #000000 0;
+#X obj 0 328 cnv 3 550 3 empty \$0-pddp.cnv.argument arguments 8 12
+0 13 #dcdcdc #000000 0;
+#X obj 0 670 cnv 3 550 3 empty \$0-pddp.cnv.more_info more_info 8 12
+0 13 #dcdcdc #000000 0;
+#X obj 80 201 cnv 17 3 50 empty \$0-pddp.cnv.let.0 n 5 9 0 16 #dcdcdc
+#9c9c9c 0;
+#X obj 78 278 cnv 17 3 40 empty \$0-pddp.cnv.let.n n 5 9 0 16 #dcdcdc
+#9c9c9c 0;
+#X text 100 200 any;
+#X text 98 277 any;
+#X obj 100 680 helplink FCPD;
+#X obj 460 10 fc_controler;
+#X text 170 200 Whatever you send to inlets is reported in FreeCAD's
+IncommingData object.;
+#X text 170 280 outlets reports FreeCAD's OutgoingData object properties
+;
+#X text 10 100 inlets and outlets are dynamicaly created \, see "arguments"
+;
+#X text 80 346 0) symbol atom;
+#X text 80 440 f = float;
+#X text 80 460 i = integer;
+#X text 80 480 v = vector;
+#X text 80 500 r = rotation;
+#X text 80 520 p = placement;
+#X text 80 540 l = list;
+#X text 80 560 b = boolean;
+#X text 11 23 dataflow pipe to FreeCAD;
+#X text 168 346 - for each creation argument \, a new inlet or outlet
+is created. In the same time a property appears in FreeCAD.;
+#X text 80 580 s = string;
+#X text 80 600 o = object;
+#X text 80 620 q = quantity;
+#X text 80 640 a = angle;
+#X text 80 380 The vertical bar | is used as separator for inlets and
+outlets definition.;
+#X text 80 420 These letters define property type for each socket;
+#X text 170 460 For exemple \; [fc_controler f f f | p] has 3 float
+inlets and 1 placement outlet;
+#X text 10 50 [fc_controler] is the easiest link to FreeCAD \, its
+inlets are connected to a dynamicaly created IncommingData object properties
+and its outlets to the OutgoingData ones.;
