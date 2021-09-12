@@ -22,9 +22,16 @@
 #
 ###################################################################################
 
+# this module implements the FreeCAD objects for [fc_controler]
+
 import FreeCAD as App
 import fcpdwb_locator as locator
 
+# shortcuts of FreeCAD console
+Log = App.Console.PrintLog
+Msg = App.Console.PrintMessage
+Wrn = App.Console.PrintWarning
+Err = App.Console.PrintError
 
 class PDControler:
     def __init__(self, obj, controlerInput, controlerOutput):
@@ -40,10 +47,33 @@ class PDControler:
 
     def onChanged(self, obj, prop):
         if str(prop) == 'Group':
-            obj.Group = [self.controlerInput, self.controlerOutput]
+            if (hasattr(self, "controlerInput") and
+                hasattr(self, "controlerOutput")):
+                obj.Group = [self.controlerInput, self.controlerOutput]
+
+    def resetIncommingProperties(self):
+        for ind in range(20):
+            name = 'DataFlow_%i' % ind
+            # Check existence
+            if hasattr(App.ActiveDocument.IncommingData, name):
+                App.ActiveDocument.IncommingData.removeProperty(name)
+            else:
+                break
+
+    def resetOutgoingProperties(self):
+        for ind in range(20):
+            name = 'DataFlow_%i' % ind
+            # Check existence
+            if hasattr(App.ActiveDocument.OutgoingData, name):
+                App.ActiveDocument.OutgoingData.removeProperty(name)
+            else:
+                break
 
     def setIncommingPropertyType(self, ind, typ):
         name = 'DataFlow_%i' % ind
+        if ind >= 20:
+            raise(AttributeError('Too many properties, maximum is 20.'))
+
         # Check existence
         if hasattr(App.ActiveDocument.IncommingData, name):
             App.ActiveDocument.IncommingData.removeProperty(name)
@@ -55,9 +85,11 @@ class PDControler:
         self.controlerInput.addProperty(typ, name, '', 'IncommingDataFlow')
         self.controlerInput.setPropertyStatus(name, 'ReadOnly')
 
-
     def setOutgoingPropertyType(self, ind, typ):
         name = 'DataFlow_%i' % ind
+        if ind >= 20:
+            raise(AttributeError('Too many properties, maximum is 20.'))
+
         # Check existence
         if hasattr(App.ActiveDocument.OutgoingData, name):
             App.ActiveDocument.OutgoingData.removeProperty(name)
@@ -71,16 +103,21 @@ class PDControler:
     def setProperty(self, ind, typ, value):
         name = 'DataFlow_%i' % ind
 
+        Log("setProperty %i %s %s\n" % (ind, typ, str(value)))
+
         # App:PropertyRotation doesn't exist so store it in a placement
         if typ == 'rotation':
             value = App.Placement(App.Vector(0,0,0), value)
 
-        try :
-            setattr(self.controlerInput.Object, name, value)
-        except AttributeError:
-            self.controlerInput.Object.addProperty(typ, name, '', 'IncommingDataFlow')
-            self.controlerInput.Object.setPropertyStatus(name, 'ReadOnly')
-            setattr(self.Object, name, value)
+        if not hasattr(self.controlerInput, name):
+            self.setIncommingPropertyType(ind, typ)
+
+        setattr(self.controlerInput, name, value)
+        return ""
+
+    def __getstate__(self):
+        return None
+
 
 class PDControlerViewProvider:
     def __init__(self, vobj):
@@ -93,13 +130,19 @@ class PDControlerViewProvider:
     def getIcon(self):
         return locator.icon('insert-link.png')
 
+    def __getstate__(self):
+        return None
+
 
 class PDControlerInput:
     def __init__(self, obj):
 
         obj.Proxy = self
-        #self.Object = obj
+        self.Object = obj
         self.Type = "PDControlerInput"
+
+    def __getstate__(self):
+        return None
 
 
 class PDControlerOutput:
@@ -125,36 +168,39 @@ class PDControlerOutput:
             self.pdServer.send(self.dollarZero, ind, getattr(obj, prop))
         self.propToSend = []
 
+    def __getstate__(self):
+        return None
 
 def isPDControler(obj):
     if hasattr(obj, 'Proxy') and hasattr(obj.Proxy, 'Type'):
         return obj.Proxy.Type == "PDControler"
     return False
 
-def get():
-    # Return the PDControler if it already exists
-    for obj in App.ActiveDocument.Objects:
-        if isPDControler(obj):
-            return obj
-    return None
-
 def create(pdServer, dollarZero):
-    """
-    Object creation method
-    """
-    curObj = get()
-    if get() is not None:
-        pdOut = curObj.Proxy.controlerOutput.Proxy
-        pdOut.pdServer = pdServer
-        pdOut.dollarZero = dollarZero
-        return curObj
+    # get an existent PDControler or create new one
+    if hasattr(App.ActiveDocument,"OutgoingData"):
+        pdOut = App.ActiveDocument.OutgoingData
+    else:
+        pdOut = App.ActiveDocument.addObject('App::FeaturePython', 'OutgoingData')
+
+    if hasattr(App.ActiveDocument,"IncommingData"):
+        pdIn = App.ActiveDocument.IncommingData
     else:
         pdIn = App.ActiveDocument.addObject('App::FeaturePython', 'IncommingData')
-        pdOut = App.ActiveDocument.addObject('App::FeaturePython', 'OutgoingData')
+
+    if hasattr(App.ActiveDocument,"PDControler"):
+        obj = App.ActiveDocument.PDControler
+    else:
         obj = App.ActiveDocument.addObject('App::DocumentObjectGroupPython', 'PDControler')
 
+    if not hasattr(pdIn, "Proxy"):
         PDControlerInput(pdIn)
+
+    if not hasattr(pdOut, "Proxy"):
         PDControlerOutput(pdOut, pdServer, dollarZero)
+
+    if not hasattr(obj, "controlerInput"):
         PDControler(obj, pdIn, pdOut)
         PDControlerViewProvider(obj.ViewObject)
-        return obj
+
+    return obj
