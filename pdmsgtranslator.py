@@ -115,7 +115,7 @@ class PDMsgTranslator:
                     retType = cls.ROTATION
                     usedWords = 4
                 elif words[0] == "Placement":
-                    retValue = App.Placement(cls.valueFromStr(words[1:5])[0], cls.valueFromStr(words[5:])[0])
+                    retValue = App.Placement(cls.valueFromStr(words[1:5])[0][0], cls.valueFromStr(words[5:])[0][0])
                     retType = cls.PLACEMENT
                     usedWords = 9
                 elif words[0] == "list":
@@ -124,7 +124,7 @@ class PDMsgTranslator:
                     count = int(words[1])
                     usedWords = 2
                     for _ in range(0, count):
-                        val, cnt = cls.valueFromStr(words[usedWords:])
+                        (val, typ), cnt = cls.valueFromStr(words[usedWords:])
                         retValue.append(val)
                         usedWords += cnt
                 elif words[0] == "True":
