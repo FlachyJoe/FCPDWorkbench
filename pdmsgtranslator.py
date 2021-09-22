@@ -177,7 +177,7 @@ class PDMsgTranslator:
     #  @param count number of value to extract or "all" to consume all the words
     #  @return a couple (remaining words, extracted values)
     @classmethod
-    def popValues(cls, words, count="all"):
+    def popValues(cls, words, count="all", ignoreNotSet=False):
         "use words to get values"
         values = []
         if count == "all":
@@ -185,13 +185,21 @@ class PDMsgTranslator:
                 val, cnt = cls.valueFromStr(words)
                 values.append(val)
                 words = words[cnt:]
+            if ignoreNotSet:
+                return ([], cls.filterNotSet(values))
             return ([], values)
 
         for _ in range(count):
             val, cnt = cls.valueFromStr(words)
             values.append(val)
             words = words[cnt:]
+        if ignoreNotSet:
+            return (words, cls.filterNotSet(values))
         return (words, values)
+
+    @classmethod
+    def filterNotSet(cls, valList):
+        return [val[0] for val in valList if val[0] is not cls.NOT_SET]
 
     @classmethod
     def fcType(cls, short):
