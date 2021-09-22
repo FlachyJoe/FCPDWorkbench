@@ -68,10 +68,10 @@ def pdGet(pdServer, words):
         objList = [obj.Name for obj in sel]
         return objList
     elif words[2] == "property":
-        obj = pdServer.valueFromStr(words[3])[0][0]
+        obj = PDMsgTranslator.valueFromStr(words[3])[0][0]
         return getattr(obj, words[4])
     elif words[2] == "constraint":
-        skc = pdServer.valueFromStr(words[3])[0][0]
+        skc = PDMsgTranslator.valueFromStr(words[3])[0][0]
         return skc.getDatum(words[4])
     elif words[2] == "reference":
         return App.ActiveDocument.getObject(words[3])
@@ -79,21 +79,21 @@ def pdGet(pdServer, words):
 
 def pdSet(pdServer, words):
     if words[2] == "property":
-        obj = pdServer.valueFromStr(words[3])[0][0]
-        val = pdServer.valueFromStr(words[5:])[0][0]
+        obj = PDMsgTranslator.valueFromStr(words[3])[0][0]
+        val = PDMsgTranslator.valueFromStr(words[5:])[0][0]
         return setattr(obj, words[4], val)
 
     elif words[2] == "constraint":
-        skc = pdServer.valueFromStr(words[3])[0][0]
-        return skc.setDatum(words[4],  pdServer.valueFromStr(words[5:])[0])
+        skc = PDMsgTranslator.valueFromStr(words[3])[0][0]
+        return skc.setDatum(words[4],  PDMsgTranslator.valueFromStr(words[5:])[0][0])
 
 
 def pdCopy(pdServer, words):
     ''' copy Object --> NewObjectName '''
-    obj = pdServer.valueFromStr(words[2])[0][0]
+    obj = PDMsgTranslator.valueFromStr(words[2])[0][0]
     copyDep = False
     if len(words) > 3:
-        copyDep = pdServer.valueFromStr(words[3])[0][0]
+        copyDep = PDMsgTranslator.valueFromStr(words[3])[0][0]
         copyDep = copyDep or copyDep == 1
     obj2 = App.ActiveDocument.copyObject(obj, copyDep, False)
     for prt in [tpl[0] for tpl in obj.Parents]:
