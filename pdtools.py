@@ -27,6 +27,8 @@
 
 import FreeCAD as App
 
+from pdmsgtranslator import PDMsgTranslator
+
 # shortcuts of FreeCAD console
 Log = App.Console.PrintLog
 Msg = App.Console.PrintMessage
@@ -171,7 +173,7 @@ def pdRemObserver(pdServer, words):
 def pdLink(pdServer, words):
     ''' link Object --> NewObjectName '''
     doc = App.ActiveDocument
-    obj = pdServer.valueFromStr(words[2])[0][0]
+    obj = PDMsgTranslator.valueFromStr(words[2])[0][0]
     lnk = doc.addObject('App::Link', 'Link')
     lnk.setLink(obj)
     lnk.Label = obj.Label
@@ -194,7 +196,7 @@ def pdObject(pdServer, words):
     current = 4
     while current < len(words):
         propName = words[current]
-        (propValue, propType), used = pdServer.valueFromStr(words[current+1:])
+        (propValue, propType), used = PDMsgTranslator.valueFromStr(words[current+1:])
         current += used+1
         if hasattr(obj, propName):
             setattr(obj, propName, propValue)
@@ -232,8 +234,7 @@ def pdPart(pdServer, words):
     if hasattr(Part, func_name):
         func = getattr(Part, func_name)
         pcount = getParametersCount(func)
-        _, args = pdServer.popValues(words[3:], pcount)
-        args = [arg for arg in args if arg is not pdServer.NOT_SET]
+        _, args = PDMsgTranslator.popValues(words[3:], pcount, ignoreNotSet=True)
         if words[2].startswith('make_'):
             shape = func(*args)
             Part.show(shape)
@@ -248,11 +249,10 @@ def pdShape(pdServer, words):
     import Part
     func_name = words[2]
     if hasattr(Part.Shape, func_name):
-        theShape = pdServer.valueFromStr(words[3])[0][0]
+        theShape = PDMsgTranslator.valueFromStr(words[3])[0][0]
         func = theShape.__getattribute__(func_name)
         pcount = getParametersCount(func)
-        _, args = pdServer.popValues(words[4:], pcount)
-        args = [arg for arg in args if arg is not pdServer.NOT_SET]
+        _, args = PDMsgTranslator.popValues(words[4:], pcount, ignoreNotSet=True)
         return func(*args)
     else:
         return "ERROR unknown function Part.Shape.%s" % func_name
@@ -270,8 +270,7 @@ def pdDraft(pdServer, words):
     if hasattr(Draft, func_name):
         func = getattr(Draft, func_name)
         pcount = getParametersCount(func)
-        _, args = pdServer.popValues(words[3:], pcount)
-        args = [arg for arg in args if arg is not pdServer.NOT_SET]
+        _, args = PDMsgTranslator.popValues(words[3:], pcount, ignoreNotSet=True)
         shape = func(*args)
         if hasattr(shape, 'Name'):
             return shape.Name
