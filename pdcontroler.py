@@ -112,7 +112,12 @@ class PDControler:
         if not hasattr(self.controlerInput, name):
             self.setIncommingPropertyType(ind, typ)
 
-        setattr(self.controlerInput, name, value)
+        try:
+            setattr(self.controlerInput, name, value)
+        except AttributeError:
+            # triggered at document load, to be fixed later
+            pass
+
         return ""
 
     def __getstate__(self):

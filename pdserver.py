@@ -77,7 +77,7 @@ class PureDataServer:
         try:
             # send close message to PD
             self.output_socket.send(b"0 close;")
-        except BrokenPipeError:
+        except (BrokenPipeError, OSError):
             # output_socket already disconnected
             pass
         self.isRunning = False

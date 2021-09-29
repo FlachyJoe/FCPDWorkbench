@@ -68,10 +68,10 @@ def pdGet(pdServer, words):
         objList = [obj.Name for obj in sel]
         return objList
     elif words[2] == "property":
-        obj = PDMsgTranslator.valueFromStr(words[3])[0][0]
+        obj = PDMsgTranslator.valueFromStr(words[3])[0].value
         return getattr(obj, words[4])
     elif words[2] == "constraint":
-        skc = PDMsgTranslator.valueFromStr(words[3])[0][0]
+        skc = PDMsgTranslator.valueFromStr(words[3])[0].value
         return skc.getDatum(words[4])
     elif words[2] == "reference":
         return App.ActiveDocument.getObject(words[3])
@@ -79,21 +79,21 @@ def pdGet(pdServer, words):
 
 def pdSet(pdServer, words):
     if words[2] == "property":
-        obj = PDMsgTranslator.valueFromStr(words[3])[0][0]
-        val = PDMsgTranslator.valueFromStr(words[5:])[0][0]
+        obj = PDMsgTranslator.valueFromStr(words[3])[0].value
+        val = PDMsgTranslator.valueFromStr(words[5:])[0].value
         return setattr(obj, words[4], val)
 
     elif words[2] == "constraint":
-        skc = PDMsgTranslator.valueFromStr(words[3])[0][0]
-        return skc.setDatum(words[4],  PDMsgTranslator.valueFromStr(words[5:])[0][0])
+        skc = PDMsgTranslator.valueFromStr(words[3])[0].value
+        return skc.setDatum(words[4], PDMsgTranslator.valueFromStr(words[5:])[0].value)
 
 
 def pdCopy(pdServer, words):
     ''' copy Object --> NewObjectName '''
-    obj = PDMsgTranslator.valueFromStr(words[2])[0][0]
+    obj = PDMsgTranslator.valueFromStr(words[2])[0].value
     copyDep = False
     if len(words) > 3:
-        copyDep = PDMsgTranslator.valueFromStr(words[3])[0][0]
+        copyDep = PDMsgTranslator.valueFromStr(words[3])[0].value
         copyDep = copyDep or copyDep == 1
     obj2 = App.ActiveDocument.copyObject(obj, copyDep, False)
     for prt in [tpl[0] for tpl in obj.Parents]:
@@ -173,7 +173,7 @@ def pdRemObserver(pdServer, words):
 def pdLink(pdServer, words):
     ''' link Object --> NewObjectName '''
     doc = App.ActiveDocument
-    obj = PDMsgTranslator.valueFromStr(words[2])[0][0]
+    obj = PDMsgTranslator.valueFromStr(words[2])[0].value
     lnk = doc.addObject('App::Link', 'Link')
     lnk.setLink(obj)
     lnk.Label = obj.Label
@@ -196,10 +196,10 @@ def pdObject(pdServer, words):
     current = 4
     while current < len(words):
         propName = words[current]
-        (propValue, propType), used = PDMsgTranslator.valueFromStr(words[current+1:])
+        prop, used = PDMsgTranslator.valueFromStr(words[current+1:])
         current += used+1
         if hasattr(obj, propName):
-            setattr(obj, propName, propValue)
+            setattr(obj, propName, prop.value)
     return obj.Name
 
 
@@ -234,7 +234,8 @@ def pdPart(pdServer, words):
     if hasattr(Part, func_name):
         func = getattr(Part, func_name)
         pcount = getParametersCount(func)
-        _, args = PDMsgTranslator.popValues(words[3:], pcount, ignoreNotSet=True)
+        _, values = PDMsgTranslator.popValues(words[3:], pcount, ignoreNotSet=True)
+        args = [val.value for val in values]
         if words[2].startswith('make_'):
             shape = func(*args)
             Part.show(shape)
@@ -249,10 +250,11 @@ def pdShape(pdServer, words):
     import Part
     func_name = words[2]
     if hasattr(Part.Shape, func_name):
-        theShape = PDMsgTranslator.valueFromStr(words[3])[0][0]
+        theShape = PDMsgTranslator.valueFromStr(words[3])[0].value
         func = theShape.__getattribute__(func_name)
         pcount = getParametersCount(func)
-        _, args = PDMsgTranslator.popValues(words[4:], pcount, ignoreNotSet=True)
+        _, values = PDMsgTranslator.popValues(words[4:], pcount, ignoreNotSet=True)
+        args = [val.value for val in values]
         return func(*args)
     else:
         return "ERROR unknown function Part.Shape.%s" % func_name
@@ -270,7 +272,8 @@ def pdDraft(pdServer, words):
     if hasattr(Draft, func_name):
         func = getattr(Draft, func_name)
         pcount = getParametersCount(func)
-        _, args = PDMsgTranslator.popValues(words[3:], pcount, ignoreNotSet=True)
+        _, values = PDMsgTranslator.popValues(words[3:], pcount, ignoreNotSet=True)
+        args = [val.value for val in values]
         shape = func(*args)
         if hasattr(shape, 'Name'):
             return shape.Name
