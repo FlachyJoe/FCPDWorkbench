@@ -31,7 +31,7 @@ import FreeCADGui
 import fcpdwb_locator as locator
 
 
-FCPD = FreeCADGui.getWorkbench('FCPDWorkbench')
+FCPD = locator.getFCPDWorkbench()
 
 # shortcuts of FreeCAD console
 Log = App.Console.PrintLog
@@ -128,6 +128,26 @@ class FCPD_CommandStop():
         return True
 
 
+class FCPD_CommandAddEmbeder():
+    """Create a PDEmbeder object"""
+
+    global FCPD
+
+    def GetResources(self):
+        return {'Pixmap': locator.icon('stop.png'),
+                'MenuText': "Create a PDEmbeder object",
+                'ToolTip': "Create a PDEmbeder object."}
+
+    def Activated(self):
+        import pdembeder
+        pdembeder.create()
+        return
+
+    def IsActive(self):
+        return True
+
+
 FreeCADGui.addCommand('FCPD_Run', FCPD_CommandRun())
 FreeCADGui.addCommand('FCPD_Stop', FCPD_CommandStop())
 FreeCADGui.addCommand('FCPD_Launch', FCPD_CommandLaunch())
+FreeCADGui.addCommand('FCPD_AddEmbeder', FCPD_CommandAddEmbeder())

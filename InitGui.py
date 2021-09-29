@@ -23,18 +23,23 @@
 #
 ###################################################################################
 
+
 class FCPDWorkbench(Workbench):
 
     MenuText = "FCPD"
     ToolTip = "Pure-Data connection"
+
     import fcpdwb_locator as locator
     Icon = locator.icon('FCPDLogo.svg')
+
+    def __init__(self):
+        self.pdProcess = None
 
     def Initialize(self):
         "This function is executed when FreeCAD starts"
         # command list
         import fcpdwb_commands
-        self.commandList = ["FCPD_Run", "FCPD_Stop", "FCPD_Launch"]
+        self.commandList = ["FCPD_Run", "FCPD_Stop", "FCPD_Launch", "FCPD_AddEmbeder"]
         self.appendToolbar("FCPD", self.commandList)   # creates a new toolbar with your commands
         self.appendMenu("FCPD", self.commandList)      # creates a new menu
 
@@ -56,8 +61,6 @@ class FCPDWorkbench(Workbench):
         if self.userPref().GetBool('fc_allowRaw', False):
             import pdrawtools
             pdrawtools.registerToolList(self.pdServer)
-
-        self.pdProcess = None
 
     def userPref(self):
         # get prefs
