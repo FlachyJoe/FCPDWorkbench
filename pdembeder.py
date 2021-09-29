@@ -63,14 +63,21 @@ class PDEmbeder:
             self.object.PDFile = self.tmpFile
             App.ActiveDocument.recompute()
 
+    def onDocumentRestored(self, obj):
+        self.object = obj
+
+    def __getstate__(self):
+        return None
 
 class VP_PDEmbeder:
     def __init__(self, vobj, obj):
         vobj.Proxy = self
-        self.object = obj
 
     def doubleClicked(self, vobj):
-        self.object.Proxy.startEdit()
+        vobj.Object.Proxy.startEdit()
+
+    def __getstate__(self):
+        return None
 
 def create():
     obj = App.ActiveDocument.addObject('App::FeaturePython', 'PDEmbeder')
