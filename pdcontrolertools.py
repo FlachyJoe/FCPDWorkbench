@@ -48,11 +48,11 @@ def registerToolList(pdServer):
 def pdCtrlr(pdServer, words):
     pdControler = pdcontroler.create(pdServer, words[0])
     _, values = PDMsgTranslator.popValues(words[2:])
-    # create a list of ((ind, 'App::PropertyInteger'), (val, typ))
-    duplet = [(values[i], values[i+1]) for i in range(0,len(values),2)]
+    # create a list of (ind, ROValue)
+    duplet = [(values[i].value, values[i+1]) for i in range(0,len(values),2)]
 
-    for (ind, _), (val, typ) in duplet:
-        pdControler.Proxy.setProperty(ind, typ, val)
+    for (ind, val) in duplet:
+        pdControler.Proxy.setProperty(ind, val.type, val.value)
 
 
 def pdNewCtrlr(pdServer, words):

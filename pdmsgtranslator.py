@@ -86,7 +86,7 @@ class PDMsgTranslator:
     ## Return a value from a PureData message
     #  @param self
     #  @param words a PureData message splits by words
-    #  @return ((value, type), usedWords_count)
+    #  @return (ROValue, usedWords_count)
     @classmethod
     def valueFromStr(cls, words):
         retValue = cls.NOT_SET
@@ -115,7 +115,7 @@ class PDMsgTranslator:
                     retType = cls.ROTATION
                     usedWords = 4
                 elif words[0] == "Placement":
-                    retValue = App.Placement(cls.valueFromStr(words[1:5])[0][0], cls.valueFromStr(words[5:])[0][0])
+                    retValue = App.Placement(cls.valueFromStr(words[1:5])[0].value, cls.valueFromStr(words[5:])[0].value)
                     retType = cls.PLACEMENT
                     usedWords = 9
                 elif words[0] == "list":
@@ -169,21 +169,20 @@ class PDMsgTranslator:
                         retValue = words[0]
                         retType = cls.STRING
                         usedWords = 1
-        return ((retValue, retType), usedWords)
+        return (ROValue(retValue, retType), usedWords)
 
     ## Extract a given number of values from a PureData message
     #  @param self
     #  @param words a PureData message splits by words
     #  @param count number of value to extract or "all" to consume all the words
-    #  @return a couple (remaining words, extracted values)
+    #  @return a couple (remaining words, [ROValue])
     @classmethod
     def popValues(cls, words, count="all", ignoreNotSet=False):
-        "use words to get values"
         values = []
         if count == "all":
             while words:
                 val, cnt = cls.valueFromStr(words)
-                values.append(val)
+                values.append(ROValue(*val))
                 words = words[cnt:]
             if ignoreNotSet:
                 return ([], cls.filterNotSet(values))
@@ -191,7 +190,7 @@ class PDMsgTranslator:
 
         for _ in range(count):
             val, cnt = cls.valueFromStr(words)
-            values.append(val)
+            values.append(ROValue(*val))
             words = words[cnt:]
         if ignoreNotSet:
             return (words, cls.filterNotSet(values))
@@ -199,8 +198,38 @@ class PDMsgTranslator:
 
     @classmethod
     def filterNotSet(cls, valList):
-        return [val[0] for val in valList if val[0] is not cls.NOT_SET]
+        return [val for val in valList if val.isSet()]
 
     @classmethod
     def fcType(cls, short):
         return cls.FC_TYPES[cls.SHORT_TYPES.index(short)]
+
+
+class ROValue:
+    """A read-only typed value"""
+
+    def __init__(self, value, typ):
+        self._value = value
+        self._type = typ
+
+    @property
+    def value(self):
+        """Get the current value."""
+        return self._value
+
+    @property
+    def type(self):
+        """Get the current type."""
+        return self._type
+
+    def __getitem__(self, key):
+        """Allow access as list"""
+        if key == 0:
+            return self._value
+        elif key == 1:
+            return self._type
+        raise IndexError()
+
+    def isSet(self):
+        """Return True if the value is set"""
+        return self._value != PDMsgTranslator.NOT_SET
