@@ -39,7 +39,7 @@ class FCPDWorkbench(Workbench):
         "This function is executed when FreeCAD starts"
         # command list
         import fcpdwb_commands
-        self.commandList = ["FCPD_Run", "FCPD_Stop", "FCPD_Launch", "FCPD_AddEmbeder"]
+        self.commandList = ["FCPD_Run", "FCPD_Stop", "FCPD_Launch", "FCPD_AddInclude"]
         self.appendToolbar("FCPD", self.commandList)   # creates a new toolbar with your commands
         self.appendMenu("FCPD", self.commandList)      # creates a new menu
 
