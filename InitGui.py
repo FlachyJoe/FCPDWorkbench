@@ -23,13 +23,19 @@
 #
 ###################################################################################
 
+import fcpdwb_locator as locator
+
+def QT_TRANSLATE_NOOP(scope, text):
+    return text
 
 class FCPDWorkbench(Workbench):
 
-    MenuText = "FCPD"
-    ToolTip = "Pure-Data connection"
+    global QT_TRANSLATE_NOOP
+    global locator
 
-    import fcpdwb_locator as locator
+    MenuText = "FCPD"
+    ToolTip = QT_TRANSLATE_NOOP("FCPDWorkbench", "Pure-Data connection")
+
     Icon = locator.icon('FCPDLogo.svg')
 
     def __init__(self):
@@ -37,6 +43,10 @@ class FCPDWorkbench(Workbench):
 
     def Initialize(self):
         "This function is executed when FreeCAD starts"
+        import fcpdwb_locator as locator
+        FreeCADGui.addLanguagePath(locator.TRANSLATIONS_PATH)
+        FreeCADGui.updateLocale()
+
         # command list
         import fcpdwb_commands
         self.commandList = ["FCPD_Run", "FCPD_Stop", "FCPD_Launch", "FCPD_AddInclude"]
@@ -77,7 +87,8 @@ class FCPDWorkbench(Workbench):
     def ContextMenu(self, recipient):
         "This is executed whenever the user right-clicks on screen"
         # "recipient" will be either "view" or "tree"
-        # self.appendContextMenu("FCPD", self.commandList)   # add commands to the context menu
+        if recipient == "tree":
+            self.appendContextMenu("FCPD", ["FCPD_AddInclude"])   # add commands to the context menu
 
     def GetClassName(self):
         # this function is mandatory if this is a full python workbench
