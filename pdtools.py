@@ -190,8 +190,8 @@ def pdByLabel(pdServer, words):
 def pdObject(pdServer, words):
     ''' Object Module Type [Property1 Value1 Property2 Value2 ...]  --> NewObjectName '''
     doc = App.ActiveDocument
-    objMod = words[2] # .title()
-    objType = words[3] # .title()
+    objMod = words[2]
+    objType = words[3]
     obj = doc.addObject('%s::%s' % (objMod, objType), objType)
     current = 4
     while current < len(words):
@@ -214,14 +214,14 @@ def getParametersCount(func):
         if docstr:
             leftpar = docstr.find("(")+1
             rightpar = docstr.find(")", leftpar)
-            if rightpar>0:
+            if rightpar > 0:
                 paramstr = docstr[leftpar:rightpar]
                 paramstr = paramstr.replace("[", "")
                 paramstr = paramstr.replace("]", "")
                 paramstr = paramstr.replace("\n", "")
                 params = paramstr.split(",")
             else:
-                params=[]
+                params = []
                 # TODO try to call the func without param and get info from error msg
     return len(params)
 

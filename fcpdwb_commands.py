@@ -32,8 +32,10 @@ import fcpdwb_locator as locator
 
 FCPD = locator.getFCPDWorkbench()
 
+
 def QT_TRANSLATE_NOOP(scope, text):
     return text
+
 
 # shortcuts of FreeCAD console
 Log = App.Console.PrintLog
@@ -41,13 +43,15 @@ Msg = App.Console.PrintMessage
 Wrn = App.Console.PrintWarning
 Err = App.Console.PrintError
 
+
 class FCPD_CommandLaunch():
     """Launch Pure-Data"""
 
     def GetResources(self):
         return {'Pixmap': locator.icon('FCPDLogo.svg'),
                 'MenuText': QT_TRANSLATE_NOOP("FCPD_Launch", "Launch Pure-Data"),
-                'ToolTip': QT_TRANSLATE_NOOP("FCPD_Launch", "Launch Pure-Data and connect it to the internal server.")}
+                'ToolTip': QT_TRANSLATE_NOOP("FCPD_Launch", "Launch Pure-Data and connect it"
+                                             " to the internal server.")}
 
     def Activated(self):
         if FCPD.pdProcess is None or FCPD.pdProcess.poll() is not None:
@@ -65,8 +69,10 @@ class FCPD_CommandLaunch():
 
             with open(os.path.join(locator.PATH, clientTemplate), 'r') as f:
                 clientContents = f.read()
-            clientContents = clientContents.replace('%FCLISTEN%', str(FCPD.userPref().GetInt('fc_listenport')))
-            clientContents = clientContents.replace('%PDLISTEN%', str(FCPD.userPref().GetInt('pd_defaultport')))
+            clientContents = clientContents.replace('%FCLISTEN%',
+                                                    str(FCPD.userPref().GetInt('fc_listenport')))
+            clientContents = clientContents.replace('%PDLISTEN%',
+                                                    str(FCPD.userPref().GetInt('pd_defaultport')))
 
             clientFilePath = os.path.join(locator.PATH, 'client.pd')
             with open(clientFilePath, 'w') as f:
@@ -94,15 +100,15 @@ class FCPD_CommandRun():
     def GetResources(self):
         return {'Pixmap': locator.icon('start.png'),
                 'MenuText': QT_TRANSLATE_NOOP("FCPD_Run", "Run Pure-Data server"),
-                'ToolTip': QT_TRANSLATE_NOOP("FCPD_Run", "Run the internal server and let Pure-Data to connect to.")}
+                'ToolTip': QT_TRANSLATE_NOOP("FCPD_Run", "Run the internal server and let"
+                                             " Pure-Data to connect to.")}
 
     def Activated(self):
         serv = FCPD.pdServer
         if not serv.isRunning:
             serv.setConnectParameters(FCPD.userPref().GetString('fc_listenaddress', 'localhost'),
                                       FCPD.userPref().GetInt('fc_listenport', 8888))
-            serv.run(withDialog=False)
-            # WARNING Doesn't return until server termination !
+            serv.run()
         return
 
     def IsActive(self):
@@ -138,7 +144,8 @@ class FCPD_CommandAddInclude():
     def GetResources(self):
         return {'Pixmap': locator.icon('new-include.png'),
                 'MenuText': QT_TRANSLATE_NOOP("FCPD_AddInclude", "Create a PDInclude object"),
-                'ToolTip': QT_TRANSLATE_NOOP("FCPD_AddInclude", "Create a PDInclude object to store a PD patch in the FreeCAD document.")}
+                'ToolTip': QT_TRANSLATE_NOOP("FCPD_AddInclude", "Create a PDInclude object to store"
+                                             " a PD patch in the FreeCAD document.")}
 
     def Activated(self):
         import pdinclude

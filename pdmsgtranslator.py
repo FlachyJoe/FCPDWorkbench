@@ -33,6 +33,7 @@ Msg = App.Console.PrintMessage
 Wrn = App.Console.PrintWarning
 Err = App.Console.PrintError
 
+
 class PDMsgTranslator:
     NOT_SET = ''
     FLOAT = 'App::PropertyFloat'
@@ -53,7 +54,7 @@ class PDMsgTranslator:
     LONG_TYPES = ['empty', 'float', 'integer', 'vector', 'rotation', 'placement', 'list', 'boolean',
                   'string', 'object', 'quantity', 'angle']
 
-    objectsStore = [] # store binary untextable objects to get them back by reference
+    objectsStore = []  # store binary untextable objects to get them back by reference
 
     ## Return a string representation of a value
     #  @param self
@@ -100,7 +101,7 @@ class PDMsgTranslator:
                 # float...
                 retValue = float(words[0])
                 retType = cls.FLOAT
-                if int(retValue) == retValue :
+                if int(retValue) == retValue:
                     # ...or int
                     retValue = int(retValue)
                     retType = cls.INT
@@ -115,7 +116,8 @@ class PDMsgTranslator:
                     retType = cls.ROTATION
                     usedWords = 4
                 elif words[0] == "Placement":
-                    retValue = App.Placement(cls.valueFromStr(words[1:5])[0].value, cls.valueFromStr(words[5:])[0].value)
+                    retValue = App.Placement(cls.valueFromStr(words[1:5])[0].value,
+                                             cls.valueFromStr(words[5:])[0].value)
                     retType = cls.PLACEMENT
                     usedWords = 9
                 elif words[0] == "list":
@@ -141,9 +143,11 @@ class PDMsgTranslator:
                 elif words[0].startswith('"'):
                     # String
                     # find closing quote
-                    strLen = [i for (i, w) in enumerate(words) if isinstance(w, str) and w.endswith('"')][0] + 1
+                    strLen = [i for (i, w) in enumerate(words)
+                              if isinstance(w, str) and w.endswith('"')
+                              ][0] + 1
                     # create the string
-                    retValue = ' '.join(map(str, words[:strLen])).replace('"','')
+                    retValue = ' '.join(map(str, words[:strLen])).replace('"', '')
                     retType = cls.STRING
                     usedWords = strLen
                 elif words[0].startswith("^"):
