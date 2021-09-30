@@ -63,6 +63,8 @@ class PureDataServer:
         self.observersStore = {}
 
         self.timer = QtCore.QTimer()
+        self.timer.setSingleShot(True)
+        self.timer.setInterval(10)
         self.timer.timeout.connect(self.serverProcess)
 
     def __eq__(self, other):
@@ -176,10 +178,10 @@ class PureDataServer:
             self.readList = [self.inputSocket]
             self.timer.start()
 
-        except ValueError:
-            Err("PDServer : %s\r\n" % sys.exc_info()[1])
         except OSError:
             Err("PDServer : port %i already in use.\r\n" % self.listenPort)
+            self.isWaiting = False
+            self.isRunning = False
 
     ## Ask the server to terminate
     #  @param self
@@ -243,8 +245,13 @@ class PureDataServer:
                     self.writeBuffer = ""
                 except BrokenPipeError:
                     Log("PDServer : nowhere to write, kept in the buffer\n")
+            self.timer.start()
         except ValueError:
             Err("PDServer : %s\r\n" % sys.exc_info()[1])
+            self.isWaiting = False
+            self.isRunning = False
         except OSError:
             Err("PDServer : port %i already in use.\r\n" % self.listenPort)
+            self.isWaiting = False
+            self.isRunning = False
 
