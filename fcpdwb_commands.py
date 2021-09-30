@@ -128,19 +128,19 @@ class FCPD_CommandStop():
         return True
 
 
-class FCPD_CommandAddEmbeder():
-    """Create a PDEmbeder object"""
+class FCPD_CommandAddInclude():
+    """Create a PDInclude object"""
 
     global FCPD
 
     def GetResources(self):
-        return {'Pixmap': locator.icon('stop.png'),
-                'MenuText': "Create a PDEmbeder object",
-                'ToolTip': "Create a PDEmbeder object."}
+        return {'Pixmap': locator.icon('new-include.png'),
+                'MenuText': "Create a PDInclude object",
+                'ToolTip': "Create a PDInclude object."}
 
     def Activated(self):
-        import pdembeder
-        pdembeder.create()
+        import pdinclude
+        pdinclude.create()
         return
 
     def IsActive(self):
@@ -150,4 +150,4 @@ class FCPD_CommandAddEmbeder():
 FreeCADGui.addCommand('FCPD_Run', FCPD_CommandRun())
 FreeCADGui.addCommand('FCPD_Stop', FCPD_CommandStop())
 FreeCADGui.addCommand('FCPD_Launch', FCPD_CommandLaunch())
-FreeCADGui.addCommand('FCPD_AddEmbeder', FCPD_CommandAddEmbeder())
+FreeCADGui.addCommand('FCPD_AddInclude', FCPD_CommandAddInclude())

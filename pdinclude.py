@@ -1,7 +1,7 @@
 #!/usr/bin/env python
 # -*- coding: utf-8 -*-
 #
-#  pdembeder.py
+#  pdinclude.py
 #
 #  Copyright 2021 Flachy Joe
 #
@@ -38,11 +38,11 @@ Msg = App.Console.PrintMessage
 Wrn = App.Console.PrintWarning
 Err = App.Console.PrintError
 
-class PDEmbeder:
+class PDInclude:
     def __init__(self, obj):
         obj.Proxy = self
         self.object = obj
-        self.Type = "PDEmbeder"
+        self.Type = "PDInclude"
         obj.addProperty('App::PropertyFileIncluded', 'PDFile', '', '')
 
     def startEdit(self):
@@ -69,7 +69,7 @@ class PDEmbeder:
     def __getstate__(self):
         return None
 
-class VP_PDEmbeder:
+class PDIncludeViewProvider:
     def __init__(self, vobj, obj):
         vobj.Proxy = self
 
@@ -80,6 +80,6 @@ class VP_PDEmbeder:
         return None
 
 def create():
-    obj = App.ActiveDocument.addObject('App::FeaturePython', 'PDEmbeder')
-    PDEmbeder(obj)
-    VP_PDEmbeder(obj.ViewObject, obj)
+    obj = App.ActiveDocument.addObject('App::FeaturePython', 'PDInclude')
+    PDInclude(obj)
+    PDIncludeViewProvider(obj.ViewObject, obj)
