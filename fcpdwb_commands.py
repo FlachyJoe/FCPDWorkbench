@@ -30,8 +30,10 @@ import FreeCADGui
 
 import fcpdwb_locator as locator
 
-
 FCPD = locator.getFCPDWorkbench()
+
+def QT_TRANSLATE_NOOP(scope, text):
+    return text
 
 # shortcuts of FreeCAD console
 Log = App.Console.PrintLog
@@ -44,8 +46,8 @@ class FCPD_CommandLaunch():
 
     def GetResources(self):
         return {'Pixmap': locator.icon('FCPDLogo.svg'),
-                'MenuText': "Launch Pure-Data",
-                'ToolTip': "Launch Pure-Data and connect it to the internal server."}
+                'MenuText': QT_TRANSLATE_NOOP("FCPD_Launch", "Launch Pure-Data"),
+                'ToolTip': QT_TRANSLATE_NOOP("FCPD_Launch", "Launch Pure-Data and connect it to the internal server.")}
 
     def Activated(self):
         if FCPD.pdProcess is None or FCPD.pdProcess.poll() is not None:
@@ -76,7 +78,7 @@ class FCPD_CommandLaunch():
 
             FreeCADGui.runCommand('FCPD_Run')
         else:
-            Log("Pure-Data is already running.\n")
+            Log(QT_TRANSLATE_NOOP("FCPD_Launch", "Pure-Data is already running.\n"))
         return
 
     def IsActive(self):
@@ -91,8 +93,8 @@ class FCPD_CommandRun():
 
     def GetResources(self):
         return {'Pixmap': locator.icon('start.png'),
-                'MenuText': "Run Pure-Data server",
-                'ToolTip': "Run the internal server and let Pure-Data to connect to."}
+                'MenuText': QT_TRANSLATE_NOOP("FCPD_Run", "Run Pure-Data server"),
+                'ToolTip': QT_TRANSLATE_NOOP("FCPD_Run", "Run the internal server and let Pure-Data to connect to.")}
 
     def Activated(self):
         serv = FCPD.pdServer
@@ -115,8 +117,8 @@ class FCPD_CommandStop():
 
     def GetResources(self):
         return {'Pixmap': locator.icon('stop.png'),
-                'MenuText': "Stop Pure-Data server",
-                'ToolTip': "Stop the internal Pure-Data server."}
+                'MenuText': QT_TRANSLATE_NOOP("FCPD_Stop", "Stop Pure-Data server"),
+                'ToolTip': QT_TRANSLATE_NOOP("FCPD_Stop", "Stop the internal Pure-Data server.")}
 
     def Activated(self):
         if FCPD.pdServer.isRunning:
@@ -135,8 +137,8 @@ class FCPD_CommandAddInclude():
 
     def GetResources(self):
         return {'Pixmap': locator.icon('new-include.png'),
-                'MenuText': "Create a PDInclude object",
-                'ToolTip': "Create a PDInclude object."}
+                'MenuText': QT_TRANSLATE_NOOP("FCPD_AddInclude", "Create a PDInclude object"),
+                'ToolTip': QT_TRANSLATE_NOOP("FCPD_AddInclude", "Create a PDInclude object to store a PD patch in the FreeCAD document.")}
 
     def Activated(self):
         import pdinclude
