@@ -34,7 +34,6 @@ import sys
 from PyQt5 import QtCore
 
 import FreeCAD as App
-import FreeCADGui
 
 from pdmsgtranslator import PDMsgTranslator
 
@@ -245,7 +244,7 @@ class PureDataServer:
                     self.writeBuffer = ""
                 except BrokenPipeError:
                     Log("PDServer : nowhere to write, kept in the buffer\n")
-            self.timer.start()
+
         except ValueError:
             Err("PDServer : %s\r\n" % sys.exc_info()[1])
             self.isWaiting = False
@@ -254,4 +253,6 @@ class PureDataServer:
             Err("PDServer : port %i already in use.\r\n" % self.listenPort)
             self.isWaiting = False
             self.isRunning = False
+        else:
+            self.timer.start()
 
