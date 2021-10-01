@@ -33,6 +33,7 @@ Msg = App.Console.PrintMessage
 Wrn = App.Console.PrintWarning
 Err = App.Console.PrintError
 
+
 class PDControler:
     def __init__(self, obj, controlerInput, controlerOutput):
 
@@ -48,7 +49,7 @@ class PDControler:
     def onChanged(self, obj, prop):
         if str(prop) == 'Group':
             if (hasattr(self, "controlerInput") and
-                hasattr(self, "controlerOutput")):
+               hasattr(self, "controlerOutput")):
                 obj.Group = [self.controlerInput, self.controlerOutput]
 
     def resetIncommingProperties(self):
@@ -107,7 +108,7 @@ class PDControler:
 
         # App:PropertyRotation doesn't exist so store it in a placement
         if typ == 'rotation':
-            value = App.Placement(App.Vector(0,0,0), value)
+            value = App.Placement(App.Vector(0, 0, 0), value)
 
         if not hasattr(self.controlerInput, name):
             self.setIncommingPropertyType(ind, typ)
@@ -176,24 +177,26 @@ class PDControlerOutput:
     def __getstate__(self):
         return None
 
+
 def isPDControler(obj):
     if hasattr(obj, 'Proxy') and hasattr(obj.Proxy, 'Type'):
         return obj.Proxy.Type == "PDControler"
     return False
 
+
 def create(pdServer, dollarZero):
     # get an existent PDControler or create new one
-    if hasattr(App.ActiveDocument,"OutgoingData"):
+    if hasattr(App.ActiveDocument, "OutgoingData"):
         pdOut = App.ActiveDocument.OutgoingData
     else:
         pdOut = App.ActiveDocument.addObject('App::FeaturePython', 'OutgoingData')
 
-    if hasattr(App.ActiveDocument,"IncommingData"):
+    if hasattr(App.ActiveDocument, "IncommingData"):
         pdIn = App.ActiveDocument.IncommingData
     else:
         pdIn = App.ActiveDocument.addObject('App::FeaturePython', 'IncommingData')
 
-    if hasattr(App.ActiveDocument,"PDControler"):
+    if hasattr(App.ActiveDocument, "PDControler"):
         obj = App.ActiveDocument.PDControler
     else:
         obj = App.ActiveDocument.addObject('App::DocumentObjectGroupPython', 'PDControler')

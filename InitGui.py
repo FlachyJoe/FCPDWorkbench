@@ -23,15 +23,13 @@
 #
 ###################################################################################
 
-import fcpdwb_locator as locator
-
-def QT_TRANSLATE_NOOP(scope, text):
-    return text
 
 class FCPDWorkbench(Workbench):
 
-    global QT_TRANSLATE_NOOP
-    global locator
+    def QT_TRANSLATE_NOOP(scope, text):
+        return text
+
+    import fcpdwb_locator as locator
 
     MenuText = "FCPD"
     ToolTip = QT_TRANSLATE_NOOP("FCPDWorkbench", "Pure-Data connection")
@@ -40,6 +38,7 @@ class FCPDWorkbench(Workbench):
 
     def __init__(self):
         self.pdProcess = None
+        self.pdServer = None
 
     def Initialize(self):
         "This function is executed when FreeCAD starts"
@@ -78,6 +77,8 @@ class FCPDWorkbench(Workbench):
 
     def Activated(self):
         "This function is executed when the workbench is activated"
+        if self.pdServer is None:
+            self.Initialize()
         return
 
     def Deactivated(self):

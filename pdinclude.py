@@ -29,6 +29,7 @@ import shutil
 from PyQt5 import QtCore
 
 import FreeCAD as App
+import FreeCADGui as Gui
 
 import fcpdwb_locator as locator
 
@@ -37,6 +38,7 @@ Log = App.Console.PrintLog
 Msg = App.Console.PrintMessage
 Wrn = App.Console.PrintWarning
 Err = App.Console.PrintError
+
 
 class PDInclude:
     def __init__(self, obj):
@@ -48,7 +50,16 @@ class PDInclude:
     def startEdit(self):
         sFile = self.object.PDFile
         pdServer = locator.getFCPDWorkbench().pdServer
-        if sFile and pdServer.isRunning :
+        if sFile:
+            if not pdServer or not pdServer.isRunning:
+                Gui.activateWorkbench("FCPDWorkbench")
+                Gui.runCommand("FCPD_Launch")
+                pdServer = locator.getFCPDWorkbench().pdServer
+                Log('wait for PureData\n')
+                while pdServer.isWaiting:
+                    Gui.updateGui()
+                Log('PureData is ready\n')
+
             _, self.tmpFile = tempfile.mkstemp()
             shutil.copyfile(sFile, self.tmpFile)
             dirName, fileName = os.path.split(self.tmpFile)
@@ -69,6 +80,7 @@ class PDInclude:
     def __getstate__(self):
         return None
 
+
 class PDIncludeViewProvider:
     def __init__(self, vobj, obj):
         vobj.Proxy = self
@@ -78,6 +90,7 @@ class PDIncludeViewProvider:
 
     def __getstate__(self):
         return None
+
 
 def create():
     obj = App.ActiveDocument.addObject('App::FeaturePython', 'PDInclude')

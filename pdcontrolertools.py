@@ -49,7 +49,7 @@ def pdCtrlr(pdServer, words):
     pdControler = pdcontroler.create(pdServer, words[0])
     _, values = PDMsgTranslator.popValues(words[2:])
     # create a list of (ind, ROValue)
-    duplet = [(values[i].value, values[i+1]) for i in range(0,len(values),2)]
+    duplet = [(values[i].value, values[i+1]) for i in range(0, len(values), 2)]
 
     for (ind, val) in duplet:
         pdControler.Proxy.setProperty(ind, val.type, val.value)
@@ -71,4 +71,3 @@ def pdNewCtrlr(pdServer, words):
         pdControler.Proxy.setIncommingPropertyType(ind, t)
     for ind, t in enumerate(outTyp):
         pdControler.Proxy.setOutgoingPropertyType(ind, t)
-
