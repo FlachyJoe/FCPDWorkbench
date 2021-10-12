@@ -1,0 +1,14 @@
+#N canvas 755 351 500 500 12;
+#X obj 10 30 inlet;
+#X obj 10 100 bang;
+#X obj 10 330 fc_process 0;
+#X obj 10 360 route ERROR;
+#X obj 10 390 print FreeCAD Error;
+#X obj 120 390 outlet;
+#X obj 10 300 list append raw ikpy.link.OriginLink;
+#X connect 0 0 1 0;
+#X connect 1 0 6 0;
+#X connect 2 0 3 0;
+#X connect 3 0 4 0;
+#X connect 3 1 5 0;
+#X connect 6 0 2 0;
