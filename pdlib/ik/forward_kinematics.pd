@@ -1,0 +1,26 @@
+#N canvas 248 109 815 692 12;
+#X obj 10 30 inlet;
+#X text 100 10 joints;
+#X obj 100 30 inlet;
+#X obj 80 100 any;
+#X obj 10 130 list append;
+#X obj 10 190 list prepend raw ikpy.chain.Chain.forward_kinematics
+;
+#X obj 10 220 fc_process 0;
+#X obj 10 250 route ERROR;
+#X obj 10 280 print FreeCAD Error;
+#X obj 160 280 outlet;
+#X text 10 10 chain;
+#X obj 10 160 list append True;
+#X obj 10 60 t a b;
+#X connect 0 0 12 0;
+#X connect 2 0 3 1;
+#X connect 3 0 4 1;
+#X connect 4 0 11 0;
+#X connect 5 0 6 0;
+#X connect 6 0 7 0;
+#X connect 7 0 8 0;
+#X connect 7 1 9 0;
+#X connect 11 0 5 0;
+#X connect 12 0 4 0;
+#X connect 12 1 3 0;
