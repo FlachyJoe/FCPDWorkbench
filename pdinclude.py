@@ -62,18 +62,17 @@ class PDInclude:
                         Gui.updateGui()
                     Log('PureData is ready\n')
 
-                hFile, self.tmpFile = tempfile.mkstemp()
-                hFile.close() # file pointer not needed
+                _, self.tmpFile = tempfile.mkstemp()
                 shutil.copyfile(sFile, self.tmpFile)
                 dirName, fileName = os.path.split(self.tmpFile)
                 pdServer.send('0 pd open %s %s' % (fileName, dirName))
                 self.isOpen = True
                 # watch for file change
                 self.fs_watcher = QtCore.QFileSystemWatcher([self.tmpFile])
-                self.fs_watcher.fileChanged.connect(self.onChanged)
+                self.fs_watcher.fileChanged.connect(self.fileChanged)
 
-    def onChanged(self, filename):
-        Log("%s have changed\n" % filename)
+    def fileChanged(self, filename):
+        Log("%s has changed\n" % filename)
         if self.tmpFile:
             self.object.PDFile = self.tmpFile
             App.ActiveDocument.recompute()
@@ -84,6 +83,7 @@ class PDInclude:
 
     def onDocumentRestored(self, obj):
         self.object = obj
+        self.isOpen = False
 
     def __getstate__(self):
         return None
