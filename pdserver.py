@@ -43,6 +43,7 @@ Msg = App.Console.PrintMessage
 Wrn = App.Console.PrintWarning
 Err = App.Console.PrintError
 
+DEBUG = False
 
 ## Deal with PureData connection
 class PureDataServer:
@@ -137,7 +138,9 @@ class PureDataServer:
                         ret = self.messageHandlerList[words[1]](self, words)
                     else:
                         ret = self.defaultMessageHandler(words)
-                except Exception:
+                except Exception as e:
+                    if DEBUG:
+                        raise e
                     ret = self.errorHandler(words)
                 # callback include current patch id ($0 in PD) to route the message
                 returnValue.append("%s %s;" % (words[0], PDMsgTranslator.strFromValue(ret)))

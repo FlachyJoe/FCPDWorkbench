@@ -25,6 +25,8 @@
 
 # this module translate PD message to/from Python values
 
+import numbers
+
 import FreeCAD as App
 
 # shortcuts of FreeCAD console
@@ -73,14 +75,19 @@ class PDMsgTranslator:
             else:
                 # empty list
                 string = 'None'
-        else:
+        elif (isinstance(val, numbers.Number) or
+              isinstance(val, bool) or
+              isinstance(val, App.Vector) or
+              isinstance(val, App.Rotation) or
+              isinstance(val, App.Placement)
+             ):
             string = str(val)
-            if string.startswith("<") and string.endswith(">"):
-                if val in cls.objectsStore:
-                    return "^%i" % cls.objectsStore.index(val)
-                # store this object and return a ref
-                cls.objectsStore.append(val)
-                return "^%i" % (len(cls.objectsStore)-1)
+        elif isinstance(val, str):
+            string = val
+        else:
+            # store this object and return a ref
+            cls.objectsStore.append(val)
+            return "^%i" % (len(cls.objectsStore)-1)
 
         return string.translate(str.maketrans(',=', '  ', ';()[]{}"\''))
 
@@ -126,8 +133,8 @@ class PDMsgTranslator:
                     count = int(words[1])
                     usedWords = 2
                     for _ in range(0, count):
-                        (val, typ), cnt = cls.valueFromStr(words[usedWords:])
-                        retValue.append(val)
+                        val, cnt = cls.valueFromStr(words[usedWords:])
+                        retValue.append(val.value)
                         usedWords += cnt
                 elif words[0] == "True":
                     retValue = True

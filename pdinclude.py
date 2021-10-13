@@ -46,36 +46,44 @@ class PDInclude:
         self.object = obj
         self.Type = "PDInclude"
         obj.addProperty('App::PropertyFileIncluded', 'PDFile', '', '')
+        self.isOpen = False
 
     def startEdit(self):
-        sFile = self.object.PDFile
-        pdServer = locator.getFCPDWorkbench().pdServer
-        if sFile:
-            if not pdServer or not pdServer.isRunning:
-                Gui.activateWorkbench("FCPDWorkbench")
-                Gui.runCommand("FCPD_Launch")
-                pdServer = locator.getFCPDWorkbench().pdServer
-                Log('wait for PureData\n')
-                while pdServer.isWaiting:
-                    Gui.updateGui()
-                Log('PureData is ready\n')
+        if not self.isOpen:
+            sFile = self.object.PDFile
+            pdServer = locator.getFCPDWorkbench().pdServer
+            if sFile:
+                if not pdServer or not pdServer.isRunning:
+                    Gui.activateWorkbench("FCPDWorkbench")
+                    Gui.runCommand("FCPD_Launch")
+                    pdServer = locator.getFCPDWorkbench().pdServer
+                    Log('wait for PureData\n')
+                    while pdServer.isWaiting:
+                        Gui.updateGui()
+                    Log('PureData is ready\n')
 
-            _, self.tmpFile = tempfile.mkstemp()
-            shutil.copyfile(sFile, self.tmpFile)
-            dirName, fileName = os.path.split(self.tmpFile)
-            pdServer.send('0 pd open %s %s' % (fileName, dirName))
-            # watch for file change
-            self.fs_watcher = QtCore.QFileSystemWatcher([self.tmpFile])
-            self.fs_watcher.fileChanged.connect(self.endEdit)
+                _, self.tmpFile = tempfile.mkstemp()
+                shutil.copyfile(sFile, self.tmpFile)
+                dirName, fileName = os.path.split(self.tmpFile)
+                pdServer.send('0 pd open %s %s' % (fileName, dirName))
+                self.isOpen = True
+                # watch for file change
+                self.fs_watcher = QtCore.QFileSystemWatcher([self.tmpFile])
+                self.fs_watcher.fileChanged.connect(self.fileChanged)
 
-    def endEdit(self, filename):
-        Log("%s have changed\n" % filename)
+    def fileChanged(self, filename):
+        Log("%s has changed\n" % filename)
         if self.tmpFile:
             self.object.PDFile = self.tmpFile
             App.ActiveDocument.recompute()
 
+    def endEdit(self):
+        os.remove(self.tmpFile)
+        self.isOpen = False
+
     def onDocumentRestored(self, obj):
         self.object = obj
+        self.isOpen = False
 
     def __getstate__(self):
         return None
