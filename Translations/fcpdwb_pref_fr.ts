@@ -4,63 +4,53 @@
 <context>
     <name>Form</name>
     <message>
-        <location filename="FCPDwb_pref.ui" line="14"/>
+        <location filename="../FCPDwb_pref.ui" line="14"/>
         <source>Form</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="FCPDwb_pref.ui" line="20"/>
+        <location filename="../FCPDwb_pref.ui" line="27"/>
         <source>purr-data</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="FCPDwb_pref.ui" line="33"/>
+        <location filename="../FCPDwb_pref.ui" line="20"/>
         <source>Executable Pure-Data</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="FCPDwb_pref.ui" line="59"/>
+        <location filename="../FCPDwb_pref.ui" line="60"/>
         <source>Port d&apos;écoute</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="FCPDwb_pref.ui" line="66"/>
+        <location filename="../FCPDwb_pref.ui" line="47"/>
         <source>localhost</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="FCPDwb_pref.ui" line="79"/>
+        <location filename="../FCPDwb_pref.ui" line="40"/>
         <source>Adresse d&apos;écoute</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="FCPDwb_pref.ui" line="86"/>
+        <location filename="../FCPDwb_pref.ui" line="93"/>
         <source>Port d&apos;écoute de Pure-Data pour le client chargé au lancement</source>
         <translation></translation>
     </message>
     <message>
-        <location filename="FCPDwb_pref.ui" line="108"/>
+        <location filename="../FCPDwb_pref.ui" line="115"/>
+        <source>Si coché le serveur interne accepte toutes les commandes python et non seulement celles codées dans l&apos;atelier.</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../FCPDwb_pref.ui" line="118"/>
+        <source>Autoriser toutes les commandes python</source>
+        <translation></translation>
+    </message>
+    <message>
+        <location filename="../FCPDwb_pref.ui" line="86"/>
         <source>Port de retour</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="FCPDwb_pref.ui" line="115"/>
-        <source>Au lancment de Pure-Data, un canevas contenant le client est ouvert automatiquement.</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="FCPDwb_pref.ui" line="118"/>
-        <source>Charger le client de connection</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="FCPDwb_pref.ui" line="134"/>
-        <source>Le client se connectera automaitquement à FreeCAD dés qu&apos;il sera lancé.</source>
-        <translation></translation>
-    </message>
-    <message>
-        <location filename="FCPDwb_pref.ui" line="137"/>
-        <source>Connection automatique</source>
         <translation></translation>
     </message>
 </context>

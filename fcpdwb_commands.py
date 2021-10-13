@@ -28,11 +28,14 @@ import subprocess
 import FreeCAD as App
 import FreeCADGui
 
-import fcpdwb_locator
-fcpdWBpath = fcpdwb_locator.PATH
-fcpdWB_icons_path = os.path.join(fcpdWBpath, 'Icons')
+import fcpdwb_locator as locator
 
-FCPDwb = FreeCADGui.getWorkbench('FCPDWorkbench')
+FCPD = locator.getFCPDWorkbench()
+
+
+def QT_TRANSLATE_NOOP(scope, text):
+    return text
+
 
 # shortcuts of FreeCAD console
 Log = App.Console.PrintLog
@@ -40,94 +43,120 @@ Msg = App.Console.PrintMessage
 Wrn = App.Console.PrintWarning
 Err = App.Console.PrintError
 
+
 class FCPD_CommandLaunch():
     """Launch Pure-Data"""
 
-    global FCPDwb
-
     def GetResources(self):
-        return {'Pixmap': os.path.join(fcpdWB_icons_path, 'FCPDLogo.svg'),
-                'MenuText': "Launch Pure-Data",
-                'ToolTip': "Launch Pure-Data and connect it to the internal server."}
+        return {'Pixmap': locator.icon('FCPDLogo.svg'),
+                'MenuText': QT_TRANSLATE_NOOP("FCPD_Launch", "Launch Pure-Data"),
+                'ToolTip': QT_TRANSLATE_NOOP("FCPD_Launch", "Launch Pure-Data and connect it"
+                                             " to the internal server.")}
 
     def Activated(self):
-        if FCPDwb.pdProcess is None or FCPDwb.pdProcess.poll() is not None:
-            # initial message creates the client canvas
-            initMsg = "pd filename FCPD Client; #N canvas; #X pop 1;"
-            initMsg += "pd-FCPD obj 0 0 fc_client localhost "
-            initMsg += "%i " % (FCPDwb.user_pref.GetInt('fc_listenport'))
-            initMsg += "%i " % (FCPDwb.user_pref.GetInt('pd_defaultport'))
-            initMsg += " 1; "
-            initMsg += "pd-FCPD text 10 90 This patch is auto-created by FCPD Workbench don't close it.; "
-            initMsg += "pd-FCPD text 10 120 help :; "
-            initMsg += "pd-FCPD obj 60 120 helplink FCPD; "
-            initMsg += "pd-FCPD loadbang"
+        if FCPD.pdProcess is None or FCPD.pdProcess.poll() is not None:
+            pdBin = FCPD.userPref().GetString('pd_path')
 
-            # pd command line
-            FCPDwb.pdProcess = subprocess.Popen([FCPDwb.user_pref.GetString('pd_path'),
-                                                 '-path', os.path.join(fcpdWBpath, 'pdlib'),
-                                                 '-helppath', os.path.join(fcpdWBpath, 'pdhelp'),
-                                                 '-send', initMsg])
+            pdArgs = ['-path', os.path.join(locator.PATH, 'pdlib'),
+                      '-helppath', os.path.join(locator.PATH, 'pdhelp')]
+
+            if FCPD.userPref().GetBool('fc_allowRaw', False):
+                clientTemplate = "client_raw.pdtemplate"
+                pdArgs += ['-path', os.path.join(locator.PATH, 'pdautogen'),
+                           '-helppath', os.path.join(locator.PATH, 'pdautogenhelp')]
+            else:
+                clientTemplate = "client.pdtemplate"
+
+            with open(os.path.join(locator.PATH, clientTemplate), 'r') as f:
+                clientContents = f.read()
+            clientContents = clientContents.replace('%FCLISTEN%',
+                                                    str(FCPD.userPref().GetInt('fc_listenport')))
+            clientContents = clientContents.replace('%PDLISTEN%',
+                                                    str(FCPD.userPref().GetInt('pd_defaultport')))
+
+            clientFilePath = os.path.join(locator.PATH, 'client.pd')
+            with open(clientFilePath, 'w') as f:
+                f.write(clientContents)
+
+            FCPD.pdProcess = subprocess.Popen([pdBin]
+                                              + pdArgs
+                                              + ['-open', clientFilePath])
 
             FreeCADGui.runCommand('FCPD_Run')
         else:
-            Log("Pure-Data is already running.\n")
+            Log(QT_TRANSLATE_NOOP("FCPD_Launch", "Pure-Data is already running.\n"))
         return
 
     def IsActive(self):
+        # return FCPD.pdProcess is None or FCPD.pdProcess.poll() is not None
         return True
 
 
 class FCPD_CommandRun():
     """Run PDServer"""
 
-    global FCPDwb
+    global FCPD
 
     def GetResources(self):
-        return {'Pixmap': os.path.join(fcpdWB_icons_path, 'start.png'),
-                'MenuText': "Run Pure-Data server",
-                'ToolTip': "Run the internal server and let Pure-Data to connect to."}
+        return {'Pixmap': locator.icon('start.png'),
+                'MenuText': QT_TRANSLATE_NOOP("FCPD_Run", "Run Pure-Data server"),
+                'ToolTip': QT_TRANSLATE_NOOP("FCPD_Run", "Run the internal server and let"
+                                             " Pure-Data to connect to.")}
 
     def Activated(self):
-        """Do something here"""
-        if not FCPDwb.pd_server.is_running:
-            FCPDwb.widget.btnRunStop.setText('Server Stop')
-            FCPDwb.pd_server.run(with_dialog=False)
-            # WARNING Doesn't return until server termination !
-            FCPDwb.widget.btnRunStop.setText('Server Start')
+        serv = FCPD.pdServer
+        if not serv.isRunning:
+            serv.setConnectParameters(FCPD.userPref().GetString('fc_listenaddress', 'localhost'),
+                                      FCPD.userPref().GetInt('fc_listenport', 8888))
+            serv.run()
         return
 
     def IsActive(self):
-        """Here you can define if the command must be active or not (grayed) if certain conditions
-        are met or not. This function is optional."""
-        # return FCPDwb.pd_server.is_running
+        # return not FCPD.pdServer.isRunning
         return True
 
 
 class FCPD_CommandStop():
     """Stop PDServer"""
 
-    global FCPDwb
+    global FCPD
 
     def GetResources(self):
-        return {'Pixmap': os.path.join(fcpdWB_icons_path, 'stop.png'),
-                'MenuText': "Stop Pure-Data server",
-                'ToolTip': "Stop the internal Pure-Data server."}
+        return {'Pixmap': locator.icon('stop.png'),
+                'MenuText': QT_TRANSLATE_NOOP("FCPD_Stop", "Stop Pure-Data server"),
+                'ToolTip': QT_TRANSLATE_NOOP("FCPD_Stop", "Stop the internal Pure-Data server.")}
 
     def Activated(self):
-        """Do something here"""
-        if FCPDwb.pd_server.is_running:
-            FCPDwb.widget.btnRunStop.setText('Server Start')
-            FCPDwb.pd_server.terminate()
+        if FCPD.pdServer.isRunning:
+            FCPD.pdServer.terminate()
         return
 
     def IsActive(self):
-        """Here you can define if the command must be active or not (grayed) if certain conditions
-        are met or not. This function is optional."""
-        # return FCPDwb.pd_server.is_running
+        # return FCPD.pdServer.isRunning
+        return True
+
+
+class FCPD_CommandAddInclude():
+    """Create a PDInclude object"""
+
+    global FCPD
+
+    def GetResources(self):
+        return {'Pixmap': locator.icon('new-include.png'),
+                'MenuText': QT_TRANSLATE_NOOP("FCPD_AddInclude", "Create a PDInclude object"),
+                'ToolTip': QT_TRANSLATE_NOOP("FCPD_AddInclude", "Create a PDInclude object to store"
+                                             " a PD patch in the FreeCAD document.")}
+
+    def Activated(self):
+        import pdinclude
+        pdinclude.create()
+        return
+
+    def IsActive(self):
         return True
 
 
 FreeCADGui.addCommand('FCPD_Run', FCPD_CommandRun())
 FreeCADGui.addCommand('FCPD_Stop', FCPD_CommandStop())
 FreeCADGui.addCommand('FCPD_Launch', FCPD_CommandLaunch())
+FreeCADGui.addCommand('FCPD_AddInclude', FCPD_CommandAddInclude())

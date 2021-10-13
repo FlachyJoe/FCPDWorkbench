@@ -23,59 +23,62 @@
 #
 ###################################################################################
 
-import fcpdwb_locator
-
-fcpdWBpath = fcpdwb_locator.PATH
-fcpdWB_icons_path = os.path.join(fcpdWBpath, 'Icons')
-fcpdWB_main_icon = os.path.join(fcpdWB_icons_path, 'FCPDLogo.svg')
-
 
 class FCPDWorkbench(Workbench):
 
-    global fcpdWB_main_icon
-    global fcpdWB_icons_path
-    global fcpdWBpath
+    def QT_TRANSLATE_NOOP(scope, text):
+        return text
+
+    import fcpdwb_locator as locator
 
     MenuText = "FCPD"
-    ToolTip = "Pure-Data connection"
-    Icon = fcpdWB_main_icon
+    ToolTip = QT_TRANSLATE_NOOP("FCPDWorkbench", "Pure-Data connection")
+
+    Icon = locator.icon('FCPDLogo.svg')
+
+    def __init__(self):
+        self.pdProcess = None
+        self.pdServer = None
 
     def Initialize(self):
         "This function is executed when FreeCAD starts"
+        import fcpdwb_locator as locator
+        FreeCADGui.addLanguagePath(locator.TRANSLATIONS_PATH)
+        FreeCADGui.updateLocale()
+
         # command list
         import fcpdwb_commands
-        self.command_list = ["FCPD_Run", "FCPD_Stop", "FCPD_Launch"]
-        self.appendToolbar("FCPD", self.command_list)   # creates a new toolbar with your commands
-        self.appendMenu("FCPD", self.command_list)      # creates a new menu
+        self.commandList = ["FCPD_Run", "FCPD_Stop", "FCPD_Launch", "FCPD_AddInclude"]
+        self.appendToolbar("FCPD", self.commandList)   # creates a new toolbar with your commands
+        self.appendMenu("FCPD", self.commandList)      # creates a new menu
 
         # prefs UI
-        FreeCADGui.addIconPath(fcpdWB_icons_path)
-        FreeCADGui.addPreferencePage(os.path.join(fcpdWBpath, "FCPDwb_pref.ui"), "FCPD")
-
-        # get prefs
-        self.user_pref = FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Mod/FCPD")
+        import fcpdwb_locator as locator
+        FreeCADGui.addIconPath(locator.ICONS_PATH)
+        FreeCADGui.addPreferencePage(os.path.join(locator.PATH, "FCPDwb_pref.ui"), "FCPD")
 
         # prepare pdserver
         import pdserver
-        self.pd_server = pdserver.PureDataServer(self.user_pref.GetString('fc_listenaddress'),
-                                                 self.user_pref.GetInt('fc_listenport'))
+        self.pdServer = pdserver.PureDataServer()
+
         # register message handlers
         import pdtools
-        pdtools.registerToolList(self.pd_server)
+        pdtools.registerToolList(self.pdServer)
+        import pdcontrolertools
+        pdcontrolertools.registerToolList(self.pdServer)
 
-        self.pdProcess = None
+        if self.userPref().GetBool('fc_allowRaw', False):
+            import pdrawtools
+            pdrawtools.registerToolList(self.pdServer)
 
-        # Show TaskPanel
-        from PySide import QtCore, QtGui
-        import FCPDTaskPanel
-        mw = FreeCADGui.getMainWindow()
-        awidget = QtGui.QDockWidget("FCPDTaskPanel", mw)
-        self.widget = FCPDTaskPanel.getPanel()
-        awidget.setWidget(self.widget)
-        mw.addDockWidget(QtCore.Qt.LeftDockWidgetArea, awidget)
+    def userPref(self):
+        # get prefs
+        return FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Mod/FCPD")
 
     def Activated(self):
         "This function is executed when the workbench is activated"
+        if self.pdServer is None:
+            self.Initialize()
         return
 
     def Deactivated(self):
@@ -85,7 +88,8 @@ class FCPDWorkbench(Workbench):
     def ContextMenu(self, recipient):
         "This is executed whenever the user right-clicks on screen"
         # "recipient" will be either "view" or "tree"
-        self.appendContextMenu("FCPD", self.command_list)   # add commands to the context menu
+        if recipient == "tree":
+            self.appendContextMenu("FCPD", ["FCPD_AddInclude"])   # add commands to the context menu
 
     def GetClassName(self):
         # this function is mandatory if this is a full python workbench

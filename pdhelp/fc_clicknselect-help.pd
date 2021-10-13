@@ -24,6 +24,6 @@
 #X text 100 150 bang;
 #X text 10 320 This object is;
 #X text 100 220 symbol;
-#X text 150 220 - when selection occures or an incomming message incomes
+#X text 150 220 - when selection occurs or a message incomes
 clicknselect outputs the name of the selected FreeCAD object;
 #X text 150 150 - send it a bang to retrieve the stored object;

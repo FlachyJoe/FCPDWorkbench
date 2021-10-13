@@ -22,7 +22,12 @@
 #
 #
 ###################################################################################
+
+# this module translate pd message to action
+
 import FreeCAD as App
+
+from pdmsgtranslator import PDMsgTranslator
 
 # shortcuts of FreeCAD console
 Log = App.Console.PrintLog
@@ -31,7 +36,7 @@ Wrn = App.Console.PrintWarning
 Err = App.Console.PrintError
 
 
-def registerToolList(pd_server):
+def registerToolList(pdServer):
     toolList = [("get", pdGet),
                 ("set", pdSet),
                 ("copy", pdCopy),
@@ -44,77 +49,82 @@ def registerToolList(pd_server):
                 ("bylabel", pdByLabel),
                 ("Object", pdObject),
                 ("Part", pdPart),
+                ("Shape", pdShape),
                 ("Draft", pdDraft),
                 ]
 
     for word, func in toolList:
-        pd_server.register_message_handler([word], func)
-    pd_server.default_message_handler = pdElse
+        pdServer.registerMessageHandler([word], func)
+    pdServer.defaultMessageHandler = pdElse
 
 
 def pdElse(words):
-    pass
+    return "ERROR unknown command"
 
 
-def pdGet(pd_server, words):
+def pdGet(pdServer, words):
     if words[2] == "selection":
         sel = App.Gui.Selection.getSelection()
         objList = [obj.Name for obj in sel]
         return objList
     elif words[2] == "property":
-        obj = pd_server.value_from_str(words[3])[0]
-        return obj.getPropertyByName(words[4])
+        obj = PDMsgTranslator.valueFromStr(words[3])[0].value
+        return getattr(obj, words[4])
     elif words[2] == "constraint":
-        skc = pd_server.value_from_str(words[3])[0]
+        skc = PDMsgTranslator.valueFromStr(words[3])[0].value
         return skc.getDatum(words[4])
     elif words[2] == "reference":
         return App.ActiveDocument.getObject(words[3])
 
 
-def pdSet(pd_server, words):
+def pdSet(pdServer, words):
     if words[2] == "property":
-        obj = pd_server.value_from_str(words[3])[0]
-        val = pd_server.value_from_str(words[5:])[0]
+        obj = PDMsgTranslator.valueFromStr(words[3])[0].value
+        val = PDMsgTranslator.valueFromStr(words[5:])[0].value
         return setattr(obj, words[4], val)
 
     elif words[2] == "constraint":
-        skc = pd_server.value_from_str(words[3])[0]
-        return skc.setDatum(words[4],  pd_server.value_from_str(words[5:])[0])
+        skc = PDMsgTranslator.valueFromStr(words[3])[0].value
+        return skc.setDatum(words[4], PDMsgTranslator.valueFromStr(words[5:])[0].value)
 
 
-def pdCopy(pd_server, words):
+def pdCopy(pdServer, words):
     ''' copy Object --> NewObjectName '''
-    obj = pd_server.value_from_str(words[2])[0]
-    obj2 = App.ActiveDocument.copyObject(obj, False, False)
+    obj = PDMsgTranslator.valueFromStr(words[2])[0].value
+    copyDep = False
+    if len(words) > 3:
+        copyDep = PDMsgTranslator.valueFromStr(words[3])[0].value
+        copyDep = copyDep or copyDep == 1
+    obj2 = App.ActiveDocument.copyObject(obj, copyDep, False)
     for prt in [tpl[0] for tpl in obj.Parents]:
         prt.addObject(obj2)
     return obj2.Name
 
 
-def pdDelete(pd_server, words):
+def pdDelete(pdServer, words):
     ''' delete ObjectName --> bang '''
     for obj in words[2:]:
         App.ActiveDocument.removeObject(obj)
 
 
-def pdRecompute(pd_server, words):
+def pdRecompute(pdServer, words):
     ''' recompute --> bang '''
     App.ActiveDocument.recompute()
 
 
-def pdSelObserver(pd_server, words):
+def pdSelObserver(pdServer, words):
     '''selobserver --> "OK" at creation
             --> list of selected objects when selection changes'''
     # See https://wiki.freecadweb.org/Code_snippets#Function_resident_with_the_mouse_click_action
     class SelObserver:
-        def __init__(self, pd_server, uid):
-            self.pd_server = pd_server
+        def __init__(self, pdServer, uid):
+            self.pdServer = pdServer
             self.uid = uid
 
         def send(self):
             sel = App.Gui.Selection.getSelection()
             objList = [obj.Name for obj in sel]
-            self.pd_server.send(self.uid, objList)
+            self.pdServer.send(self.uid, objList)
 
         def addSelection(self, doc, obj, sub, pnt):
             self.send()
@@ -128,68 +138,68 @@ def pdSelObserver(pd_server, words):
         def clearSelection(self, doc):
             self.send()
 
-    s = SelObserver(pd_server, words[0])
-    pd_server.observers_store[words[0]] = s   # store the observer to allow removing later
+    s = SelObserver(pdServer, words[0])
+    pdServer.observersStore[words[0]] = s   # store the observer to allow removing later
     App.Gui.Selection.addObserver(s)
     return 'OK'
 
 
-def pdObjObserver(pd_server, words):
+def pdObjObserver(pdServer, words):
     '''objobserver ObjectName   --> "OK" at creation
                          --> bang when mouse enter the object'''
     class PreSelObserver:
-        def __init__(self, pd_server, uid, obj):
-            self.pd_server = pd_server
+        def __init__(self, pdServer, uid, obj):
+            self.pdServer = pdServer
             self.uid = uid
             self.obj = obj
 
         def setPreselection(self, doc, obj, sub):
             if obj == self.obj:
-                self.pd_server.send("%s %s;" % (self.uid, 'bang'))
-    s = PreSelObserver(pd_server, words[0], words[2])
-    pd_server.observers_store[words[0]] = s   # store the observer to allow removing later
+                self.pdServer.send("%s %s;" % (self.uid, 'bang'))
+    s = PreSelObserver(pdServer, words[0], words[2])
+    pdServer.observersStore[words[0]] = s   # store the observer to allow removing later
     App.Gui.Selection.addObserver(s)
     return 'OK'
 
 
-def pdRemObserver(pd_server, words):
+def pdRemObserver(pdServer, words):
     '''remobserver --> "OK" '''
     # Uninstall the resident function
-    App.Gui.Selection.removeObserver(pd_server.observers_store[words[0]])
-    del pd_server.observers_store[words[0]]
+    App.Gui.Selection.removeObserver(pdServer.observersStore[words[0]])
+    del pdServer.observersStore[words[0]]
     return 'OK'
 
 
-def pdLink(pd_server, words):
+def pdLink(pdServer, words):
     ''' link Object --> NewObjectName '''
     doc = App.ActiveDocument
-    obj = pd_server.value_from_str(words[2])[0]
+    obj = PDMsgTranslator.valueFromStr(words[2])[0].value
     lnk = doc.addObject('App::Link', 'Link')
     lnk.setLink(obj)
     lnk.Label = obj.Label
     return lnk.Name
 
 
-def pdByLabel(pd_server, words):
+def pdByLabel(pdServer, words):
     ''' bylabel Label  --> [Objects] '''
     doc = App.ActiveDocument
     lst = doc.getObjectsByLabel(words[2])
     return [o.Name for o in lst]
 
 
-def pdObject(pd_server, words):
+def pdObject(pdServer, words):
     ''' Object Module Type [Property1 Value1 Property2 Value2 ...]  --> NewObjectName '''
     doc = App.ActiveDocument
-    objMod = words[2].title()
-    objType = words[3].title()
+    objMod = words[2]
+    objType = words[3]
     obj = doc.addObject('%s::%s' % (objMod, objType), objType)
     current = 4
     while current < len(words):
         propName = words[current]
-        propValue, used = pd_server.value_from_str(words[current+1:])
+        prop, used = PDMsgTranslator.valueFromStr(words[current+1:])
         current += used+1
         if hasattr(obj, propName):
-            setattr(obj, propName, propValue)
+            setattr(obj, propName, prop.value)
     return obj.Name
 
 
@@ -204,35 +214,50 @@ def getParametersCount(func):
         if docstr:
             leftpar = docstr.find("(")+1
             rightpar = docstr.find(")", leftpar)
-            paramstr = docstr[leftpar:rightpar]
-            paramstr = paramstr.replace("[", "")
-            paramstr = paramstr.replace("]", "")
-            paramstr = paramstr.replace("\n", "")
-            params = paramstr.split(",")
+            if rightpar > 0:
+                paramstr = docstr[leftpar:rightpar]
+                paramstr = paramstr.replace("[", "")
+                paramstr = paramstr.replace("]", "")
+                paramstr = paramstr.replace("\n", "")
+                params = paramstr.split(",")
+            else:
+                params = []
+                # TODO try to call the func without param and get info from error msg
     return len(params)
 
 
 ###################################################
 # PART WORKBENCH                                  #
-def pdPart(pd_server, words):
+def pdPart(pdServer, words):
     import Part
-    if words[2].startswith('make'):
-        shape = None
-        func_name = words[2]
-        if hasattr(Part, func_name):
-            func = getattr(Part, func_name)
-            pcount = getParametersCount(func)
-            _, args = pd_server.pop_values(words[3:], pcount)
+    func_name = words[2]
+    if hasattr(Part, func_name):
+        func = getattr(Part, func_name)
+        pcount = getParametersCount(func)
+        _, values = PDMsgTranslator.popValues(words[3:], pcount, ignoreNotSet=True)
+        args = [val.value for val in values]
+        if words[2].startswith('make_'):
             shape = func(*args)
             Part.show(shape)
             return App.ActiveDocument.ActiveObject.Name
-    else:
-        func_name = words[2]
-        if hasattr(Part, func_name):
-            func = getattr(Part, func_name)
-            pcount = getParametersCount(func)
-            _, args = pd_server.pop_values(words[3:], pcount)
+        else:
             return func(*args)
+    else:
+        return "ERROR unknown function Part.%s" % func_name
+
+
+def pdShape(pdServer, words):
+    import Part
+    func_name = words[2]
+    if hasattr(Part.Shape, func_name):
+        theShape = PDMsgTranslator.valueFromStr(words[3])[0].value
+        func = theShape.__getattribute__(func_name)
+        pcount = getParametersCount(func)
+        _, values = PDMsgTranslator.popValues(words[4:], pcount, ignoreNotSet=True)
+        args = [val.value for val in values]
+        return func(*args)
+    else:
+        return "ERROR unknown function Part.Shape.%s" % func_name
 
 #                                  PART WORKBENCH #
 ###################################################
@@ -240,18 +265,21 @@ def pdPart(pd_server, words):
 
 ###################################################
 # DRAFT WORKBENCH                                 #
-def pdDraft(pd_server, words):
+def pdDraft(pdServer, words):
     import Draft
     shape = None
     func_name = words[2]
     if hasattr(Draft, func_name):
         func = getattr(Draft, func_name)
         pcount = getParametersCount(func)
-        _, args = pd_server.pop_values(words[3:], pcount)
+        _, values = PDMsgTranslator.popValues(words[3:], pcount, ignoreNotSet=True)
+        args = [val.value for val in values]
         shape = func(*args)
         if hasattr(shape, 'Name'):
             return shape.Name
         # if no Name return a reference
         return shape
+    else:
+        return "ERROR unknown function Draft.%s" % func_name
 #                                 DRAFT WORKBENCH #
 ###################################################

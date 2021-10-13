@@ -11,3 +11,24 @@
 0 13 #dcdcdc #000000 0;
 #X obj 0 547 cnv 3 550 3 empty \$0-pddp.cnv.more_info more_info 8 12
 0 13 #dcdcdc #000000 0;
+#N canvas 484 205 494 420 META 0;
+#X text 12 165 LIBRARY internal;
+#X text 12 205 WEBSITE http://crca.ucsd.edu/~msp/;
+#X text 12 45 LICENSE SIBSD;
+#X text 12 185 AUTHOR Miller Puckette;
+#X text 12 245 HELP_PATCH_AUTHORS This help patch was updated for Pd
+version 0.35 test 24 by Dave Sabine as part of a project called pddp
+proposed by Krzysztof Czaja to build comprehensive documentation for
+Pd. Jonathan Wilkes revised the patch to conform to the PDDP template
+for Pd version 0.42.;
+#X text 12 65 DESCRIPTION compare numbers or symbols;
+#X text 12 5 ALIAS sel;
+#X text 12 85 INLET_0 float symbol list;
+#X text 12 105 INLET_1 float symbol;
+#X text 12 125 OUTLET_N bang;
+#X text 12 145 OUTLET_R float symbol;
+#X text 12 25 KEYWORDS control symbol_op;
+#X text 12 225 RELEASE_DATE 1997;
+#X restore 500 597 pd META;
+#X obj 4 597 pddp/pddplink all_about_help_patches.pd -text Usage Guide
+;

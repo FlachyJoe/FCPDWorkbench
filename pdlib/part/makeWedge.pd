@@ -46,7 +46,7 @@
 #X obj 1100 390 any;
 #X obj 1100 420 list append;
 #X obj 10 300 list prepend Part makeWedge;
-#X obj 10 330 fc_process 1;
+#X obj 10 330 fc_process 0;
 #X obj 10 360 route ERROR;
 #X obj 10 390 print FreeCAD Error;
 #X obj 120 390 outlet;
