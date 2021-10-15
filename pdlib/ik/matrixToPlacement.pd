@@ -1,4 +1,4 @@
-#N canvas 505 274 478 484 12;
+#N canvas 525 278 478 559 12;
 #X obj 30 330 fc_process;
 #X obj 100 30 inlet;
 #X obj 30 300 list prepend raw App.Placement;
