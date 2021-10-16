@@ -48,6 +48,7 @@ def registerToolList(pdServer):
                 ("link", pdLink),
                 ("bylabel", pdByLabel),
                 ("Object", pdObject),
+                ("matrixPlacement", pdMatrixPlacement),
                 ("Part", pdPart),
                 ("Shape", pdShape),
                 ("Draft", pdDraft),
@@ -224,6 +225,16 @@ def getParametersCount(func):
                 params = []
                 # TODO try to call the func without param and get info from error msg
     return len(params)
+
+
+def pdMatrixPlacement(pdServer, words):
+    val, _ = PDMsgTranslator.valueFromStr(words[2:])
+    val = val.value
+    if hasattr(val, 'flatten'):
+        # numpy array case
+        return App.Placement(App.Matrix(*val.flatten()))
+    else:
+        return App.Placement(App.Matrix(*val))
 
 
 ###################################################
