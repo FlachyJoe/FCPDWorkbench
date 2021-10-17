@@ -26,7 +26,7 @@ import os
 import tempfile
 import shutil
 
-from PyQt5 import QtCore
+from PySide import QtCore
 
 import FreeCAD as App
 import FreeCADGui as Gui
