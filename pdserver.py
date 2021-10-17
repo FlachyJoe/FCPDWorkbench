@@ -31,7 +31,7 @@ import select
 import socket
 import sys
 
-from PyQt5 import QtCore
+from PySide import QtCore
 
 import FreeCAD as App
 
@@ -45,12 +45,15 @@ Err = App.Console.PrintError
 
 DEBUG = False
 
+
 ## Deal with PureData connection
-class PureDataServer:
+class PureDataServer(QtCore.QObject):
 
     ## PureDataServer constructor
     #  @param self
     def __init__(self):
+        super().__init__()
+
         self.isRunning = False
         self.isWaiting = False
         self.remoteAddress = ""
@@ -62,7 +65,7 @@ class PureDataServer:
         self.readList = []
         self.observersStore = {}
 
-        self.timer = QtCore.QTimer()
+        self.timer = QtCore.QTimer(self)
         self.timer.setSingleShot(True)
         self.timer.setInterval(10)
         self.timer.timeout.connect(self.serverProcess)
