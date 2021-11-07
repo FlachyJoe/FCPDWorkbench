@@ -27,15 +27,15 @@
 
 ## @package pdserver
 
-import select
-import socket
 import sys
 
-from PySide import QtCore
+from PySide2 import QtCore
+from PySide2.QtNetwork import QTcpServer, QTcpSocket, QHostAddress
 
 import FreeCAD as App
 
-from pdmsgtranslator import PDMsgTranslator
+from . import pdmsgtranslator
+PDMsgTranslator = pdmsgtranslator.PDMsgTranslator
 
 # shortcuts of FreeCAD console
 Log = App.Console.PrintLog
@@ -65,10 +65,12 @@ class PureDataServer(QtCore.QObject):
         self.readList = []
         self.observersStore = {}
 
-        self.timer = QtCore.QTimer(self)
-        self.timer.setSingleShot(True)
-        self.timer.setInterval(10)
-        self.timer.timeout.connect(self.serverProcess)
+        self.tcpServer = QTcpServer(self)
+        self.tcpServer.setMaxPendingConnections(1)
+        self.tcpServer.newConnection.connect(self.newConnection)
+
+        self.inputSocket = None
+        self.outputSocket = QTcpSocket(self)
 
     def __eq__(self, other):
         if isinstance(other, bool):
@@ -129,9 +131,14 @@ class PureDataServer(QtCore.QObject):
 
             # split words
             words = msg.split(' ')
+
             if words[0] == 'initrcv':
-                self.outputSocket.connect((self.remoteAddress, int(words[1])))
-                Log("PDServer : Callback initialized to %s:%s\r\n" % (self.remoteAddress, words[1]))
+                self.outputSocket.connectToHost(self.remoteAddress, int(words[1]), QtCore.QIODevice.WriteOnly)
+                if self.outputSocket.waitForConnected(1000):
+                    self.isWaiting = False
+                    Log("PDServer : Callback initialized to %s:%s\n" % (self.remoteAddress.toString(), words[1]))
+                else:
+                    Log("PDServer : ERROR during callback initialization\n%s\n" % self.outputSocket.error())
             elif words[0] == 'close':
                 self.terminate()
             else:
@@ -154,111 +161,61 @@ class PureDataServer(QtCore.QObject):
     #  @param data the message as a string
     #  @return Nothing
     def send(self, *data):
-        for d in data:
-            self.writeBuffer += " %s" % PDMsgTranslator.strFromValue(d)
-        self.writeBuffer += ";\n"
-        if not self.isRunning or self.isWaiting:
+        if self.outputSocket.isOpen():
+            writeBuffer=""
+            for d in data:
+                writeBuffer += " %s" % PDMsgTranslator.strFromValue(d)
+            writeBuffer += ";\n"
+            self.outputSocket.write(bytes(writeBuffer, "utf8"))
+            Log("PDServer : >>> %s\r\n" % writeBuffer)
+        else:
             Wrn('WARNING : Data are sent to PDServer but Pure-Data is not connected.\n')
 
     ## launch the server
     #  @param self
     #  @return Nothing
     def run(self):
-        self.isRunning = True
-
-        try:
-            self.inputSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.inputSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-
-            self.outputSocket = socket.socket(socket.AF_INET, socket.SOCK_STREAM)
-            self.outputSocket.setsockopt(socket.SOL_SOCKET, socket.SO_REUSEADDR, 1)
-
-            self.inputSocket.bind((self.listenAddress, self.listenPort))
-            self.inputSocket.listen(1)
-
+        if self.tcpServer.listen(QHostAddress(self.listenAddress), self.listenPort):
+            self.isRunning = True
             self.isWaiting = True
-
             Log("PDServer : Listening on port %i\r\n" % self.listenPort)
 
-            self.readList = [self.inputSocket]
-            self.timer.start()
-
-        except OSError:
-            Err("PDServer : port %i already in use.\r\n" % self.listenPort)
-            self.isWaiting = False
-            self.isRunning = False
 
     ## Ask the server to terminate
     #  @param self
     def terminate(self):
-        try:
-            # send close message to PD
-            self.outputSocket.send(b"0 close;")
-        except (BrokenPipeError, OSError):
-            # outputSocket already disconnected
-            pass
+        self.outputSocket.write(b"0 close;")
+        self.outputSocket.disconnectFromHost()
         self.isRunning = False
-        self.timer.stop()
-        try:
-            self.inputSocket.shutdown(socket.SHUT_RDWR)
-        except OSError:
-            pass
-        self.inputSocket.close()
-        self.outputSocket.close()
-        Log("PDServer : No more listening port %i\r\n" % self.listenPort)
 
-    # QTimer timeout callback
-    def serverProcess(self):
-        try:
-            if self.writeBuffer:
-                writeList = [self.outputSocket]
-            else:
-                writeList = []
 
-            readable, writable, _ = select.select(self.readList, writeList, [], 0.05)
-            for s in readable:
-                if s is self.inputSocket:
-                    client_socket, address = self.inputSocket.accept()
-                    self.readList.append(client_socket)
-                    self.remoteAddress = address[0]
-                    Log("PDServer : Connection from %s:%s\r\n" % address)
-                    self.isWaiting = False
-                else:
-                    data = s.recv(1024)
-                    if data:
-                        self.readBuffer += data.decode('utf8')
-                        msgList = self.readBuffer.splitlines(True)
-                        # is last line complete ?
-                        lastLine = msgList[-1]
-                        self.readBuffer = ""
-                        if not (lastLine[-1:] == "\n" or lastLine[-1] == ";"):
-                            msgList = msgList[:-1]
-                            self.readBuffer = lastLine
-                        retList = self._pdMsgListProcessor(msgList)
-                        if retList:
-                            for ret in retList:
-                                self.send(ret)
-                    else:
-                        s.close()
-                        Log("PDServer : close connection\r\n")
-                        self.readList.remove(s)
+    def newConnection(self):
+            self.inputSocket = self.tcpServer.nextPendingConnection()
+            self.inputSocket.readyRead.connect(self.readyRead)
+            self.inputSocket.aboutToClose.connect(self.remoteClose)
+            self.tcpServer.close()  # no new connection accepted
+            self.remoteAddress = self.inputSocket.peerAddress()
+            Log("PDServer : Connection from %s:%s\r\n" % (self.remoteAddress.toString(), self.inputSocket.peerPort()))
 
-            for s in writable:
-                try:
-                    self.outputSocket.send(bytes(self.writeBuffer, "utf8"))
-                    Log("PDServer : >>> %s\r\n" % self.writeBuffer)
-                    self.writeBuffer = ""
-                except BrokenPipeError:
-                    Log("PDServer : nowhere to write, kept in the buffer\n")
 
-        except ValueError:
-            Err("PDServer : %s\r\n" % sys.exc_info()[1])
-            self.isWaiting = False
-            self.isRunning = False
-        except OSError:
-            Err("PDServer : port %i already in use.\r\n" % self.listenPort)
-            self.isWaiting = False
-            self.isRunning = False
-        else:
-            self.timer.start()
+    def readyRead(self):
+        data = self.inputSocket.readAll()
+        if data:
+            self.readBuffer += str(data, 'utf8')
+            msgList = self.readBuffer.splitlines(True)
+            # is last line complete ?
+            lastLine = msgList[-1]
+            self.readBuffer = ""
+            if not (lastLine[-1:] == "\n" or lastLine[-1] == ";"):
+                msgList = msgList[:-1]
+                self.readBuffer = lastLine
+            retList = self._pdMsgListProcessor(msgList)
+            if retList:
+                for ret in retList:
+                    self.send(ret)
 
+
+    def remoteClose(self):
+        Log("PDServer : %s close connection\r\n" % self.inputSocket.peerAddress().toString())
+        if self.isRunning:
+            self.run()  # let tcpServer wait for a new connection

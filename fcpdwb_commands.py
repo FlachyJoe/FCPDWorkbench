@@ -24,13 +24,12 @@
 ###################################################################################
 
 import os
-import subprocess
 import FreeCAD as App
 import FreeCADGui
 
 import fcpdwb_locator as locator
 
-FCPD = locator.getFCPDWorkbench()
+FCPD = locator.getFCPDCore()
 
 
 def QT_TRANSLATE_NOOP(scope, text):
@@ -54,34 +53,8 @@ class FCPD_CommandLaunch():
                                              " to the internal server.")}
 
     def Activated(self):
-        if FCPD.pdProcess is None or FCPD.pdProcess.poll() is not None:
-            pdBin = FCPD.userPref().GetString('pd_path')
-
-            pdArgs = ['-path', os.path.join(locator.PATH, 'pdlib'),
-                      '-helppath', os.path.join(locator.PATH, 'pdhelp')]
-
-            if FCPD.userPref().GetBool('fc_allowRaw', False):
-                clientTemplate = "client_raw.pdtemplate"
-                pdArgs += ['-path', os.path.join(locator.PATH, 'pdautogen'),
-                           '-helppath', os.path.join(locator.PATH, 'pdautogenhelp')]
-            else:
-                clientTemplate = "client.pdtemplate"
-
-            with open(os.path.join(locator.PATH, clientTemplate), 'r') as f:
-                clientContents = f.read()
-            clientContents = clientContents.replace('%FCLISTEN%',
-                                                    str(FCPD.userPref().GetInt('fc_listenport')))
-            clientContents = clientContents.replace('%PDLISTEN%',
-                                                    str(FCPD.userPref().GetInt('pd_defaultport')))
-
-            clientFilePath = os.path.join(locator.PATH, 'client.pd')
-            with open(clientFilePath, 'w') as f:
-                f.write(clientContents)
-
-            FCPD.pdProcess = subprocess.Popen([pdBin]
-                                              + pdArgs
-                                              + ['-open', clientFilePath])
-
+        if not FCPD.pdIsRunning():
+            FCPD.runPD()
             FreeCADGui.runCommand('FCPD_Run')
         else:
             Log(QT_TRANSLATE_NOOP("FCPD_Launch", "Pure-Data is already running.\n"))
@@ -148,7 +121,7 @@ class FCPD_CommandAddInclude():
                                              " a PD patch in the FreeCAD document.")}
 
     def Activated(self):
-        import pdinclude
+        from fcpd import pdinclude
         pdinclude.create()
         return
 

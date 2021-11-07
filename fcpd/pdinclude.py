@@ -51,16 +51,15 @@ class PDInclude:
     def startEdit(self):
         if not self.isOpen:
             sFile = self.object.PDFile
-            pdServer = locator.getFCPDWorkbench().pdServer
+            pdServer = locator.getFCPDCore().pdServer
             if sFile:
                 if not pdServer or not pdServer.isRunning:
                     Gui.activateWorkbench("FCPDWorkbench")
                     Gui.runCommand("FCPD_Launch")
-                    pdServer = locator.getFCPDWorkbench().pdServer
                     Log('wait for PureData\n')
                     while pdServer.isWaiting:
                         Gui.updateGui()
-                    Log('PureData is ready\n')
+                Log('PureData is ready\n')
 
                 _, self.tmpFile = tempfile.mkstemp()
                 shutil.copyfile(sFile, self.tmpFile)

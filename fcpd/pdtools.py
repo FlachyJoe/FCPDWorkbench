@@ -27,7 +27,8 @@
 
 import FreeCAD as App
 
-from pdmsgtranslator import PDMsgTranslator
+from . import pdmsgtranslator
+PDMsgTranslator = pdmsgtranslator.PDMsgTranslator
 
 # shortcuts of FreeCAD console
 Log = App.Console.PrintLog

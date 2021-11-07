@@ -26,8 +26,10 @@
 # this module translate pd message to action for [fc_controler]
 
 import FreeCAD as App
-import pdcontroler
-from pdmsgtranslator import PDMsgTranslator
+from . import pdcontroler
+
+from . import pdmsgtranslator
+PDMsgTranslator = pdmsgtranslator.PDMsgTranslator
 
 # shortcuts of FreeCAD console
 Log = App.Console.PrintLog
