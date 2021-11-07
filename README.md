@@ -17,7 +17,7 @@ As you can start to see, imagination and programming skills are one's only limit
 
 ## Requirements
 
-The PySide2 Python bindings for Qt5 Network is required. Linux users ca install python3-pyside2.qtnetwork
+The PySide2 Python bindings for Qt5 Network is required. Linux users can install python3-pyside2.qtnetwork package.
 
 External libraries are needed for Pure-Data :
 * [list-abs](https://puredata.info/downloads/list-abs)
