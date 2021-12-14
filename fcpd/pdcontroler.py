@@ -2,7 +2,7 @@
 #
 #  pdcontroler.py
 #
-#  Copyright 2020 Flachy Joe
+#  Copyright 2020 Florian Foinant-Willig <ffw@2f2v.fr>
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by

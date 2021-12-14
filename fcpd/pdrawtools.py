@@ -3,7 +3,7 @@
 #
 #  pdrawtools.py
 #
-#  Copyright 2021 Flachy Joe
+#  Copyright 2021 Florian Foinant-Willig <ffw@2f2v.fr>
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -284,9 +284,10 @@ def pdRaw(pdServer, words):
     func = getattr(obj, funcName)
     _, values = PDMsgTranslator.popValues(words[3:])
     args = [val.value for val in values]
-    ret = func(*args)
-    Log("Call %s with args : %s Returns %s\n" % (words[2],args,ret))
-    return ret
+    try:
+        return func(*args)
+    except AttributeError:
+        return "ERROR AttributeError"
 
 
 def pdGiveMe(pdServer, words):

@@ -3,7 +3,7 @@
 #
 #  __init__.py
 #
-#  Copyright 2021 Flachy Joe
+#  Copyright 2021 Florian Foinant-Willig <ffw@2f2v.fr>
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -24,12 +24,15 @@
 ###################################################################################
 
 import os
+from PySide2 import QtGui
 from PySide2.QtCore import QProcess
 
 import FreeCAD
+import FreeCADGui
 
 import fcpdwb_locator as locator
-from . import pdserver, pdtools, pdcontrolertools, pdrawtools
+from . import pdserver, pdtools, pdcontrolertools, pdincludetools, pdrawtools
+
 
 class FCPDCore():
     def __init__(self):
@@ -40,8 +43,8 @@ class FCPDCore():
 
         # register message handlers
         pdtools.registerToolList(self.pdServer)
-
         pdcontrolertools.registerToolList(self.pdServer)
+        pdincludetools.registerToolList(self.pdServer)
 
         if self.userPref().GetBool('fc_allowRaw', False):
             pdrawtools.registerToolList(self.pdServer)
@@ -51,7 +54,7 @@ class FCPDCore():
         return FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Mod/FCPD")
 
     def pdIsRunning(self):
-        return not self.pdProcess.state() == QProcess.NotRunning
+        return self.pdProcess.state() != QProcess.NotRunning
 
     def runPD(self):
         if not self.pdIsRunning():
@@ -79,3 +82,6 @@ class FCPDCore():
                 f.write(clientContents)
 
             self.pdProcess.startDetached(pdBin, pdArgs + ['-open', clientFilePath])
+
+
+core = FCPDCore()

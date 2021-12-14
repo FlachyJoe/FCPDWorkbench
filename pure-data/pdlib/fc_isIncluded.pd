@@ -1,0 +1,8 @@
+#N canvas 177 535 450 300 12;
+#X obj 10 10 closebang;
+#X obj 10 100 fc_process;
+#X msg 10 40 endedit;
+#X obj 10 70 list append \$1;
+#X connect 0 0 2 0;
+#X connect 2 0 3 0;
+#X connect 3 0 1 0;

@@ -3,7 +3,7 @@
     <name>FCPDWorkbench</name>
     <description>A FreeCAD workbench to use Pure-Data as a graphical macro langage.</description>
     <version>0.2.0</version>
-    <maintainer email=" flachyjoe@gmail.com">Flachy Joe</maintainer>
+    <maintainer email="ffw@2f2v.fr">Florian Foinant-Willig</maintainer>
     <license file="LICENSE">GPLv3</license>
     <url type="repository" branch="main">https://github.com/FlachyJoe/FCPDWorkbench</url>
     <icon>resources/icons/FCPDLogo.svg</icon>

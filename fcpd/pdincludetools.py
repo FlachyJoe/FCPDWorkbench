@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 ###################################################################################
 #
-#  pdcontrolertools.py
+#  pdincludetools.py
 #
 #  Copyright 2021 Florian Foinant-Willig <ffw@2f2v.fr>
 #
@@ -23,13 +23,9 @@
 #
 ###################################################################################
 
-# this module translate pd message to action for [fc_controler]
+# this module translate pd message to action for PDInclude
 
 import FreeCAD as App
-from . import pdcontroler
-
-from . import pdmsgtranslator
-PDMsgTranslator = pdmsgtranslator.PDMsgTranslator
 
 # shortcuts of FreeCAD console
 Log = App.Console.PrintLog
@@ -39,37 +35,22 @@ Err = App.Console.PrintError
 
 
 def registerToolList(pdServer):
-    toolList = [("ctrlr", pdCtrlr),
-                ("newctrlr", pdNewCtrlr)
+    toolList = [("endedit", pdEndEdit)
                 ]
-
     for word, func in toolList:
         pdServer.registerMessageHandler([word], func)
 
 
-def pdCtrlr(pdServer, words):
-    pdControler = pdcontroler.create(pdServer, words[0])
-    _, values = PDMsgTranslator.popValues(words[2:])
-    # create a list of (ind, ROValue)
-    duplet = [(values[i].value, values[i+1]) for i in range(0, len(values), 2)]
-
-    for (ind, val) in duplet:
-        pdControler.Proxy.setProperty(ind, val.type, val.value)
-
-
-def pdNewCtrlr(pdServer, words):
-    pdControler = pdcontroler.create(pdServer, words[0])
-    pdControler.Proxy.resetIncommingProperties()
-    pdControler.Proxy.resetOutgoingProperties()
-
+def pdEndEdit(pdServer, words):
+    # find pdinclude object which use the given filename
+    pyObjects = App.ActiveDocument.findObjects('App::FeaturePython')
     try:
-        outStart = words.index('|')
-    except ValueError:
-        outStart = len(words)
-    inTyp = [PDMsgTranslator.fcType(w) for w in words[2:outStart]]
-    outTyp = [PDMsgTranslator.fcType(w) for w in words[outStart+1:]]
+        obj = [o for o in pyObjects if (hasattr(o, 'Proxy')
+                                        and hasattr(o.Proxy, 'tmpFile')
+                                        and o.Proxy.tmpFile.endswith(words[2])
+                                        )][0]
+        obj.Proxy.endEdit()
+    except IndexError:
+        return "ERROR given filename is not valid %s" % words[2]
 
-    for ind, t in enumerate(inTyp):
-        pdControler.Proxy.setIncommingPropertyType(ind, t)
-    for ind, t in enumerate(outTyp):
-        pdControler.Proxy.setOutgoingPropertyType(ind, t)
+

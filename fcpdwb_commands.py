@@ -3,7 +3,7 @@
 #
 #  fcpdwb_commands.py
 #
-#  Copyright 2020 Flachy Joe
+#  Copyright 2020 Florian Foinant-Willig <ffw@2f2v.fr>
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -122,14 +122,40 @@ class FCPD_CommandAddInclude():
 
     def Activated(self):
         from fcpd import pdinclude
-        pdinclude.create()
+        pdinclude.createWithEmpty()
         return
 
     def IsActive(self):
         return True
 
+class FCPD_CommandAddPopulatedInclude():
+    """Create a PDInclude object from an *.pd file"""
+
+    global FCPD
+
+    def GetResources(self):
+        return {'Pixmap': locator.icon('new-include.png'),
+                'MenuText': QT_TRANSLATE_NOOP("FCPD_AddPopulatedInclude",
+                                              "Create a PDInclude object from an *.pd file"),
+                'ToolTip': QT_TRANSLATE_NOOP("FCPD_AddPopulatedInclude",
+                                             "Create a PDInclude object to store a given"
+                                             " PD patch in the FreeCAD document.")}
+
+    def Activated(self):
+        from fcpd import pdinclude
+        from PySide2.QtWidgets import QFileDialog
+        fileName = QFileDialog.getOpenFileName(None, QT_TRANSLATE_NOOP("Open a Pure-Data file"), "",
+                                               QT_TRANSLATE_NOOP("Pure-Data Files (*.pd)"))
+        if fileName:
+            obj = pdinclude.create()
+            obj.PDFile = fileName
+
+
+    def IsActive(self):
+        return True
 
 FreeCADGui.addCommand('FCPD_Run', FCPD_CommandRun())
 FreeCADGui.addCommand('FCPD_Stop', FCPD_CommandStop())
 FreeCADGui.addCommand('FCPD_Launch', FCPD_CommandLaunch())
 FreeCADGui.addCommand('FCPD_AddInclude', FCPD_CommandAddInclude())
+FreeCADGui.addCommand('FCPD_AddPopulatedInclude', FCPD_CommandAddPopulatedInclude())

@@ -3,7 +3,7 @@
 #
 #  pdtools.py
 #
-#  Copyright 2020 Flachy Joe
+#  Copyright 2020 Florian Foinant-Willig <ffw@2f2v.fr>
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -49,6 +49,7 @@ def registerToolList(pdServer):
                 ("link", pdLink),
                 ("bylabel", pdByLabel),
                 ("Object", pdObject),
+                ("onMove", pdOnMove),
                 ("matrixPlacement", pdMatrixPlacement),
                 ("Part", pdPart),
                 ("Shape", pdShape),
@@ -61,7 +62,7 @@ def registerToolList(pdServer):
 
 
 def pdElse(words):
-    return "ERROR unknown command"
+    return "ERROR unknown or unallowed command (see the FCPDWorkbench preference page to allow raw python commands)."
 
 
 def pdGet(pdServer, words):
@@ -148,7 +149,7 @@ def pdSelObserver(pdServer, words):
 
 def pdObjObserver(pdServer, words):
     '''objobserver ObjectName   --> "OK" at creation
-                         --> bang when mouse enter the object'''
+                                --> bang when mouse enter the object'''
     class PreSelObserver:
         def __init__(self, pdServer, uid, obj):
             self.pdServer = pdServer
@@ -167,7 +168,11 @@ def pdObjObserver(pdServer, words):
 def pdRemObserver(pdServer, words):
     '''remobserver --> "OK" '''
     # Uninstall the resident function
-    App.Gui.Selection.removeObserver(pdServer.observersStore[words[0]])
+    try:
+        App.Gui.Selection.removeObserver(pdServer.observersStore[words[0]])
+        App.removeDocumentObserver(pdServer.observersStore[words[0]])
+    except KeyError:
+        return
     del pdServer.observersStore[words[0]]
     return 'OK'
 
@@ -203,6 +208,24 @@ def pdObject(pdServer, words):
         if hasattr(obj, propName):
             setattr(obj, propName, prop.value)
     return obj.Name
+
+
+def pdOnMove(pdServer, words):
+    '''onMove ObjectName    --> "OK" at creation
+                            --> placement when the object move'''
+    class DocObserver:
+        def __init__(self, pdServer, uid, obj):
+            self.pdServer = pdServer
+            self.uid = uid
+            self.obj = obj
+        def slotChangedObject(self, obj, prop):
+            if obj.Label == self.obj and prop == "Placement":
+                self.pdServer.send(self.uid, obj.Placement)
+
+    s = DocObserver(pdServer, words[0], words[2])
+    pdServer.observersStore[words[0]] = s   # store the observer to allow removing later
+    App.addDocumentObserver(s)
+    return "OK"
 
 
 # return the count of parameters of the given function

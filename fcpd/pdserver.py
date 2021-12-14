@@ -3,7 +3,7 @@
 #
 #  pdserver.py
 #
-#  Copyright 2020 Flachy Joe
+#  Copyright 2020 Florian Foinant-Willig <ffw@2f2v.fr>
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -37,13 +37,13 @@ import FreeCAD as App
 from . import pdmsgtranslator
 PDMsgTranslator = pdmsgtranslator.PDMsgTranslator
 
+DEBUG = True
+
 # shortcuts of FreeCAD console
-Log = App.Console.PrintLog
+Log = App.Console.PrintLog if DEBUG else lambda *args : None
 Msg = App.Console.PrintMessage
 Wrn = App.Console.PrintWarning
 Err = App.Console.PrintError
-
-DEBUG = False
 
 
 ## Deal with PureData connection
@@ -55,7 +55,7 @@ class PureDataServer(QtCore.QObject):
         super().__init__()
 
         self.isRunning = False
-        self.isWaiting = False
+        self.isWaiting = True
         self.remoteAddress = ""
         self.listenAddress = "localhost"
         self.listenPort = 8888
@@ -72,15 +72,8 @@ class PureDataServer(QtCore.QObject):
         self.inputSocket = None
         self.outputSocket = QTcpSocket(self)
 
-    def __eq__(self, other):
-        if isinstance(other, bool):
-            return other == self.isRunning
-        return NotImplemented
-
-    def __ne__(self, other):
-        if isinstance(other, bool):
-            return other != self.isRunning
-        return NotImplemented
+    def isAvailable(self):
+        return self.isRunning and not self.isWaiting
 
     ## Update listenning address and port
     #  @param self
@@ -137,6 +130,11 @@ class PureDataServer(QtCore.QObject):
                 if self.outputSocket.waitForConnected(1000):
                     self.isWaiting = False
                     Log("PDServer : Callback initialized to %s:%s\n" % (self.remoteAddress.toString(), words[1]))
+                    if self.writeBuffer:
+                        Wrn("PDServer : The data previously stored are now sent\n")
+                        self.outputSocket.write(bytes(self.writeBuffer, "utf8"))
+                        Log("PDServer : >>> %s\r\n" % self.writeBuffer)
+                        self.writeBuffer = ""
                 else:
                     Log("PDServer : ERROR during callback initialization\n%s\n" % self.outputSocket.error())
             elif words[0] == 'close':
@@ -161,15 +159,16 @@ class PureDataServer(QtCore.QObject):
     #  @param data the message as a string
     #  @return Nothing
     def send(self, *data):
+        writeBuffer = ""
+        for d in data:
+            writeBuffer += " %s" % PDMsgTranslator.strFromValue(d)
+        writeBuffer += ";\n"
         if self.outputSocket.isOpen():
-            writeBuffer=""
-            for d in data:
-                writeBuffer += " %s" % PDMsgTranslator.strFromValue(d)
-            writeBuffer += ";\n"
             self.outputSocket.write(bytes(writeBuffer, "utf8"))
             Log("PDServer : >>> %s\r\n" % writeBuffer)
         else:
-            Wrn('WARNING : Data are sent to PDServer but Pure-Data is not connected.\n')
+            self.writeBuffer = writeBuffer
+            Wrn('WARNING : Data are sent to PDServer but Pure-Data is not connected.\nThe data will be kept until connection.\n')
 
     ## launch the server
     #  @param self
@@ -179,24 +178,24 @@ class PureDataServer(QtCore.QObject):
             self.isRunning = True
             self.isWaiting = True
             Log("PDServer : Listening on port %i\r\n" % self.listenPort)
-
+        else:
+            Err("PDServer : unable to listen port %s" % self.listenPort)
 
     ## Ask the server to terminate
     #  @param self
     def terminate(self):
         self.outputSocket.write(b"0 close;")
         self.outputSocket.disconnectFromHost()
+        self.inputSocket.disconnectFromHost()
         self.isRunning = False
 
-
     def newConnection(self):
-            self.inputSocket = self.tcpServer.nextPendingConnection()
-            self.inputSocket.readyRead.connect(self.readyRead)
-            self.inputSocket.aboutToClose.connect(self.remoteClose)
-            self.tcpServer.close()  # no new connection accepted
-            self.remoteAddress = self.inputSocket.peerAddress()
-            Log("PDServer : Connection from %s:%s\r\n" % (self.remoteAddress.toString(), self.inputSocket.peerPort()))
-
+        self.inputSocket = self.tcpServer.nextPendingConnection()
+        self.inputSocket.readyRead.connect(self.readyRead)
+        self.inputSocket.aboutToClose.connect(self.remoteClose)
+        self.tcpServer.close()  # no new connection accepted
+        self.remoteAddress = self.inputSocket.peerAddress()
+        Log("PDServer : Connection from %s:%s\r\n" % (self.remoteAddress.toString(), self.inputSocket.peerPort()))
 
     def readyRead(self):
         data = self.inputSocket.readAll()
@@ -214,8 +213,8 @@ class PureDataServer(QtCore.QObject):
                 for ret in retList:
                     self.send(ret)
 
-
     def remoteClose(self):
         Log("PDServer : %s close connection\r\n" % self.inputSocket.peerAddress().toString())
         if self.isRunning:
+            self.terminate()
             self.run()  # let tcpServer wait for a new connection

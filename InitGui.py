@@ -3,7 +3,7 @@
 #
 #  InitGui.py
 #
-#  Copyright 2020 Flachy Joe
+#  Copyright 2020 Florian Foinant-Willig <ffw@2f2v.fr>
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -33,12 +33,11 @@ class FCPDWorkbench(Workbench):
 
     MenuText = "FCPD"
     ToolTip = QT_TRANSLATE_NOOP("FCPDWorkbench", "Pure-Data connection")
-
     Icon = locator.icon('FCPDLogo.svg')
 
     def Initialize(self):
         import fcpd
-        self.core = fcpd.FCPDCore()
+        self.core = fcpd.core
 
         import fcpdwb_locator as locator
         FreeCADGui.addLanguagePath(locator.TRANSLATIONS_PATH)
