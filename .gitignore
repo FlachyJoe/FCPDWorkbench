@@ -1,3 +1,4 @@
 /__pycache__
-/pdautogen/*
-/pdautogenhelp/*
+/pure-data/pdautogen/*
+/pure-data/pdautogenhelp/*
+/fcpd/__pycache__
