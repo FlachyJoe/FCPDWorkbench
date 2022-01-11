@@ -10,10 +10,36 @@ Using a real-time visual programming language to control FreeCAD can results in 
 
 As you can start to see, imagination and programming skills are one's only limitation when using FCPD.
 
-<p align=center>
-    <i>Sample</i></br>
-    <img src="https://raw.githubusercontent.com/FlachyJoe/FCPD/main/doc/sample-animate.gif" width=800/>
-</p>
+## Status: WIP
+
+This workbench is under development. Feel free to test, report bugs, provide feedback, and participate. Thank you!
+
+## Feedback
+
+Bugs, feature requests, and inquiries? Please open tickets in the repo's issue queue. You can also follow progress via the [dicussion thread](https://forum.freecadweb.org/viewtopic.php?f=24&t=51429) on the FreeCAD forum.
+
+## Install
+
+ * Clone the git repository in your FreeCAD Mod path
+ * Install Pure-Data and [required external libraries](#Requirements).
+ * Launch FreeCAD
+ * Load the FCPD workbench
+ * Set your Pure-Data binary path in the workbench preference page
+
+## First steps
+
+ * Open a FreeCAD document
+ * Load the FCPD workbench
+ * Start Pure-Data and internal FreeCAD server by clicking Launch Pure-Data in the FCPD menu or toolbar
+ * The opening client.pd window implements the connection to FC, don't close it.
+ * Create a new patch from PD File menu
+ * Add your needed [fc_…] objects, they are automatically connected to FreeCAD
+
+Take a look in the *pdlib* directory for available objects. Some of them are pd-documented (RMB/Help in PD) and/or listed in the *FCPD-help.pd* file.
+
+## Samples
+
+Please see [FCPDWorkbench_Samples](https://github.com/FlachyJoe/FCPDWorkbench_Samples)
 
 ## Requirements
 
@@ -24,14 +50,6 @@ External libraries are needed for Pure-Data :
 * [iemlib](https://puredata.info/downloads/iemlib)
 
 See Pure-Data documentation to install them or use an already populated distribution as [Purr-Data](http://l2ork.music.vt.edu/main/make-your-own-l2ork/software/).
-
-## Status: WIP
-
-This workbench is under development. Feel free to test, report bugs, provide feedback, and participate. Thank you!
-
-## Feedback
-
-Bugs, feature requests, and inquiries? Please open tickets in the repo's issue queue. You can also follow progress via the [dicussion thread](https://forum.freecadweb.org/viewtopic.php?f=24&t=51429) on the FreeCAD forum.
 
 ## License
 
