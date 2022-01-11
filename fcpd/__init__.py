@@ -31,7 +31,8 @@ import FreeCAD
 import FreeCADGui
 
 import fcpdwb_locator as locator
-from . import pdserver, pdtools, pdcontrolertools, pdincludetools, pdrawtools
+from . import pdserver
+from . import pdtools, pdcontrolertools, pdincludetools, pdrawtools, pdgeometrictools
 
 
 class FCPDCore():
@@ -45,9 +46,8 @@ class FCPDCore():
         pdtools.registerToolList(self.pdServer)
         pdcontrolertools.registerToolList(self.pdServer)
         pdincludetools.registerToolList(self.pdServer)
-
-        if self.userPref().GetBool('fc_allowRaw', False):
-            pdrawtools.registerToolList(self.pdServer)
+        pdrawtools.registerToolList(self.pdServer)
+        pdgeometrictools.registerToolList(self.pdServer)
 
     def userPref(self):
         # get prefs
