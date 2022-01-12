@@ -118,6 +118,18 @@ class PDMsgTranslator:
                     retValue = App.Vector(float(words[1]), float(words[2]), float(words[3]))
                     retType = cls.VECTOR
                     usedWords = 4
+                elif words[0] == "Ox":
+                    retValue = App.Vector(1, 0, 0)
+                    retType = cls.VECTOR
+                    usedWords = 1
+                elif words[0] == "Oy":
+                    retValue = App.Vector(0, 1, 0)
+                    retType = cls.VECTOR
+                    usedWords = 1
+                elif words[0] == "Oz":
+                    retValue = App.Vector(0, 0, 1)
+                    retType = cls.VECTOR
+                    usedWords = 1
                 elif words[0] in ["Rotation", "Yaw-Pitch-Roll", "Rot"]:
                     retValue = App.Rotation(float(words[1]), float(words[2]), float(words[3]))
                     retType = cls.ROTATION
