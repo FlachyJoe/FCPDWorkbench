@@ -38,6 +38,7 @@ from . import pdmsgtranslator
 PDMsgTranslator = pdmsgtranslator.PDMsgTranslator
 
 DEBUG = True
+RAISE_ERROR = False
 
 # shortcuts of FreeCAD console
 Log = App.Console.PrintLog if DEBUG else lambda *args : None
@@ -147,7 +148,7 @@ class PureDataServer(QtCore.QObject):
                     else:
                         ret = self.defaultMessageHandler(words)
                 except Exception as e:
-                    if DEBUG:
+                    if RAISE_ERROR:
                         raise e
                     ret = self.errorHandler(words)
                 # callback include current patch id ($0 in PD) to route the message
@@ -163,7 +164,7 @@ class PureDataServer(QtCore.QObject):
         for d in data:
             writeBuffer += " %s" % PDMsgTranslator.strFromValue(d)
         writeBuffer += ";\n"
-        if self.outputSocket.isOpen():
+        if self.isAvailable() and self.outputSocket.isOpen():
             self.outputSocket.write(bytes(writeBuffer, "utf8"))
             Log("PDServer : >>> %s\r\n" % writeBuffer)
         else:
