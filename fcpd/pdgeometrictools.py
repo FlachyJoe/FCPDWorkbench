@@ -98,4 +98,4 @@ def pdPlacementMinus(pdServer, words):
     _, val = PDMsgTranslator.popValues(words[2:], 2)
     p1 = val[0].value
     p2 = val[1].value
-    return p1*p2.inverse()
+    return p2.inverse()*p1
