@@ -45,7 +45,7 @@ class FCPDWorkbench(Workbench):
 
         # command list
         import fcpdwb_commands
-        self.commandList = ["FCPD_Run", "FCPD_Stop", "FCPD_Launch", "FCPD_AddInclude"]
+        self.commandList = ["FCPD_Run", "FCPD_Stop", "FCPD_Launch", "FCPD_AddInclude", "FCPD_AddPopulatedInclude"]
         self.appendToolbar("FCPD", self.commandList)   # creates a new toolbar
         self.appendMenu("FCPD", self.commandList)      # creates a new menu
 
@@ -56,7 +56,7 @@ class FCPDWorkbench(Workbench):
 
     def ContextMenu(self, recipient):
         if recipient == "tree":
-            self.appendContextMenu("FCPD", ["FCPD_AddInclude"])   # add commands to the context menu
+            self.appendContextMenu("FCPD", ["FCPD_AddInclude", "FCPD_AddPopulatedInclude"])   # add commands to the context menu
 
     def GetClassName(self):
         return "Gui::PythonWorkbench"
