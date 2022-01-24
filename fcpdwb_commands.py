@@ -23,7 +23,6 @@
 #
 ###################################################################################
 
-import os
 import FreeCAD as App
 import FreeCADGui
 
@@ -71,7 +70,7 @@ class FCPD_CommandRun():
     global FCPD
 
     def GetResources(self):
-        return {'Pixmap': locator.icon('start.png'),
+        return {'Pixmap': locator.icon('start.svg'),
                 'MenuText': QT_TRANSLATE_NOOP("FCPD_Run", "Run Pure-Data server"),
                 'ToolTip': QT_TRANSLATE_NOOP("FCPD_Run", "Run the internal server and let"
                                              " Pure-Data to connect to.")}
@@ -95,7 +94,7 @@ class FCPD_CommandStop():
     global FCPD
 
     def GetResources(self):
-        return {'Pixmap': locator.icon('stop.png'),
+        return {'Pixmap': locator.icon('stop.svg'),
                 'MenuText': QT_TRANSLATE_NOOP("FCPD_Stop", "Stop Pure-Data server"),
                 'ToolTip': QT_TRANSLATE_NOOP("FCPD_Stop", "Stop the internal Pure-Data server.")}
 
@@ -115,7 +114,7 @@ class FCPD_CommandAddInclude():
     global FCPD
 
     def GetResources(self):
-        return {'Pixmap': locator.icon('new-include.png'),
+        return {'Pixmap': locator.icon('new-include.svg'),
                 'MenuText': QT_TRANSLATE_NOOP("FCPD_AddInclude", "Create a PDInclude object"),
                 'ToolTip': QT_TRANSLATE_NOOP("FCPD_AddInclude", "Create a PDInclude object to store"
                                              " a PD patch in the FreeCAD document.")}
@@ -134,7 +133,7 @@ class FCPD_CommandAddPopulatedInclude():
     global FCPD
 
     def GetResources(self):
-        return {'Pixmap': locator.icon('new-include.png'),
+        return {'Pixmap': locator.icon('new-populated-include.svg'),
                 'MenuText': QT_TRANSLATE_NOOP("FCPD_AddPopulatedInclude",
                                               "Create a PDInclude object from an *.pd file"),
                 'ToolTip': QT_TRANSLATE_NOOP("FCPD_AddPopulatedInclude",
@@ -144,8 +143,8 @@ class FCPD_CommandAddPopulatedInclude():
     def Activated(self):
         from fcpd import pdinclude
         from PySide2.QtWidgets import QFileDialog
-        fileName = QFileDialog.getOpenFileName(None, QT_TRANSLATE_NOOP("Open a Pure-Data file"), "",
-                                               QT_TRANSLATE_NOOP("Pure-Data Files (*.pd)"))
+        fileName = QFileDialog.getOpenFileName(None, QT_TRANSLATE_NOOP("FCPD_AddPopulatedInclude", "Open a Pure-Data file"), "",
+                                               QT_TRANSLATE_NOOP("FCPD_AddPopulatedInclude", "Pure-Data Files (*.pd)"))
         if fileName:
             obj = pdinclude.create()
             obj.PDFile = fileName
