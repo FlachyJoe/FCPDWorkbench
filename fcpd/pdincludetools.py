@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 ###################################################################################
 #
-#  fcpdwb_locator.py
+#  pdincludetools.py
 #
 #  Copyright 2021 Florian Foinant-Willig <ffw@2f2v.fr>
 #
@@ -23,25 +23,34 @@
 #
 ###################################################################################
 
-import os
-import FreeCADGui
+# this module translate pd message to action for PDInclude
 
-PATH = os.path.dirname(__file__)
-RESOURCES_PATH = os.path.join(PATH, 'resources')
-ICONS_PATH = os.path.join(RESOURCES_PATH, 'icons')
-TRANSLATIONS_PATH = os.path.join(RESOURCES_PATH, 'translations')
-PD_PATH = os.path.join(PATH, 'pure-data')
+import FreeCAD as App
+
+# shortcuts of FreeCAD console
+Log = App.Console.PrintLog
+Msg = App.Console.PrintMessage
+Wrn = App.Console.PrintWarning
+Err = App.Console.PrintError
 
 
-def icon(filename):
-    return os.path.join(ICONS_PATH, filename)
+def registerToolList(pdServer):
+    toolList = [("endedit", pdEndEdit)
+                ]
+    for word, func in toolList:
+        pdServer.registerMessageHandler([word], func)
 
-def resource(filename):
-    return os.path.join(RESOURCES_PATH, filename)
 
-def getFCPDWorkbench():
-    return FreeCADGui.getWorkbench('FCPDWorkbench')
+def pdEndEdit(pdServer, words):
+    # find pdinclude object which use the given filename
+    pyObjects = App.ActiveDocument.findObjects('App::FeaturePython')
+    try:
+        obj = [o for o in pyObjects if (hasattr(o, 'Proxy')
+                                        and hasattr(o.Proxy, 'tmpFile')
+                                        and o.Proxy.tmpFile.endswith(words[2])
+                                        )][0]
+        obj.Proxy.endEdit()
+    except IndexError:
+        return "ERROR given filename is not valid %s" % words[2]
 
-def getFCPDCore():
-    import fcpd
-    return fcpd.core
+

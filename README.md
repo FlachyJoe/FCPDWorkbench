@@ -43,12 +43,17 @@ Please see [FCPDWorkbench_Samples](https://github.com/FlachyJoe/FCPDWorkbench_Sa
 
 ## Requirements
 
+The PySide2 Python bindings for Qt5 Network is required. Linux users can install python3-pyside2.qtnetwork package.
+
 External libraries are needed for Pure-Data :
 * [list-abs](https://puredata.info/downloads/list-abs)
 * [iemlib](https://puredata.info/downloads/iemlib)
 
 See Pure-Data documentation to install them or use an already populated distribution as [Purr-Data](http://l2ork.music.vt.edu/main/make-your-own-l2ork/software/).
 
+Inverse kinematic features request [ikpy](https://github.com/Phylliade/ikpy).
+
+=======
 ## License
 
 Copyright 2020 @flachyjoe and other contributors
@@ -62,3 +67,14 @@ This program is distributed in the hope that it will be useful,
 but WITHOUT ANY WARRANTY; without even the implied warranty of
 MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
 GNU General Public License for more details.
+
+## Background / How it works ?
+
+The FreeCAD workbench is codded with Python, it implements a TCP server to get FUDI message from Pure-Data.
+
+The Pure-Data part is coded in Pure-Data language. Thus it require some extra-libraries : list-abs and iemlib you can find easly in Pure-Data repositories.
+
+As FUDI protocol can only deal with text, all the FreeCAD data are converted to be usable in Pure-Data. Some objects are still not string-representable. These ones are simply keeped in FreeCAD and Pure-Data can refer to them by reference indexes.
+
+Due to the latency in client/server communication and FreeCAD stuff, *fcpd_** Pure-Data objects are **asynchronous**. So you can't know when outlets trigger. Nevertheless outlets are still triggered right to left.
+This breaks the usual PD codding and require some more work to let other objects wait for FC datas.

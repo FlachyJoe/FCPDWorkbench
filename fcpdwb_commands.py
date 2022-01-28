@@ -3,7 +3,7 @@
 #
 #  fcpdwb_commands.py
 #
-#  Copyright 2020 Flachy Joe
+#  Copyright 2020 Florian Foinant-Willig <ffw@2f2v.fr>
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -23,14 +23,12 @@
 #
 ###################################################################################
 
-import os
-import subprocess
 import FreeCAD as App
 import FreeCADGui
 
 import fcpdwb_locator as locator
 
-FCPD = locator.getFCPDWorkbench()
+FCPD = locator.getFCPDCore()
 
 
 def QT_TRANSLATE_NOOP(scope, text):
@@ -54,34 +52,8 @@ class FCPD_CommandLaunch():
                                              " to the internal server.")}
 
     def Activated(self):
-        if FCPD.pdProcess is None or FCPD.pdProcess.poll() is not None:
-            pdBin = FCPD.userPref().GetString('pd_path')
-
-            pdArgs = ['-path', os.path.join(locator.PATH, 'pdlib'),
-                      '-helppath', os.path.join(locator.PATH, 'pdhelp')]
-
-            if FCPD.userPref().GetBool('fc_allowRaw', False):
-                clientTemplate = "client_raw.pdtemplate"
-                pdArgs += ['-path', os.path.join(locator.PATH, 'pdautogen'),
-                           '-helppath', os.path.join(locator.PATH, 'pdautogenhelp')]
-            else:
-                clientTemplate = "client.pdtemplate"
-
-            with open(os.path.join(locator.PATH, clientTemplate), 'r') as f:
-                clientContents = f.read()
-            clientContents = clientContents.replace('%FCLISTEN%',
-                                                    str(FCPD.userPref().GetInt('fc_listenport')))
-            clientContents = clientContents.replace('%PDLISTEN%',
-                                                    str(FCPD.userPref().GetInt('pd_defaultport')))
-
-            clientFilePath = os.path.join(locator.PATH, 'client.pd')
-            with open(clientFilePath, 'w') as f:
-                f.write(clientContents)
-
-            FCPD.pdProcess = subprocess.Popen([pdBin]
-                                              + pdArgs
-                                              + ['-open', clientFilePath])
-
+        if not FCPD.pdIsRunning():
+            FCPD.runPD()
             FreeCADGui.runCommand('FCPD_Run')
         else:
             Log(QT_TRANSLATE_NOOP("FCPD_Launch", "Pure-Data is already running.\n"))
@@ -98,7 +70,7 @@ class FCPD_CommandRun():
     global FCPD
 
     def GetResources(self):
-        return {'Pixmap': locator.icon('start.png'),
+        return {'Pixmap': locator.icon('start.svg'),
                 'MenuText': QT_TRANSLATE_NOOP("FCPD_Run", "Run Pure-Data server"),
                 'ToolTip': QT_TRANSLATE_NOOP("FCPD_Run", "Run the internal server and let"
                                              " Pure-Data to connect to.")}
@@ -122,7 +94,7 @@ class FCPD_CommandStop():
     global FCPD
 
     def GetResources(self):
-        return {'Pixmap': locator.icon('stop.png'),
+        return {'Pixmap': locator.icon('stop.svg'),
                 'MenuText': QT_TRANSLATE_NOOP("FCPD_Stop", "Stop Pure-Data server"),
                 'ToolTip': QT_TRANSLATE_NOOP("FCPD_Stop", "Stop the internal Pure-Data server.")}
 
@@ -142,21 +114,47 @@ class FCPD_CommandAddInclude():
     global FCPD
 
     def GetResources(self):
-        return {'Pixmap': locator.icon('new-include.png'),
+        return {'Pixmap': locator.icon('new-include.svg'),
                 'MenuText': QT_TRANSLATE_NOOP("FCPD_AddInclude", "Create a PDInclude object"),
                 'ToolTip': QT_TRANSLATE_NOOP("FCPD_AddInclude", "Create a PDInclude object to store"
                                              " a PD patch in the FreeCAD document.")}
 
     def Activated(self):
-        import pdinclude
-        pdinclude.create()
+        from fcpd import pdinclude
+        pdinclude.createWithEmpty()
         return
 
     def IsActive(self):
         return True
 
+class FCPD_CommandAddPopulatedInclude():
+    """Create a PDInclude object from an *.pd file"""
+
+    global FCPD
+
+    def GetResources(self):
+        return {'Pixmap': locator.icon('new-populated-include.svg'),
+                'MenuText': QT_TRANSLATE_NOOP("FCPD_AddPopulatedInclude",
+                                              "Create a PDInclude object from an *.pd file"),
+                'ToolTip': QT_TRANSLATE_NOOP("FCPD_AddPopulatedInclude",
+                                             "Create a PDInclude object to store a given"
+                                             " PD patch in the FreeCAD document.")}
+
+    def Activated(self):
+        from fcpd import pdinclude
+        from PySide2.QtWidgets import QFileDialog
+        fileName = QFileDialog.getOpenFileName(None, QT_TRANSLATE_NOOP("FCPD_AddPopulatedInclude", "Open a Pure-Data file"), "",
+                                               QT_TRANSLATE_NOOP("FCPD_AddPopulatedInclude", "Pure-Data Files (*.pd)"))
+        if fileName:
+            obj = pdinclude.create()
+            obj.PDFile = fileName
+
+
+    def IsActive(self):
+        return True
 
 FreeCADGui.addCommand('FCPD_Run', FCPD_CommandRun())
 FreeCADGui.addCommand('FCPD_Stop', FCPD_CommandStop())
 FreeCADGui.addCommand('FCPD_Launch', FCPD_CommandLaunch())
 FreeCADGui.addCommand('FCPD_AddInclude', FCPD_CommandAddInclude())
+FreeCADGui.addCommand('FCPD_AddPopulatedInclude', FCPD_CommandAddPopulatedInclude())
