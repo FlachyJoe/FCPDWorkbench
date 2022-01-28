@@ -92,7 +92,7 @@ def pdSet(pdServer, words):
 
 
 def pdCopy(pdServer, words):
-    ''' copy Object --> NewObjectName '''
+    ''' copy Object [with-dependencies]--> NewObjectName '''
     obj = PDMsgTranslator.valueFromStr(words[2])[0].value
     copyDep = False
     if len(words) > 3:
