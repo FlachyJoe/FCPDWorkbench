@@ -1,4 +1,4 @@
-#N canvas 590 380 450 325 12;
+#N canvas 595 381 450 325 12;
 #X obj 10 170 fc_process;
 #X msg 220 100 remobserver;
 #X obj 70 230 outlet;
@@ -11,6 +11,7 @@
 #X obj 10 230 outlet;
 #X text 10 250 done;
 #X obj 30 100 list prepend onMove;
+#X text 70 250 placement;
 #X connect 0 0 8 0;
 #X connect 1 0 0 0;
 #X connect 3 0 1 0;
