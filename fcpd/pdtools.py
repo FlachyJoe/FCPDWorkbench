@@ -40,6 +40,7 @@ Err = App.Console.PrintError
 def registerToolList(pdServer):
     toolList = [("get", pdGet),
                 ("set", pdSet),
+                ("is", pdIs),
                 ("copy", pdCopy),
                 ("delete", pdDelete),
                 ("recompute", pdRecompute),
@@ -62,7 +63,7 @@ def registerToolList(pdServer):
 
 
 def pdElse(words):
-    return "ERROR unknown or unallowed command (see the FCPDWorkbench preference page to allow raw python commands)."
+    return "ERROR unknown command."
 
 
 def pdGet(pdServer, words):
@@ -90,9 +91,42 @@ def pdSet(pdServer, words):
         skc = PDMsgTranslator.valueFromStr(words[3])[0].value
         return skc.setDatum(words[4], PDMsgTranslator.valueFromStr(words[5:])[0].value)
 
+    elif words[2] == "properties":
+        obj = PDMsgTranslator.valueFromStr(words[3])[0].value
+        current = 4
+        ret = None
+        while current < len(words):
+            propName = words[current]
+            prop, used = PDMsgTranslator.valueFromStr(words[current+1:])
+            current += used+1
+            if hasattr(obj, propName):
+                setattr(obj, propName, prop.value)
+            else:
+                ret += f"{propName} is not a valid property "
+        if ret:
+            return "ERROR " + ret
+
+
+def pdIs(pdServer, words):
+    if words[2] == "object":
+        obj = PDMsgTranslator.valueFromStr(words[3])[0].value
+        try:
+            return obj.Document == App.ActiveDocument
+        except AttributeError:
+            return False
+    elif words[2] == "typeid":
+        obj = PDMsgTranslator.valueFromStr(words[3])[0].value
+        try:
+            return obj.TypeId == f"{words[4]}::{words[5]}"
+        except AttributeError:
+            return False
+    elif words[2] == "property":
+        obj = PDMsgTranslator.valueFromStr(words[3])[0].value
+        propName = words[4]
+        return hasattr(obj, propName)
 
 def pdCopy(pdServer, words):
-    ''' copy Object [with-dependencies]--> NewObjectName '''
+    ''' copy Object [with-dependencies]--> NewObject '''
     obj = PDMsgTranslator.valueFromStr(words[2])[0].value
     copyDep = False
     if len(words) > 3:
@@ -101,13 +135,17 @@ def pdCopy(pdServer, words):
     obj2 = App.ActiveDocument.copyObject(obj, copyDep, False)
     for prt in [tpl[0] for tpl in obj.Parents]:
         prt.addObject(obj2)
-    return obj2.Name
+    return obj2
 
 
 def pdDelete(pdServer, words):
-    ''' delete ObjectName --> bang '''
-    for obj in words[2:]:
-        App.ActiveDocument.removeObject(obj)
+    ''' delete Object --> bang '''
+    obj = PDMsgTranslator.valueFromStr(words[3])[0].value
+    if type(obj) is list:
+        for o in obj:
+            App.ActiveDocument.removeObject(o.Name)
+    else:
+        App.ActiveDocument.removeObject(obj.Name)
 
 
 def pdRecompute(pdServer, words):
@@ -190,8 +228,8 @@ def pdLink(pdServer, words):
 def pdByLabel(pdServer, words):
     ''' bylabel Label  --> [Objects] '''
     doc = App.ActiveDocument
-    lst = doc.getObjectsByLabel(words[2])
-    return [o.Name for o in lst]
+    lst = doc.getObjectsByLabel(PDMsgTranslator.valueFromStr(words[2:])[0].value)
+    return lst
 
 
 def pdObject(pdServer, words):
@@ -207,7 +245,7 @@ def pdObject(pdServer, words):
         current += used+1
         if hasattr(obj, propName):
             setattr(obj, propName, prop.value)
-    return obj.Name
+    return obj
 
 
 def pdOnMove(pdServer, words):
