@@ -1,0 +1,70 @@
+#N canvas 650 134 552 607 10;
+#X obj 0 585 cnv 15 552 21 empty \$0-pddp.cnv.footer empty 20 12 0
+14 #dcdcdc #404040 0;
+#X obj 0 0 cnv 15 552 40 empty \$0-pddp.cnv.header waitFor 3 12 0 18
+#c4dcdc #000000 0;
+#X obj 0 193 cnv 3 550 3 empty \$0-pddp.cnv.inlets inlets 8 12 0 13
+#dcdcdc #000000 0;
+#N canvas 573 351 494 420 META 0;
+#X text 12 45 LICENSE LGPL;
+#X text 12 145 OUTLET_0 any;
+#X text 12 165 LIBRARY FCPD;
+#X text 12 205 WEBSITE https://github.com/FlachyJoe/FCPDWorkbench;
+#X text 12 25 KEYWORDS fifo wait until;
+#X text 12 65 DESCRIPTION fifo storage;
+#X text 12 85 INLET_0 bang;
+#X text 12 105 INLET_1 any;
+#X text 12 125 INLET_2 bang;
+#X text 12 225 RELEASE_DATE 2022;
+#X text 12 185 AUTHOR Florian Foinant-Willig;
+#X text 12 245 HELP_PATCH_AUTHORS Florian Foinant-Willig;
+#X restore 500 587 pd META;
+#X obj 0 419 cnv 3 550 3 empty \$0-pddp.cnv.outlets outlets 8 12 0
+13 #dcdcdc #000000 0;
+#X obj 0 478 cnv 3 550 3 empty \$0-pddp.cnv.argument arguments 8 12
+0 13 #dcdcdc #000000 0;
+#X obj 0 530 cnv 3 550 3 empty \$0-pddp.cnv.more_info more_info 8 12
+0 13 #dcdcdc #000000 0;
+#N canvas 222 374 428 275 Related_objects 0;
+#X obj 1 1 cnv 15 425 20 empty \$0-pddp.cnv.subheading empty 3 12 0
+14 #c4dcdc #000000 0;
+#X text 8 2 [waitFor] Related Objects;
+#X obj 10 30 fifo;
+#X obj 50 30 once;
+#X restore 102 587 pd Related_objects;
+#X obj 80 201 cnv 17 3 90 empty \$0-pddp.cnv.let.0 0 5 9 0 16 #dcdcdc
+#9c9c9c 0;
+#X obj 78 428 cnv 17 3 40 empty \$0-pddp.cnv.let.n 0 5 9 0 16 #dcdcdc
+#9c9c9c 0;
+#X obj 80 301 cnv 17 3 45 empty \$0-pddp.cnv.let.1 1 5 9 0 16 #dcdcdc
+#9c9c9c 0;
+#X text 100 200 bang;
+#X obj 80 361 cnv 17 3 45 empty \$0-pddp.cnv.let.1 2 5 9 0 16 #dcdcdc
+#9c9c9c 0;
+#X obj 100 540 helplink FCPD;
+#X obj 460 10 waitFor;
+#X text 270 100 [waitFor] is a first-in-first-out cache;
+#X text 170 200 - when a bang incomes \, the next stored value is sent
+to the outlet. If the cache is empty \, nothing occurs;
+#X text 11 23 store data until a bang come;
+#X text 172 360 - the third inlet clear the cache;
+#X text 100 360 bang;
+#X text 100 300 any;
+#X text 98 427 any;
+#X text 168 427 - the next stored value is sent when a bang comes in
+the first inlet;
+#X obj 50 130 waitFor;
+#X msg 70 50 first is sent \, second is stored;
+#X obj 50 160 print;
+#X obj 90 100 bng 15 250 50 0 empty empty clear 17 7 0 10 #fcfcfc #000000
+#000000;
+#X text 169 300 - store the value in the fifo cache. If the cache is
+empty the value is sent immediatly;
+#X obj 20 80 bng 15 250 50 0 empty empty release\ next 17 7 0 10 #fcfcfc
+#000000 #000000;
+#X msg 110 70 third and \, fourth are stored too;
+#X connect 23 0 25 0;
+#X connect 24 0 23 1;
+#X connect 26 0 23 2;
+#X connect 28 0 23 0;
+#X connect 29 0 23 1;
