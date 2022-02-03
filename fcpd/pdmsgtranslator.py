@@ -86,8 +86,11 @@ class PDMsgTranslator:
             string = val
         else:
             # store this object and return a ref
-            cls.objectsStore.append(val)
-            return "^%i" % (len(cls.objectsStore)-1)
+            try:
+                return "^%i" % cls.objectsStore.index(val)
+            except ValueError:
+                cls.objectsStore.append(val)
+                return "^%i" % (len(cls.objectsStore)-1)
 
         return string.translate(str.maketrans(',=', '  ', ';()[]{}"\''))
 
