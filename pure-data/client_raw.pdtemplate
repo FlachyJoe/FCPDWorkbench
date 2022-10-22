@@ -15,4 +15,4 @@ it.;
 #X coords 0 -1 1 1 207 25 2 35 76;
 #X restore 10 190 pd giveme;
 #X text 10 150 auto python creator : type module.function you want
-to link to. Result is ready to paste where you need it., f 65;
+to link to.; Result is ready to paste where you need it., f 65;

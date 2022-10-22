@@ -5,7 +5,7 @@
 #X obj 100 210 list trim;
 #X obj 100 80 route list;
 #X obj 210 180 list length;
-#X obj 100 110 t l l;
+#X obj 100 110 t a a;
 #X obj 100 280 ==;
 #X obj 210 210 - 1;
 #X obj 50 40 t b a;

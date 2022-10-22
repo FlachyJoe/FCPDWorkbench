@@ -1,6 +1,6 @@
 #N canvas 580 450 566 351 10;
 #X obj 92 29 inlet;
-#X obj 148 141 t l;
+#X obj 148 141 t a;
 #X obj 92 141 list;
 #X obj 152 210 list;
 #X obj 152 262 outlet;

@@ -17,7 +17,7 @@
 #X obj 10 59 b;
 #X obj 10 90 list append None;
 #X obj 10 120 list append None;
-#X obj 160 270 t b l;
+#X obj 160 270 t b a;
 #X obj 220 300 list split 2;
 #X text 320 300 delete length and first = origin;
 #X connect 0 0 15 1;
