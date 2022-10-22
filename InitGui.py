@@ -37,7 +37,6 @@ class FCPDWorkbench(Workbench):
 
     def Initialize(self):
         import fcpd
-        self.core = fcpd.core
 
         import fcpdwb_locator as locator
         FreeCADGui.addLanguagePath(locator.TRANSLATIONS_PATH)

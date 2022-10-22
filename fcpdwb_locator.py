@@ -41,7 +41,3 @@ def resource(filename):
 
 def getFCPDWorkbench():
     return FreeCADGui.getWorkbench('FCPDWorkbench')
-
-def getFCPDCore():
-    import fcpd
-    return fcpd.core

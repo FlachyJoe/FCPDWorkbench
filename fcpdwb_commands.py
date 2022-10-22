@@ -28,8 +28,7 @@ import FreeCADGui
 
 import fcpdwb_locator as locator
 
-FCPD = locator.getFCPDCore()
-
+import fcpd
 
 def QT_TRANSLATE_NOOP(scope, text):
     return text
@@ -52,8 +51,8 @@ class FCPD_CommandLaunch():
                                              " to the internal server.")}
 
     def Activated(self):
-        if not FCPD.pdIsRunning():
-            FCPD.runPD()
+        if not fcpd.pdIsRunning():
+            fcpd.runPD()
             FreeCADGui.runCommand('FCPD_Run')
         else:
             Log(QT_TRANSLATE_NOOP("FCPD_Launch", "Pure-Data is already running.\n"))
@@ -67,8 +66,6 @@ class FCPD_CommandLaunch():
 class FCPD_CommandRun():
     """Run PDServer"""
 
-    global FCPD
-
     def GetResources(self):
         return {'Pixmap': locator.icon('start.svg'),
                 'MenuText': QT_TRANSLATE_NOOP("FCPD_Run", "Run Pure-Data server"),
@@ -76,10 +73,10 @@ class FCPD_CommandRun():
                                              " Pure-Data to connect to.")}
 
     def Activated(self):
-        serv = FCPD.pdServer
+        serv = fcpd.pdServer
         if not serv.isRunning:
-            serv.setConnectParameters(FCPD.userPref().GetString('fc_listenaddress', 'localhost'),
-                                      FCPD.userPref().GetInt('fc_listenport', 8888))
+            serv.setConnectParameters(fcpd.userPref.GetString('fc_listenaddress', 'localhost'),
+                                      fcpd.userPref.GetInt('fc_listenport', 8888))
             serv.run()
         return
 
@@ -91,16 +88,14 @@ class FCPD_CommandRun():
 class FCPD_CommandStop():
     """Stop PDServer"""
 
-    global FCPD
-
     def GetResources(self):
         return {'Pixmap': locator.icon('stop.svg'),
                 'MenuText': QT_TRANSLATE_NOOP("FCPD_Stop", "Stop Pure-Data server"),
                 'ToolTip': QT_TRANSLATE_NOOP("FCPD_Stop", "Stop the internal Pure-Data server.")}
 
     def Activated(self):
-        if FCPD.pdServer.isRunning:
-            FCPD.pdServer.terminate()
+        if fcpd.pdServer.isRunning:
+            fcpd.pdServer.terminate()
         return
 
     def IsActive(self):
@@ -110,8 +105,6 @@ class FCPD_CommandStop():
 
 class FCPD_CommandAddInclude():
     """Create a PDInclude object"""
-
-    global FCPD
 
     def GetResources(self):
         return {'Pixmap': locator.icon('new-include.svg'),
@@ -129,8 +122,6 @@ class FCPD_CommandAddInclude():
 
 class FCPD_CommandAddPopulatedInclude():
     """Create a PDInclude object from an *.pd file"""
-
-    global FCPD
 
     def GetResources(self):
         return {'Pixmap': locator.icon('new-populated-include.svg'),

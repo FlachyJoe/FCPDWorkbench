@@ -140,7 +140,7 @@ class PureDataServer(QtCore.QObject):
                     Log("PDServer : ERROR during callback initialization\n%s\n" % self.outputSocket.error())
             elif words[0] == 'close':
                 self.terminate()
-            else:
+            elif len(words)>1:
                 # is words[1] registered ?
                 try:
                     if words[1] in self.messageHandlerList:

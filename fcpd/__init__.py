@@ -24,64 +24,103 @@
 ###################################################################################
 
 import os
-from PySide2 import QtGui
+import sys
+import time
+
+from PySide2 import QtGui, QtWidgets
 from PySide2.QtCore import QProcess
 
 import FreeCAD
-import FreeCADGui
+import FreeCADGui as Gui
 
 import fcpdwb_locator as locator
 from . import pdserver
 from . import pdtools, pdcontrolertools, pdincludetools, pdrawtools, pdgeometrictools
 
+TRY2EMBED = False
 
-class FCPDCore():
-    def __init__(self):
-        self.pdProcess = QProcess()
+pdProcess = QProcess()
+pdServer = pdserver.PureDataServer()
 
-        # prepare pdserver
-        self.pdServer = pdserver.PureDataServer()
+# register message handlers
+pdtools.registerToolList(pdServer)
+pdcontrolertools.registerToolList(pdServer)
+pdincludetools.registerToolList(pdServer)
+pdrawtools.registerToolList(pdServer)
+pdgeometrictools.registerToolList(pdServer)
 
-        # register message handlers
-        pdtools.registerToolList(self.pdServer)
-        pdcontrolertools.registerToolList(self.pdServer)
-        pdincludetools.registerToolList(self.pdServer)
-        pdrawtools.registerToolList(self.pdServer)
-        pdgeometrictools.registerToolList(self.pdServer)
+userPref = FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Mod/FCPD")
 
-    def userPref(self):
-        # get prefs
-        return FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Mod/FCPD")
+def pdIsRunning():
+    return pdProcess.state() != QProcess.NotRunning
 
-    def pdIsRunning(self):
-        return self.pdProcess.state() != QProcess.NotRunning
+def runPD():
+    if not pdIsRunning():
+        pdBin = userPref.GetString('pd_path')
 
-    def runPD(self):
-        if not self.pdIsRunning():
-            pdBin = self.userPref().GetString('pd_path')
+        pdArgs = ['-path', os.path.join(locator.PD_PATH, 'pdlib'),
+                  '-helppath', os.path.join(locator.PD_PATH, 'pdhelp')]
 
-            pdArgs = ['-path', os.path.join(locator.PD_PATH, 'pdlib'),
-                      '-helppath', os.path.join(locator.PD_PATH, 'pdhelp')]
+        if userPref.GetBool('fc_allowRaw', False):
+            clientTemplate = "client_raw.pdtemplate"
+            pdArgs += ['-path', os.path.join(locator.PD_PATH, 'pdautogen'),
+                       '-helppath', os.path.join(locator.PD_PATH, 'pdautogenhelp')]
+        else:
+            clientTemplate = "client.pdtemplate"
 
-            if self.userPref().GetBool('fc_allowRaw', False):
-                clientTemplate = "client_raw.pdtemplate"
-                pdArgs += ['-path', os.path.join(locator.PD_PATH, 'pdautogen'),
-                           '-helppath', os.path.join(locator.PD_PATH, 'pdautogenhelp')]
-            else:
-                clientTemplate = "client.pdtemplate"
+        with open(os.path.join(locator.PD_PATH, clientTemplate), 'r') as f:
+            clientContents = f.read()
+        clientContents = clientContents.replace('%FCLISTEN%',
+                                                str(userPref.GetInt('fc_listenport')))
+        clientContents = clientContents.replace('%PDLISTEN%',
+                                                str(userPref.GetInt('pd_defaultport')))
 
-            with open(os.path.join(locator.PD_PATH, clientTemplate), 'r') as f:
-                clientContents = f.read()
-            clientContents = clientContents.replace('%FCLISTEN%',
-                                                    str(self.userPref().GetInt('fc_listenport')))
-            clientContents = clientContents.replace('%PDLISTEN%',
-                                                    str(self.userPref().GetInt('pd_defaultport')))
+        clientFilePath = os.path.join(locator.PD_PATH, 'client.pd')
+        with open(clientFilePath, 'w') as f:
+            f.write(clientContents)
 
-            clientFilePath = os.path.join(locator.PD_PATH, 'client.pd')
-            with open(clientFilePath, 'w') as f:
-                f.write(clientContents)
+        pdProcess.startDetached(pdBin, pdArgs + ['-open', clientFilePath])
+        if TRY2EMBED:
+            time.sleep(1)
+            embedPD()
 
-            self.pdProcess.startDetached(pdBin, pdArgs + ['-open', clientFilePath])
+def embedPD():
+    '''
+    Try to embed the pd window(s) in FreeCAD
+    return True in success
+    only implemented for PureData and PlugData on Linux platform
+    '''
+    if not sys.platform.startswith('linux'):
+        return False
 
+    exe = userPref.GetString('pd_path').lower()
+    if 'plugdata' in exe:
+        wName = ['"PlugData"']
+    elif ('pd' in exe or 'puredata' in exe):
+        wName = ['"Pd"', '"PatchWindow"']
+    else:
+        return False
 
-core = FCPDCore()
+    #if not pdIsRunning():
+    #    #runPD()
+    #    return False
+
+    mw = Gui.getMainWindow()
+    mdi = mw.findChild(QtWidgets.QMdiArea)
+    isOk = False
+    for w in wName:
+        cl = f'xwininfo -root -tree | grep \'{w}\' | cut -f9 -d" "'
+        print(cl)
+        cliP = QProcess()
+        cliP.start('bash', ['-c', cl])
+        cliP.waitForReadyRead();
+        winid, _ = cliP.readAllStandardOutput().toInt(16)
+        print(winid)
+        if winid:
+            win = QtGui.QWindow.fromWinId(winid)
+            widget = QtWidgets.QWidget(mdi)
+            cont = QtWidgets.QWidget.createWindowContainer(win, widget)
+            mdi.addSubWindow(cont)
+            cont.show()
+            isOk = True
+    return isOk
