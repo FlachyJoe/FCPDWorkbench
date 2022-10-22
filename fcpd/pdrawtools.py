@@ -335,7 +335,7 @@ def pdGiveMe(pdServer, words):
                 return 'ERROR unable to generate the object'
             generateHelp(func, objectName, moduleHelpPath, paramCount)
         else:
-            return 'ERROR %s have no function %s' % (moduleName, funcName)
+            return 'ERROR %s has no function %s' % (moduleName, funcName)
     return "%s/%s" % (objectName.lower(), funcName)
 
 
