@@ -1,18 +1,18 @@
 #N struct display-struct symbol text float background float width float
 height;
-#N canvas 10 69 1261 726 12;
-#X obj 500 90 cnv 15 208 250 empty empty template\ and\ click 20 12
-0 14 #e0e0e0 #404040 0;
-#X obj 720 90 cnv 15 319 150 empty empty get\ pointer 20 12 0 14 #e0e0e0
+#N canvas 14 83 1469 830 12;
+#X obj 500 90 cnv 15 208 250 empty empty template\\\ and\\\ click 20
+12 0 14 #e0e0e0 #404040 0;
+#X obj 718 91 cnv 15 319 180 empty empty get\ pointer 20 12 0 14 #e0e0e0
 #404040 0;
-#X obj 720 260 cnv 15 319 117 empty empty Change\ text 20 12 0 14 #e0e0e0
-#404040 0;
-#X obj 720 400 cnv 15 320 160 empty empty Change\ background\ color
+#X obj 720 290 cnv 15 319 117 empty empty Change\\\ text 20 12 0 14
+#e0e0e0 #404040 0;
+#X obj 720 430 cnv 15 320 160 empty empty Change\\\ background\\\ color
 20 12 0 14 #e0e0e0 #404040 0;
-#X obj 340 400 cnv 15 219 159 empty empty without\ last\ char 20 12
-0 14 #e0e0e0 #404040 0;
-#X obj 320 290 cnv 15 164 60 empty empty main\ list\ storage 20 12
-0 14 #e0e0e0 #404040 0;
+#X obj 340 400 cnv 15 219 159 empty empty without\\\ last\\\ char 20
+12 0 14 #e0e0e0 #404040 0;
+#X obj 320 290 cnv 15 164 60 empty empty main\\\ list\\\ storage 20
+12 0 14 #e0e0e0 #404040 0;
 #X obj 220 40 key;
 #X obj 330 320 list prepend;
 #X obj 280 570 list tosymbol;
@@ -28,7 +28,7 @@ height;
 #X obj 354 530 list;
 #X obj 130 209 t b b;
 #X obj 190 660 symbol;
-#X symbolatom 260 630 10 0 0 0 preview - -, f 10;
+#X symbolatom 260 630 10 0 0 0 preview - - 0;
 #X obj 190 689 outlet;
 #X obj 220 70 spigot;
 #X obj 260 40 tgl 15 0 empty empty Active 17 7 0 10 #fcfcfc #000000
@@ -40,49 +40,48 @@ height;
 #X obj 260 10 r \$0-active;
 #X obj 540 190 r \$0-activity;
 #X obj 80 140 s \$0-activity;
-#X floatatom 130 100 5 0 0 0 - - -, f 5;
+#X floatatom 130 100 5 0 0 0 - - - 0;
 #X obj 520 250 bng 15 250 50 0 empty empty empty 17 7 0 10 #fcfcfc
 #000000 #000000;
 #X obj 360 250 t b b;
-#X floatatom 360 170 5 0 0 0 - - -, f 5;
+#X floatatom 360 170 5 0 0 0 - - - 0;
 #X obj 220 100 t b f;
 #X obj 280 600 t a a;
 #X obj 560 250 del 2000;
 #X obj 520 160 route click;
-#X obj 730 350 set -symbol display-struct text;
-#X obj 720 180 pointer;
-#X obj 730 320 symbol;
-#X obj 730 290 r \$0-display;
+#X obj 730 380 set -symbol display-struct text;
+#X obj 720 210 pointer;
+#X obj 730 350 symbol;
+#X obj 730 320 r \$0-display;
 #X obj 720 120 loadbang;
-#X obj 720 210 s \$0-pointer;
-#X obj 940 280 r \$0-pointer;
-#X obj 900 430 r \$0-pointer;
-#X obj 730 520 set display-struct background;
-#X msg 730 490 777;
-#X msg 770 490 999;
-#X obj 730 431 r \$0-active;
-#X obj 730 460 moses 1;
+#X obj 720 240 s \$0-pointer;
+#X obj 940 310 r \$0-pointer;
+#X obj 900 460 r \$0-pointer;
+#X obj 730 550 set display-struct background;
+#X msg 730 520 777;
+#X msg 770 520 999;
+#X obj 730 461 r \$0-active;
+#X obj 730 490 moses 1;
 #X obj 210 209 t b b;
-#X obj 900 459 t b p;
-#X msg 720 150 traverse pd-\$0-display-data \, next;
-#N canvas 260 300 450 375 \$0-display-data 0;
-#X scalar display-struct  777 200 20 \;;
-#X coords 0 0 150 20 150 20 1;
+#X obj 900 489 t b p;
+#N canvas 647 285 450 375 \$0-display-data 0;
+#X scalar display-struct text 200 20 0 \;;
+#X coords 0 0 150 20 150 20 2 0 0;
 #X restore 600 20 pd \$0-display-data;
-#N canvas 373 244 450 775 \$0-display-template 0;
+#N canvas 247 212 450 775 \$0-display-template 0;
 #X obj 10 60 outlet;
 #X obj 10 10 struct display-struct symbol text float background float
 width float height;
 #X obj 10 90 filledpolygon background 0 0 0 0 width 0 width height
 0 height 0 0;
-#X obj 10 140 drawsymbol text 2 2 0 0;
+#X obj 10 140 drawsymbol text 2 2 0 >;
 #X connect 1 0 0 0;
 #X coords 0 0 1 1 137 60 0;
 #X restore 520 130 pd \$0-display-template;
-#X obj 940 310 t b p;
+#X obj 940 340 t b p;
 #X obj 520 220 t b b;
-#X obj 1050 90 cnv 15 200 270 empty empty Change\ width/height 20 12
-0 14 #e0e0e0 #404040 0;
+#X obj 1050 90 cnv 15 200 270 empty empty Change\\\ width/height 20
+12 0 14 #e0e0e0 #404040 0;
 #X obj 1150 121 r \$0-pointer;
 #X obj 1150 150 t b p;
 #X obj 1060 121 r \$0-width;
@@ -93,6 +92,8 @@ width float height;
 #X obj 1060 241 r \$0-heigth;
 #X msg 1150 300 20;
 #X obj 1060 330 set display-struct height;
+#X obj 720 150 \$0;
+#X msg 720 180 traverse pd-\$1-display-data \, next;
 #X connect 6 0 23 0;
 #X connect 7 0 9 0;
 #X connect 7 0 17 0;
@@ -122,7 +123,7 @@ width float height;
 #X connect 26 0 28 0;
 #X connect 27 0 28 0;
 #X connect 29 0 24 0;
-#X connect 30 0 59 0;
+#X connect 30 0 58 0;
 #X connect 32 0 36 0;
 #X connect 33 0 27 0;
 #X connect 34 0 7 0;
@@ -132,12 +133,12 @@ width float height;
 #X connect 37 0 21 0;
 #X connect 37 1 25 0;
 #X connect 38 0 26 0;
-#X connect 39 0 59 0;
+#X connect 39 0 58 0;
 #X connect 41 0 45 0;
 #X connect 42 0 40 0;
 #X connect 43 0 42 0;
-#X connect 44 0 55 0;
-#X connect 46 0 58 0;
+#X connect 44 0 70 0;
+#X connect 46 0 57 0;
 #X connect 47 0 54 0;
 #X connect 49 0 48 0;
 #X connect 50 0 48 0;
@@ -148,20 +149,21 @@ width float height;
 #X connect 53 1 20 0;
 #X connect 54 0 49 0;
 #X connect 54 1 48 1;
-#X connect 55 0 41 0;
-#X connect 57 0 39 0;
-#X connect 58 0 42 0;
-#X connect 58 1 40 1;
-#X connect 59 0 33 0;
-#X connect 59 1 38 0;
-#X connect 61 0 62 0;
+#X connect 56 0 39 0;
+#X connect 57 0 42 0;
+#X connect 57 1 40 1;
+#X connect 58 0 33 0;
+#X connect 58 1 38 0;
+#X connect 60 0 61 0;
+#X connect 61 0 63 0;
+#X connect 61 1 64 1;
 #X connect 62 0 64 0;
-#X connect 62 1 65 1;
-#X connect 63 0 65 0;
-#X connect 64 0 65 0;
-#X connect 66 0 67 0;
+#X connect 63 0 64 0;
+#X connect 65 0 66 0;
+#X connect 66 0 68 0;
+#X connect 66 1 69 1;
 #X connect 67 0 69 0;
-#X connect 67 1 70 1;
-#X connect 68 0 70 0;
-#X connect 69 0 70 0;
-#X coords 0 -1 1 1 204 25 1 597 17;
+#X connect 68 0 69 0;
+#X connect 70 0 71 0;
+#X connect 71 0 41 0;
+#X coords 0 -1 1 1 204 25 2 597 17;

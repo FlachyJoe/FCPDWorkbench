@@ -14,7 +14,7 @@
 #X obj 130 180 list length;
 #X obj 130 210 == 4;
 #X obj 10 260 spigot;
-#X obj 110 149 t l l;
+#X obj 110 149 t a a;
 #X scalar draw-image-struct 122 102 0 0 \;;
 #X obj 10 30 inlet;
 #X obj 10 230 list;
