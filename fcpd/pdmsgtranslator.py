@@ -190,7 +190,7 @@ class PDMsgTranslator:
                         retValue = App.Units.parseQuantity(words[0])
                         retType = cls.QUANTITY
                         usedWords = 1
-                    except OSError:
+                    except (OSError, ValueError):
                         # String
                         retValue = words[0]
                         retType = cls.STRING
