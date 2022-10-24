@@ -94,7 +94,7 @@ def main(args):
         patch.addDef(Object(-1, gopWidth / 2, LABEL_HEIGHT + TITLE_HEIGHT + 19 , "ggee/image", icons[0]))
 
     # set GraphOnParent
-    patch.coords = Coords(0, 0, 1, 1, gopWidth, gopHeight, 2)
+    patch.setCoords(0, 0, 1, 1, gopWidth, gopHeight, 2)
 
     # output result patch
     print(str(patch))
