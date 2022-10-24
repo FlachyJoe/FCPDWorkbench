@@ -41,8 +41,8 @@ def getCleanDoc(func):
         dash = docstr.find("--")+3
         return docstr[dash:].replace(",", " \, ").replace("\n", " \; ")
 
-def generate(dirname):
-    func_list = inspect.getmembers(Part, inspect.isroutine)
+def generate(dirname, what):
+    func_list = inspect.getmembers(what, inspect.isroutine)
     for func_name, func in func_list:
         if not func_name.startswith("_"):
             pdname = func_name #.replace("make","")
@@ -89,8 +89,8 @@ def generate(dirname):
             with open(os.path.join(dirname, pdname) + ".pd", 'w') as file:
                 file.write(cnv)
 
-def generateHelp(dirname):
-    func_list = inspect.getmembers(Part, inspect.isroutine)
+def generateHelp(dirname, what):
+    func_list = inspect.getmembers(what, inspect.isroutine)
     index=[]
     for func_name, func in func_list:
         if not func_name.startswith("_"):
@@ -142,12 +142,13 @@ def generateHelp(dirname):
             file.write(hlp)
 
 def main():
+    what = Part
     where = os.path.realpath(os.path.join(os.path.dirname(__file__),"../pdlib/part"))
-    generate(where)
-    Msg("Pure-Data patches for Part have been written in %s\n" %where)
+    generate(where, what)
+    Msg("Pure-Data patches for Part.Geom2d have been written in %s\n" %where)
 
     where = os.path.realpath(os.path.join(os.path.dirname(__file__),"../pdhelp/part"))
-    generateHelp(where)
-    Msg("Pure-Data help for Part have been written in %s\n" %where)
+    generateHelp(where, what)
+    Msg("Pure-Data help for Partt.Geom2d have been written in %s\n" %where)
 
 main()
