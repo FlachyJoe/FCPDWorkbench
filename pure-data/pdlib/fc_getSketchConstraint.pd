@@ -1,4 +1,3 @@
-#N struct draw-image-struct float x float y float w float h;
 #N canvas 585 379 450 300 12;
 #X obj 70 40 inlet;
 #X obj 151 40 inlet;
@@ -8,7 +7,6 @@
 #X text 150 20 Constraint;
 #X obj 70 70 list append \$1;
 #X obj 70 100 list prepend get constraint;
-#X scalar draw-image-struct 92 66 0 0 \;;
 #X obj 10 40 inlet;
 #X obj 10 130 list;
 #X obj 10 190 t b a;
@@ -17,10 +15,10 @@
 #X text 10 240 done;
 #X connect 0 0 6 0;
 #X connect 1 0 6 1;
-#X connect 3 0 11 0;
+#X connect 3 0 10 0;
 #X connect 6 0 7 0;
-#X connect 7 0 10 1;
-#X connect 9 0 10 0;
-#X connect 10 0 3 0;
-#X connect 11 0 12 0;
-#X connect 11 1 2 0;
+#X connect 7 0 9 1;
+#X connect 8 0 9 0;
+#X connect 9 0 3 0;
+#X connect 10 0 11 0;
+#X connect 10 1 2 0;
