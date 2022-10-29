@@ -22,8 +22,9 @@
 #
 #
 
+from os import path
 from os.path import dirname, basename, splitext, join
-from glob import glob
+import argparse
 
 from PdParser import Patch, Object, Canvas, Coords, byX
 
@@ -42,8 +43,15 @@ def cnvLabel(x, y, text):
                   text=text, textSize=8, boxSize=6, background="#000000", foreground="#ffffff")
 
 # process the input file and print the result in stdout
-def main(args):
-    filename: str = args[1]
+def main():
+    parser = argparse.ArgumentParser(description='Beautify a PureData patch')
+    parser.add_argument('--icon', type=str, help='GIF to show as icon', dest='icon')
+    parser.add_argument('input', type=str, help='file to process')
+    parser.add_argument('output', type=str, help='file to store result', default='-')
+
+    args = parser.parse_args()
+
+    filename: str = args.input
     patch = Patch.fromFile(filename)
 
     # retrieve objects
@@ -52,11 +60,17 @@ def main(args):
     outlets = patch.getDefOfType("outlet") + patch.getDefOfType("outlet~")
 
     # look for icon
-    icons = glob(join(dirname(filename),'*.gif'))
+    if args.icon:
+        icon = args.icon
+    else:
+        icon = path.splitext(filename)[0] + ".gif"
+
+    if not path.exists(icon):
+        icon = False
 
     # GraphOnParent dimensions
-    gopWidth = LABEL_WIDTH * len(inlets) + 10
-    gopHeight = 2 * LABEL_HEIGHT + TITLE_HEIGHT + (34 if icons else 10)
+    gopWidth = LABEL_WIDTH * max(len(inlets), len(outlets)) + 10
+    gopHeight = 2 * LABEL_HEIGHT + TITLE_HEIGHT + (34 if icon else 10)
 
     # beautify inlets
     inletDeltaX = ((gopWidth - LABEL_WIDTH) / (len(inlets) - 1)) if len(inlets) > 1 else 0
@@ -72,17 +86,17 @@ def main(args):
         patch.addDef(cnvLabel(inletDeltaX*i, 0, comment))
 
     # beautify outlets
-        outletDeltaX = ((gopWidth - LABEL_WIDTH) / (len(outlets) - 1)) if len(outlets) > 1 else 0
-        for i, inlet in enumerate(sorted(outlets, key=byX)):
-            comment = f'Outlet {i}'
+    outletDeltaX = ((gopWidth - LABEL_WIDTH) / (len(outlets) - 1)) if len(outlets) > 1 else 0
+    for i, outlet in enumerate(sorted(outlets, key=byX)):
+        comment = f'Outlet {i}'
 
-            # look for comment on bottom of outlet
-            for text in allTexts:
-                if text.inRect(inlet.x - MAX_TEXT_DISTANCE, inlet.x + MAX_TEXT_DISTANCE,
-                               inlet.y, inlet.y + MAX_TEXT_DISTANCE):
-                    comment = text.value
+        # look for comment on bottom of outlet
+        for text in allTexts:
+            if text.inRect(outlet.x - MAX_TEXT_DISTANCE, outlet.x + MAX_TEXT_DISTANCE,
+                           outlet.y, outlet.y + MAX_TEXT_DISTANCE):
+                comment = text.value
 
-            patch.addDef(cnvLabel(outletDeltaX*i, gopHeight - LABEL_HEIGHT, comment))
+        patch.addDef(cnvLabel(outletDeltaX*i, gopHeight - LABEL_HEIGHT, comment))
 
     # set title
     title, _ = splitext(basename(filename))
@@ -90,17 +104,21 @@ def main(args):
                   text=title, textSize=12, boxSize=6, background="#ffffff", foreground="#000000"))
 
     # set icon
-    if icons:
-        patch.addDef(Object(-1, gopWidth / 2, LABEL_HEIGHT + TITLE_HEIGHT + 19 , "ggee/image", icons[0]))
+    if icon:
+        patch.addDef(Object(-1, gopWidth / 2, LABEL_HEIGHT + TITLE_HEIGHT + 19 , "ggee/image", icon))
 
     # set GraphOnParent
     patch.setCoords(0, 0, 1, 1, gopWidth, gopHeight, 2)
 
     # output result patch
-    print(str(patch))
+    if args.output != "-" :
+        output_stream = open(args.output, 'w')
+    else:
+        output_stream = sys.stdout
 
+    print(str(patch), file=output_stream)
     return 0
 
 if __name__ == '__main__':
     import sys
-    sys.exit(main(sys.argv))
+    sys.exit(main())
