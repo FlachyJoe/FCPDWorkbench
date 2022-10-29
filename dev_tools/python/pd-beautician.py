@@ -26,7 +26,7 @@ from os import path
 from os.path import dirname, basename, splitext, join
 import argparse
 
-from PdParser import Patch, Object, Canvas, Coords, byX
+from PdParser import Patch, Object, Canvas, Coords, byX, byY
 
 # where to look for text around sockets
 MAX_TEXT_DISTANCE = 50
@@ -72,6 +72,9 @@ def main():
     gopWidth = LABEL_WIDTH * max(len(inlets), len(outlets)) + 10
     gopHeight = 2 * LABEL_HEIGHT + TITLE_HEIGHT + (34 if icon else 10)
 
+    gopLeft = max(patch.definitions, key=byX).x + 20
+    gopTop = max(patch.definitions, key=byY).y + 20
+
     # beautify inlets
     inletDeltaX = ((gopWidth - LABEL_WIDTH) / (len(inlets) - 1)) if len(inlets) > 1 else 0
     for i, inlet in enumerate(sorted(inlets, key=byX)):
@@ -83,7 +86,7 @@ def main():
                            inlet.y - MAX_TEXT_DISTANCE, inlet.y):
                 comment = text.value
 
-        patch.addDef(cnvLabel(inletDeltaX*i, 0, comment))
+        patch.addDef(cnvLabel(gopLeft + inletDeltaX*i, gopTop, comment))
 
     # beautify outlets
     outletDeltaX = ((gopWidth - LABEL_WIDTH) / (len(outlets) - 1)) if len(outlets) > 1 else 0
@@ -96,19 +99,19 @@ def main():
                            outlet.y, outlet.y + MAX_TEXT_DISTANCE):
                 comment = text.value
 
-        patch.addDef(cnvLabel(outletDeltaX*i, gopHeight - LABEL_HEIGHT, comment))
+        patch.addDef(cnvLabel(gopLeft + outletDeltaX*i, gopTop + gopHeight - LABEL_HEIGHT, comment))
 
     # set title
     title, _ = splitext(basename(filename))
-    patch.addDef(Canvas(x=(gopWidth - 80)/2, y=LABEL_HEIGHT+5, width=80, height=TITLE_HEIGHT, dX=5, dY=8,
+    patch.addDef(Canvas(x=gopLeft + (gopWidth - 80)/2, y=gopTop + LABEL_HEIGHT+5, width=80, height=TITLE_HEIGHT, dX=5, dY=8,
                   text=title, textSize=12, boxSize=6, background="#ffffff", foreground="#000000"))
 
     # set icon
     if icon:
-        patch.addDef(Object(-1, gopWidth / 2, LABEL_HEIGHT + TITLE_HEIGHT + 19 , "ggee/image", icon))
+        patch.addDef(Object(-1, gopLeft + gopWidth / 2, gopTop + LABEL_HEIGHT + TITLE_HEIGHT + 19 , "ggee/image", icon))
 
     # set GraphOnParent
-    patch.setCoords(0, 0, 1, 1, gopWidth, gopHeight, 2)
+    patch.setCoords(left=gopLeft, top=gopTop, width=gopWidth, height=gopHeight)
 
     # output result patch
     if args.output != "-" :
