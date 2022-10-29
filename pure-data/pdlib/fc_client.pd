@@ -100,7 +100,6 @@
 #X obj 1240 260 route close;
 #X obj 738 710 else/avg 50;
 #X obj 834 669 init reset 5;
-#X obj 713 211 print;
 #X connect 11 0 42 0;
 #X connect 11 0 43 0;
 #X connect 12 0 15 0;
@@ -120,7 +119,6 @@
 #X connect 28 0 31 0;
 #X connect 28 1 11 0;
 #X connect 29 0 74 0;
-#X connect 29 0 86 0;
 #X connect 29 0 11 0;
 #X connect 31 0 32 0;
 #X connect 32 0 44 0;
