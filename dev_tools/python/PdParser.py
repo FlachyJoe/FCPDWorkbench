@@ -32,8 +32,9 @@ else:
     def eprint(*args, **kwargs): pass
 
 
-MULTILINE_ERROR = ValueError('\';\' found. Only one object can be convert. \
- Please split before convert.')
+def MULTILINE_ERROR(lineNumber):
+    return ValueError(f"Error line {lineNumber}: \';\' found.\n"
+                      "Only one object can be converted. Please split before convert.")
 
 
 def unescape(source: str) -> str:
@@ -56,7 +57,7 @@ def byX(o):
 
 
 def byY(o):
-    return o.Y
+    return o.y
 
 
 def byLine(o):
@@ -117,7 +118,7 @@ class FileLine:
         if self.endswith(';'):
             self.string = self.string[:-1]
         if ';' in self.string:
-            raise MULTILINE_ERROR
+            raise MULTILINE_ERROR(self.lineNumber)
         return self.string.split()
 
 
@@ -167,7 +168,8 @@ class Object(Definition):
         self.args = args
 
     def __str__(self):
-        return f"#X obj {self.x} {self.y} {self.type}{' ' if self.args else ''}{' '.join([escape(s) for s in self.args])};"
+        return (f"#X obj {self.x} {self.y} {self.type}"
+                f"{' ' if self.args else ''}{' '.join([escape(s) for s in self.args])};")
 
     @staticmethod
     def fromLine(code: FileLine):
@@ -183,7 +185,7 @@ class Coords:
         the visual range of a frameset
         see https://puredata.info/docs/developer/PdFileFormat#r33
     '''
-    def __init__(self, xFrom, yTo, xTo, yFrom, width, height, gop):
+    def __init__(self, xFrom, yTo, xTo, yFrom, width, height, gop, left=0, top=0):
         self.xFrom = xFrom
         self.yTo = yTo
         self.xTo = xTo
@@ -191,9 +193,12 @@ class Coords:
         self.width = width
         self.height = height
         self.gop = gop
+        self.left = left
+        self.top = top
 
     def __str__(self):
-        return f"#X coords {self.xFrom} {self.yTo} {self.xTo} {self.yFrom} {self.width} {self.height} {self.gop} 0 0;"
+        return (f"#X coords {self.xFrom} {self.yTo} {self.xTo} {self.yFrom}"
+                f" {self.width} {self.height} {self.gop} {self.left} {self.top};")
 
     @staticmethod
     def fromLine(code: FileLine):
@@ -201,7 +206,7 @@ class Coords:
         if words[1] != 'coords':
             raise ValueError('This is not a coords definition.')
 
-        return Coords(*words[2:9])
+        return Coords(*words[2:])
 
 
 class Message(Definition):
@@ -307,11 +312,14 @@ class Patch:
         self.arrays = arrays
 
     def __str__(self):
-        contents = [self.canvas] + self.structs + sorted(self.definitions + self.subPatches , key=byLine) + self.connects + self.coords
+        contents = ([self.canvas] + self.structs
+                    + sorted(self.definitions + self.subPatches , key=byLine)
+                    + self.connects + self.coords)
         return '\n'.join([str(s) for s in contents])
 
-    def setCoords(self, xFrom, yTo, xTo, yFrom, width, height, gop):
-        self.coords = [Coords(xFrom, yTo, xTo, yFrom, width, height, gop)]
+    def setCoords(self, xFrom=0, yTo=0, xTo=1, yFrom=1,
+                  width=100, height=100, gop=2, left=0, top=0):
+        self.coords = [Coords(xFrom, yTo, xTo, yFrom, width, height, gop, left, top)]
 
     def getDefOfType(self, type: str) -> list[Definition]:
         return [obj for obj in self.definitions if obj.type == type]
@@ -349,7 +357,9 @@ class Patch:
         firstLine = int(code[0])
 
         # sub-patches
-        subPatchesCode = [code[start - firstLine:end - firstLine] for lvl, start, end in subPatchesLinesNumber if lvl == 1]
+        subPatchesCode = [code[start - firstLine:end - firstLine]
+                          for lvl, start, end in subPatchesLinesNumber
+                          if lvl == 1]
         subPatchesLines = set(l for lines in subPatchesCode for l in lines)
         subPatches = []
         for lines in subPatchesCode:
@@ -434,10 +444,10 @@ class SubPatch(Definition):
             return SubPatch(int(code[0]), fWords[2], fWords[3],
                             hWords[2], hWords[3], hWords[4], hWords[5],
                             fWords[5], fWords[6:], defContents)
-        else: # graph case, only 5 words
-            return SubPatch(int(code[0]), fWords[2], fWords[3],
-                            hWords[2], hWords[3], hWords[4], hWords[5],
-                            'graph', None, defContents)
+        # graph case, only 5 words
+        return SubPatch(int(code[0]), fWords[2], fWords[3],
+                        hWords[2], hWords[3], hWords[4], hWords[5],
+                        'graph', None, defContents)
 
 
 class PdFile:
@@ -466,7 +476,8 @@ class FloatAtom(Definition):
         a floatatom
         see https://puredata.info/docs/developer/PdFileFormat#r34
     '''
-    def __init__(self, index, x, y, width, lowerLimit, upperLimit, labelPos, label='-', receive='-', send='-', size='0'):
+    def __init__(self, index, x, y, width, lowerLimit, upperLimit, labelPos,
+                 label='-', receive='-', send='-', size='0'):
         super().__init__(index, x, y, 'floatatom')
         self.values = [width, lowerLimit, upperLimit, labelPos, label, receive, send, size]
 
@@ -487,7 +498,8 @@ class SymbolAtom(Definition):
         a symbolatom
         see https://puredata.info/docs/developer/PdFileFormat#r3A
     '''
-    def __init__(self, index, x, y, width, lowerLimit, upperLimit, labelPos, label='-', receive='-', send='-', size='0'):
+    def __init__(self, index, x, y, width, lowerLimit, upperLimit, labelPos,
+                 label='-', receive='-', send='-', size='0'):
         super().__init__(index, x, y, 'symbolatom')
         self.values = [width, lowerLimit, upperLimit, labelPos, label, receive, send, size]
 
@@ -517,8 +529,9 @@ class Array:
         self.datas = datas
 
     def __str__(self):
-        lines = f"#X array {self.name} {self.size} float {self.saveFlag};\n#A"
-        lines += ' '.join(self.datas)
+        lines = (f"#X array {self.name} {self.size} float {self.saveFlag};\n#A"
+                ' '.join(self.datas))
+        return lines
 
     @staticmethod
     def fromLines(code: list[FileLine]):
