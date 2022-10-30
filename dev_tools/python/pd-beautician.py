@@ -26,7 +26,7 @@ from os import path
 from os.path import dirname, basename, splitext, join
 import argparse
 
-from PdParser import Patch, Object, Canvas, Coords, byX, byY
+from PdParser import Patch, Object, Canvas, Coords, byX, byY, Text
 
 # where to look for text around sockets
 MAX_TEXT_DISTANCE = 50
@@ -83,6 +83,8 @@ def main():
     gopLeft = min(patch.definitions, key=byX).x - gopWidth - 20
     gopTop = min(patch.definitions, key=byY).y + 20
 
+    patch.addDef(Text(x=gopLeft, y=gopTop - 10, value="Autogen GUI >>>"))
+
     # beautify inlets
     labelDeltaX = ((gopWidth - LABEL_WIDTH) / (len(inlets) - 1)) if len(inlets) > 1 else 0
     socketDeltaX = ((gopWidth - SOCKET_WIDTH) / (len(inlets) - 1)) if len(inlets) > 1 else 0
@@ -126,8 +128,12 @@ def main():
 
     # set icon
     if icon:
-        patch.addDef(Object(-1, gopLeft + gopWidth / 2, gopTop + LABEL_HEIGHT + TITLE_HEIGHT + 19,
-                            "ggee/image", icon))
+        patch.addDef(Object(x=gopLeft + gopWidth / 2,
+                            y=gopTop + LABEL_HEIGHT + TITLE_HEIGHT + 19,
+                            type="ggee/image",
+                            args=icon))
+
+    patch.addDef(Text(x=gopLeft, y=gopTop + gopHeight + 10, value="<<< Autogen GUI"))
 
     # set GraphOnParent
     patch.setCoords(left=gopLeft, top=gopTop, width=gopWidth, height=gopHeight)
