@@ -126,7 +126,7 @@ class Definition:
     '''
         Represents a PD 'box'
     '''
-    def __init__(self, index: int, x: int, y: int, type: str):
+    def __init__(self, x: int, y: int, index: int=-1, type: str='nothing'):
         self.index = index
         self.x = int(x)
         self.y = int(y)
@@ -161,8 +161,8 @@ class Object(Definition):
         a PureData object
         see https://puredata.info/docs/developer/PdFileFormat#r36
     '''
-    def __init__(self, index: int, x: int, y: int, type: str, args):
-        super().__init__(index, x, y, type)
+    def __init__(self, x: int, y: int, index: int, type: str, args):
+        super().__init__(x, y, index, type)
         if not isinstance(args, list):
             args = [args]
         self.args = args
@@ -177,7 +177,7 @@ class Object(Definition):
         if words[1] != 'obj':
             raise ValueError('This is not an object definition.')
 
-        return Object(int(code), words[2], words[3], words[4], [unescape(s) for s in words[5:]])
+        return Object(words[2], words[3], int(code), words[4], [unescape(s) for s in words[5:]])
 
 
 class Coords:
@@ -214,8 +214,8 @@ class Message(Definition):
         a PureData message
         see https://puredata.info/docs/developer/PdFileFormat#r35
     '''
-    def __init__(self, index: int, x: int, y: int, value: str):
-        super().__init__(index, x, y, 'msg')
+    def __init__(self, x: int, y: int, index: int=-1, value: str='empty'):
+        super().__init__(x, y, index, 'msg')
         self.value = value
 
     def __str__(self):
@@ -227,7 +227,7 @@ class Message(Definition):
         if words[1] != 'msg':
             raise ValueError('This is not a message definition.')
 
-        return Message(int(code), words[2], words[3], ' '.join(words[4:]))
+        return Message(words[2], words[3], int(code), ' '.join(words[4:]))
 
 
 class Text(Definition):
@@ -236,8 +236,8 @@ class Text(Definition):
         see https://puredata.info/docs/developer/PdFileFormat#r3B
     '''
 
-    def __init__(self, index: int, x: int, y: int, value: str):
-        super().__init__(index, x, y, 'text')
+    def __init__(self, x: int, y: int, index: int=-1, value: str='empty'):
+        super().__init__(x, y, index, 'text')
         self.value = value
 
     def __str__(self):
@@ -249,7 +249,7 @@ class Text(Definition):
         if words[1] != 'text':
             raise ValueError('This is not a text definition.')
 
-        return Text(int(code), words[2], words[3], ' '.join(words[4:]))
+        return Text(words[2], words[3], int(code), ' '.join(words[4:]))
 
 
 class Struct:
@@ -403,9 +403,9 @@ class SubPatch(Definition):
         a PureData sub-patch
     '''
 
-    def __init__(self, index: int, x: int, y: int, width: int, height: int,
+    def __init__(self, x: int, y: int, index: int, width: int, height: int,
                  winX: int, winY: int, name: str, args: str, contents: Patch):
-        super().__init__(index, x, y, 'subpatch')
+        super().__init__(x, y, index, 'subpatch')
         self.width = width
         self.height = height
         self.winX = winX
@@ -441,11 +441,11 @@ class SubPatch(Definition):
         defContents = Patch.fromLines(contents)
 
         if len(fWords)>5:
-            return SubPatch(int(code[0]), fWords[2], fWords[3],
+            return SubPatch(fWords[2], fWords[3], int(code[0]),
                             hWords[2], hWords[3], hWords[4], hWords[5],
                             fWords[5], fWords[6:], defContents)
         # graph case, only 5 words
-        return SubPatch(int(code[0]), fWords[2], fWords[3],
+        return SubPatch(fWords[2], fWords[3], int(code[0]),
                         hWords[2], hWords[3], hWords[4], hWords[5],
                         'graph', None, defContents)
 
@@ -476,9 +476,9 @@ class FloatAtom(Definition):
         a floatatom
         see https://puredata.info/docs/developer/PdFileFormat#r34
     '''
-    def __init__(self, index, x, y, width, lowerLimit, upperLimit, labelPos,
+    def __init__(self, x, y, index=-1, width=5, lowerLimit=0, upperLimit=0, labelPos=0,
                  label='-', receive='-', send='-', size='0'):
-        super().__init__(index, x, y, 'floatatom')
+        super().__init__(x, y, index, 'floatatom')
         self.values = [width, lowerLimit, upperLimit, labelPos, label, receive, send, size]
 
     def __str__(self):
@@ -490,7 +490,7 @@ class FloatAtom(Definition):
         if words[1] != 'floatatom':
             raise ValueError('This is not a FloatAtom definition.')
 
-        return FloatAtom(int(code), words[2], words[3], *words[4:])
+        return FloatAtom(words[2], words[3], int(code), *words[4:])
 
 
 class SymbolAtom(Definition):
@@ -498,9 +498,9 @@ class SymbolAtom(Definition):
         a symbolatom
         see https://puredata.info/docs/developer/PdFileFormat#r3A
     '''
-    def __init__(self, index, x, y, width, lowerLimit, upperLimit, labelPos,
+    def __init__(self, x, y, index=-1, width=10, lowerLimit=0, upperLimit=0, labelPos=0,
                  label='-', receive='-', send='-', size='0'):
-        super().__init__(index, x, y, 'symbolatom')
+        super().__init__(x, y, index, 'symbolatom')
         self.values = [width, lowerLimit, upperLimit, labelPos, label, receive, send, size]
 
     def __str__(self):
@@ -512,8 +512,29 @@ class SymbolAtom(Definition):
         if words[1] != 'symbolatom':
             raise ValueError('This is not a SymbolAtom definition.')
 
-        return SymbolAtom(int(code), words[2], words[3], *words[4:])
+        return SymbolAtom(words[2], words[3], int(code), *words[4:])
 
+
+class ListBox(Definition):
+    '''
+        a listbox
+        see https://puredata.info/docs/developer/PdFileFormat#r3A
+    '''
+    def __init__(self, x, y, index=-1, width=20, lowerLimit=0, upperLimit=0, labelPos=0,
+                 label='-', receive='-', send='-', size='0'):
+        super().__init__(x, y, index, 'listbox')
+        self.values = [width, lowerLimit, upperLimit, labelPos, label, receive, send, size]
+
+    def __str__(self):
+        return f"#X listbox {self.x} {self.y} {' '.join(self.values)};"
+
+    @staticmethod
+    def fromLine(code: FileLine):
+        words = code.checkAndSplit()
+        if words[1] != 'symbolatom':
+            raise ValueError('This is not a SymbolAtom definition.')
+
+        return SymbolAtom(words[2], words[3], int(code), *words[4:])
 
 class Array:
     '''
@@ -557,9 +578,9 @@ class Canvas (Object):
     '''
         helper for canvas creation
     '''
-    def __init__(self, index=-1, x=100, y=100,
+    def __init__(self, x=100, y=100, index=-1,
                  boxSize=15, width=100, height=60, send='empty', receive='empty',
                  text='empty', dX=20, dY=12, font=0, textSize=14,
                  background="#e0e0e0", foreground="#404040"):
-        super().__init__(index, x, y, "cnv", [boxSize, width, height, send, receive,
+        super().__init__(x, y, index, "cnv", [boxSize, width, height, send, receive,
                          escape(text), dX, dY, font, textSize, background, foreground])
