@@ -3,6 +3,9 @@
 #X obj 10 100 fc_process;
 #X msg 10 40 endedit;
 #X obj 10 70 list append \$1;
+#X obj 101 101 cnv 15 80 18 empty empty Saved\ in\ FC 0 10 0 12 #ffffff
+#bbbbbb 0;
 #X connect 0 0 2 0;
 #X connect 2 0 3 0;
 #X connect 3 0 1 0;
+#X coords 0 -1 1 1 100 20 2 100 100;

@@ -7,6 +7,15 @@
 #X obj 100 50 loadbang;
 #X obj 100 150 route OK None;
 #X obj 150 190 b;
+#X text 193 256 selection;
+#X text -34 40 Autogen GUI >>>;
+#X obj -26 85 cnv 6 10 15 empty empty fc_selObserver 5 8 0 12 #ffffff
+#000000 0;
+#X obj -34 113 cnv 2 10 2 empty empty empty 20 12 0 14 #000000 #404040
+0;
+#X obj -34 103 cnv 10 75 10 empty empty selection 5 6 0 8 #000000 #ffffff
+0;
+#X text -34 145 <<< Autogen GUI;
 #X connect 0 0 1 0;
 #X connect 1 0 6 0;
 #X connect 2 0 1 0;
@@ -15,3 +24,4 @@
 #X connect 6 1 7 0;
 #X connect 6 2 3 0;
 #X connect 7 0 3 0;
+#X coords 0 0 1 1 114 35 2 -34 80;

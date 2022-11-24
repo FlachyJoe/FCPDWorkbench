@@ -1,18 +1,37 @@
 #N canvas 588 235 604 638 12;
-#X obj 90 10 inlet;
-#X obj 270 10 inlet;
-#X obj 90 170 list prepend Placement;
-#X obj 90 40 t a a;
-#X obj 90 130 spigot;
-#X obj 270 40 t a a;
-#X obj 270 130 spigot;
-#X obj 90 260 outlet;
-#X msg 120 100 1;
-#X msg 300 100 1;
-#X obj 120 70 isVector;
-#X obj 300 70 isRotation;
-#X obj 90 200 list append Rot 0 0 0;
-#X obj 90 230 list trim;
+#X obj 90 40 inlet;
+#X obj 270 40 inlet;
+#X obj 90 220 list prepend Placement;
+#X obj 90 70 t a a;
+#X obj 90 180 spigot;
+#X obj 270 70 t a a;
+#X obj 270 180 spigot;
+#X obj 90 310 outlet;
+#X msg 120 150 1;
+#X msg 300 150 1;
+#X obj 120 100 isVector;
+#X obj 300 100 isRotation;
+#X obj 90 250 list append Rot 0 0 0;
+#X obj 90 280 list trim;
+#X text 91 337 placement;
+#X text 90 13 vector;
+#X text 275 17 rotation;
+#X text -90 3 Autogen GUI >>>;
+#X obj -90 33 cnv 2 10 2 empty empty empty 20 12 0 14 #000000 #404040
+0;
+#X obj -90 35 cnv 10 75 10 empty empty vector 5 6 0 8 #000000 #ffffff
+0;
+#X obj 60 33 cnv 2 10 2 empty empty empty 20 12 0 14 #000000 #404040
+0;
+#X obj -5 35 cnv 10 75 10 empty empty rotation 5 6 0 8 #000000 #ffffff
+0;
+#X obj -41 48 cnv 6 10 15 empty empty placement 5 8 0 12 #ffffff #000000
+0;
+#X obj -90 76 cnv 2 10 2 empty empty empty 20 12 0 14 #000000 #404040
+0;
+#X obj -90 66 cnv 10 75 10 empty empty placement 5 6 0 8 #000000 #ffffff
+0;
+#X text -90 108 <<< Autogen GUI;
 #X connect 0 0 3 0;
 #X connect 1 0 5 0;
 #X connect 2 0 12 0;
@@ -28,3 +47,4 @@
 #X connect 11 0 9 0;
 #X connect 12 0 13 0;
 #X connect 13 0 7 0;
+#X coords 0 0 1 1 160 45 2 -90 33;

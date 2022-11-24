@@ -1,31 +1,49 @@
-#N canvas 334 453 450 373 12;
+#N canvas 443 223 755 522 12;
 #X obj 300 50 inlet;
 #X obj 130 50 inlet;
-#X text 300 20 Vector;
-#X text 130 20 Placement;
 #X obj 130 80 t a a;
-#X obj 130 280 outlet;
-#X obj 130 180 +;
-#X obj 170 180 +;
-#X obj 210 180 +;
+#X obj 130 430 outlet;
+#X obj 130 240 +;
+#X obj 244 242 +;
+#X obj 358 242 +;
 #X obj 130 120 placementPosRot;
 #X obj 300 80 vectorXYZ;
-#X obj 130 150 vectorXYZ;
-#X obj 130 250 setPlacementPos;
-#X obj 130 220 XYZvector;
-#X connect 0 0 10 0;
-#X connect 1 0 4 0;
-#X connect 4 0 9 0;
-#X connect 4 1 12 1;
-#X connect 6 0 13 0;
-#X connect 7 0 13 1;
-#X connect 8 0 13 2;
-#X connect 9 0 11 0;
-#X connect 10 0 6 1;
-#X connect 10 1 7 1;
-#X connect 10 2 8 1;
-#X connect 11 0 6 0;
-#X connect 11 1 7 0;
-#X connect 11 2 8 0;
-#X connect 12 0 5 0;
-#X connect 13 0 12 0;
+#X obj 130 180 vectorXYZ;
+#X obj 130 370 setPlacementPos;
+#X obj 130 280 XYZvector;
+#X text 131 452 placement;
+#X text 130 20 placement;
+#X text 299 24 vector;
+#X text -50 10 Autogen GUI >>>;
+#X obj -50 40 cnv 2 10 2 empty empty empty 20 12 0 14 #000000 #404040
+0;
+#X obj -50 42 cnv 10 75 10 empty empty placement 5 6 0 8 #000000 #ffffff
+0;
+#X obj 100 40 cnv 2 10 2 empty empty empty 20 12 0 14 #000000 #404040
+0;
+#X obj 35 42 cnv 10 75 10 empty empty vector 5 6 0 8 #000000 #ffffff
+0;
+#X obj -33 55 cnv 6 10 15 empty empty translatePlacement 5 8 0 12 #ffffff
+#000000 0;
+#X obj -50 83 cnv 2 10 2 empty empty empty 20 12 0 14 #000000 #404040
+0;
+#X obj -50 73 cnv 10 75 10 empty empty placement 5 6 0 8 #000000 #ffffff
+0;
+#X text -50 115 <<< Autogen GUI;
+#X connect 0 0 8 0;
+#X connect 1 0 2 0;
+#X connect 2 0 7 0;
+#X connect 2 1 10 1;
+#X connect 4 0 11 0;
+#X connect 5 0 11 1;
+#X connect 6 0 11 2;
+#X connect 7 0 9 0;
+#X connect 8 0 4 1;
+#X connect 8 1 5 1;
+#X connect 8 2 6 1;
+#X connect 9 0 4 0;
+#X connect 9 1 5 0;
+#X connect 9 2 6 0;
+#X connect 10 0 3 0;
+#X connect 11 0 10 0;
+#X coords 0 0 1 1 160 45 2 -50 40;

@@ -1,32 +1,82 @@
-#N struct draw-image-struct float x float y float w float h;
-#N canvas 453 110 783 595 12;
-#X obj 130 80 fc_getObjectProperty Placement;
-#X obj 480 470 fc_setObjectProperty Placement;
-#X text 40 220 translation vector;
-#X text 220 390 rotation vector;
-#X obj 180 190 f;
-#X obj 230 190 f;
-#X obj 280 190 f;
-#X obj 130 110 t b b b a;
-#X obj 340 360 f;
-#X obj 200 20 inlet;
-#X obj 250 20 inlet;
-#X obj 300 20 inlet;
-#X obj 130 20 inlet;
-#X obj 350 20 inlet;
-#X obj 390 360 f;
-#X obj 400 20 inlet;
-#X obj 440 360 f;
-#X obj 450 20 inlet;
-#X obj 180 280 t b b b a;
-#X obj 130 50 t a a;
-#X text 70 20 Object;
-#X obj 480 500 outlet;
-#X obj 340 420 rotatePlacement;
-#X obj 180 250 translatePlacement;
-#X obj 180 220 XYZvector;
-#X obj 340 390 YPRrotation;
-#X connect 0 0 7 0;
+#N canvas 453 110 1033 820 12;
+#X obj 27 111 fc_getObjectProperty Placement;
+#X obj 102 679 fc_setObjectProperty Placement;
+#X text 40 270 translation vector;
+#X text 130 490 rotation vector;
+#X obj 180 240 f;
+#X obj 230 240 f;
+#X obj 280 240 f;
+#X obj 165 198 t b b b a;
+#X obj 250 460 f;
+#X obj 200 50 inlet;
+#X obj 250 50 inlet;
+#X obj 300 50 inlet;
+#X obj 130 50 inlet;
+#X obj 350 50 inlet;
+#X obj 300 460 f;
+#X obj 400 50 inlet;
+#X obj 350 460 f;
+#X obj 450 50 inlet;
+#X obj 180 410 t b b b a;
+#X obj 130 80 t a a;
+#X text 124 26 Object;
+#X obj 102 759 outlet;
+#X obj 250 580 rotatePlacement;
+#X obj 180 360 translatePlacement;
+#X obj 180 270 XYZvector;
+#X obj 250 490 YPRrotation;
+#X text 104 783 done;
+#X text 202 26 X;
+#X text 252 26 Y;
+#X text 303 26 Z;
+#X text 352 26 Y;
+#X text 402 26 P;
+#X text 452 26 R;
+#X obj 28 48 inlet;
+#X obj 28 73 b;
+#X text 30 22 go;
+#X obj 122 645 t b a;
+#X text -603 12 Autogen GUI >>>;
+#X obj -603 42 cnv 2 10 2 empty empty empty 20 12 0 14 #000000 #404040
+0;
+#X obj -603 44 cnv 10 75 10 empty empty go 5 6 0 8 #000000 #ffffff
+0;
+#X obj -517 42 cnv 2 10 2 empty empty empty 20 12 0 14 #000000 #404040
+0;
+#X obj -526 44 cnv 10 75 10 empty empty Object 5 6 0 8 #000000 #ffffff
+0;
+#X obj -431 42 cnv 2 10 2 empty empty empty 20 12 0 14 #000000 #404040
+0;
+#X obj -450 44 cnv 10 75 10 empty empty X 5 6 0 8 #000000 #ffffff 0
+;
+#X obj -345 42 cnv 2 10 2 empty empty empty 20 12 0 14 #000000 #404040
+0;
+#X obj -373 44 cnv 10 75 10 empty empty Y 5 6 0 8 #000000 #ffffff 0
+;
+#X obj -260 42 cnv 2 10 2 empty empty empty 20 12 0 14 #000000 #404040
+0;
+#X obj -297 44 cnv 10 75 10 empty empty Z 5 6 0 8 #000000 #ffffff 0
+;
+#X obj -174 42 cnv 2 10 2 empty empty empty 20 12 0 14 #000000 #404040
+0;
+#X obj -220 44 cnv 10 75 10 empty empty Y 5 6 0 8 #000000 #ffffff 0
+;
+#X obj -88 42 cnv 2 10 2 empty empty empty 20 12 0 14 #000000 #404040
+0;
+#X obj -144 44 cnv 10 75 10 empty empty P 5 6 0 8 #000000 #ffffff 0
+;
+#X obj -3 42 cnv 2 10 2 empty empty empty 20 12 0 14 #000000 #404040
+0;
+#X obj -68 44 cnv 10 75 10 empty empty R 5 6 0 8 #000000 #ffffff 0
+;
+#X obj -371 57 cnv 6 10 15 empty empty fc_setObjectPlacement 5 8 0
+12 #ffffff #000000 0;
+#X obj -603 85 cnv 2 10 2 empty empty empty 20 12 0 14 #000000 #404040
+0;
+#X obj -603 75 cnv 10 75 10 empty empty done 5 6 0 8 #000000 #ffffff
+0;
+#X text -603 117 <<< Autogen GUI;
+#X connect 0 1 7 0;
 #X connect 1 0 21 0;
 #X connect 4 0 24 0;
 #X connect 5 0 24 1;
@@ -49,9 +99,14 @@
 #X connect 18 1 14 0;
 #X connect 18 2 16 0;
 #X connect 18 3 22 1;
-#X connect 19 0 0 0;
-#X connect 19 1 1 1;
-#X connect 22 0 1 0;
+#X connect 19 0 0 1;
+#X connect 19 1 1 2;
+#X connect 22 0 36 0;
 #X connect 23 0 18 0;
 #X connect 24 0 23 0;
 #X connect 25 0 22 0;
+#X connect 33 0 34 0;
+#X connect 34 0 0 0;
+#X connect 36 0 1 0;
+#X connect 36 1 1 1;
+#X coords 0 0 1 1 610 45 2 -603 42;

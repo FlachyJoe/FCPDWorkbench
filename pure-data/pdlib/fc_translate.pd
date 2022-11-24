@@ -1,32 +1,56 @@
-#N struct draw-image-struct float x float y float w float h;
-#N canvas 520 172 559 465 12;
+#N canvas 520 172 973 637 12;
 #X obj 140 30 inlet;
 #X obj 160 210 list append Placement;
 #X obj 390 30 inlet;
 #X text 140 10 vector \, placement or object;
-#X obj 10 270 +;
-#X obj 50 270 +;
-#X obj 90 270 +;
+#X obj 10 320 +;
+#X obj 50 320 +;
+#X obj 90 320 +;
 #X obj 10 210 unpack f f f;
-#X obj 150 420 outlet;
+#X obj 150 510 outlet;
 #X obj 140 129 route Vector Pos Placement;
 #X text 390 10 vector;
-#X obj 330 210 fc_getObjectProperty Placement;
-#X obj 330 320 fc_setObjectProperty Placement;
-#X obj 360 290 t a a;
-#X obj 330 350 fc_recompute;
-#X obj 30 240 vectorXYZ;
-#X obj 30 300 XYZvector;
-#X obj 160 270 translatePlacement;
-#X obj 360 260 translatePlacement;
+#X obj 330 220 fc_getObjectProperty Placement;
+#X obj 330 410 fc_setObjectProperty Placement;
+#X obj 360 363 t a a;
+#X obj 330 510 fc_recompute;
+#X obj 30 250 vectorXYZ;
+#X obj 30 390 XYZvector;
+#X obj 160 320 translatePlacement;
+#X obj 360 310 translatePlacement;
 #X obj 10 30 inlet;
 #X text 10 10 go;
-#X obj 10 420 outlet;
-#X text 10 440 done;
-#X obj 124 350 t b a;
+#X obj 10 510 outlet;
+#X text 10 530 done;
+#X obj 74 480 t b a;
 #X obj 10 60 b;
 #X obj 140 100 any;
 #X obj 330 180 t b a a;
+#X text 145 530 vector or placement;
+#X text -245 0 Autogen GUI >>>;
+#X obj -245 30 cnv 2 10 2 empty empty empty 20 12 0 14 #000000 #404040
+0;
+#X obj -245 32 cnv 10 75 10 empty empty go 5 6 0 8 #000000 #ffffff
+0;
+#X obj -132 30 cnv 2 10 2 empty empty empty 20 12 0 14 #000000 #404040
+0;
+#X obj -165 32 cnv 10 75 10 empty empty vctr\ plcmt\ obj 5 6 0 8 #000000
+#ffffff 0;
+#X obj -20 30 cnv 2 10 2 empty empty empty 20 12 0 14 #000000 #404040
+0;
+#X obj -85 32 cnv 10 75 10 empty empty vector 5 6 0 8 #000000 #ffffff
+0;
+#X obj -169 45 cnv 6 10 15 empty empty fc_translate 5 8 0 12 #ffffff
+#000000 0;
+#X obj -245 73 cnv 2 10 2 empty empty empty 20 12 0 14 #000000 #404040
+0;
+#X obj -245 63 cnv 10 75 10 empty empty done 5 6 0 8 #000000 #ffffff
+0;
+#X obj -20 73 cnv 2 10 2 empty empty empty 20 12 0 14 #000000 #404040
+0;
+#X obj -85 63 cnv 10 75 10 empty empty vctr\ plcmt 5 6 0 8 #000000
+#ffffff 0;
+#X text -245 105 <<< Autogen GUI;
 #X connect 0 0 25 1;
 #X connect 1 0 17 0;
 #X connect 2 0 15 0;
@@ -62,3 +86,4 @@
 #X connect 26 0 11 0;
 #X connect 26 1 11 1;
 #X connect 26 2 12 2;
+#X coords 0 0 1 1 235 45 2 -245 30;

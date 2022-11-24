@@ -1,29 +1,71 @@
 #N canvas 733 260 561 575 12;
 #X obj 140 30 inlet;
 #X obj 221 30 inlet;
-#X obj 70 270 outlet;
 #X obj 10 210 fc_process;
-#X obj 60 30 inlet;
-#X text 60 10 Value;
+#X obj 70 30 inlet;
+#X text 70 10 Value;
 #X text 140 10 Sketch;
 #X text 220 10 Constraint;
 #X obj 10 30 inlet;
 #X text 10 10 go;
-#X obj 10 270 outlet;
-#X text 10 290 done;
-#X obj 10 240 t b a;
 #X obj 10 140 list append \$1;
 #X msg 10 70 list set constraint;
 #X obj 10 170 list append;
 #X obj 10 110 list append;
-#X connect 0 0 16 1;
-#X connect 1 0 13 1;
-#X connect 3 0 12 0;
-#X connect 4 0 15 1;
-#X connect 8 0 14 0;
-#X connect 12 0 10 0;
-#X connect 12 1 2 0;
-#X connect 13 0 15 0;
-#X connect 14 0 16 0;
-#X connect 15 0 3 0;
-#X connect 16 0 13 0;
+#X obj 10 241 route ERROR;
+#X obj 10 271 print FreeCAD Error;
+#X obj 160 301 outlet;
+#X text 160 321 done;
+#X obj 160 271 b;
+#X text -320 0 Autogen GUI >>>;
+#X obj -320 30 cnv 2 10 2 empty empty empty 20 12 0 14 #000000 #404040
+0;
+#X obj -320 32 cnv 10 75 10 empty empty go 5 6 0 8 #000000 #ffffff
+0;
+#X obj -220 30 cnv 2 10 2 empty empty empty 20 12 0 14 #000000 #404040
+0;
+#X obj -241 32 cnv 10 75 10 empty empty value 5 6 0 8 #000000 #ffffff
+0;
+#X obj -120 30 cnv 2 10 2 empty empty empty 20 12 0 14 #000000 #404040
+0;
+#X obj -163 32 cnv 10 75 10 empty empty Sketch 5 6 0 8 #000000 #ffffff
+0;
+#X obj -20 30 cnv 2 10 2 empty empty empty 20 12 0 14 #000000 #404040
+0;
+#X obj -85 32 cnv 10 75 10 empty empty Constraint 5 6 0 8 #000000 #ffffff
+0;
+#X obj -242 45 cnv 6 10 15 empty empty fc_setSketchConstraint 5 8 0
+12 #ffffff #000000 0;
+#X obj -315 65 cnv 1 300 20 empty \$0-argsdisplay empty 10 14 0 12
+#e0e0e0 #404040 0;
+#X obj -315 65 cnv 1 1 1 empty empty args: 0 6 0 8 #e0e0e0 #404040
+0;
+#X obj -320 115 loadbang;
+#X msg -320 145 args;
+#X obj -320 175 pdcontrol;
+#X obj -320 205 l2s;
+#X msg -320 235 label \$1;
+#X obj -320 265 s \$0-argsdisplay;
+#X obj -320 103 cnv 2 10 2 empty empty empty 20 12 0 14 #000000 #404040
+0;
+#X obj -320 93 cnv 10 75 10 empty empty done 5 6 0 8 #000000 #ffffff
+0;
+#X text -320 295 <<< Autogen GUI;
+#X connect 0 0 12 1;
+#X connect 1 0 9 1;
+#X connect 2 0 13 0;
+#X connect 3 0 11 1;
+#X connect 7 0 10 0;
+#X connect 9 0 11 0;
+#X connect 10 0 12 0;
+#X connect 11 0 2 0;
+#X connect 12 0 9 0;
+#X connect 13 0 14 0;
+#X connect 13 1 17 0;
+#X connect 17 0 15 0;
+#X connect 30 0 31 0;
+#X connect 31 0 32 0;
+#X connect 32 0 33 0;
+#X connect 33 0 34 0;
+#X connect 34 0 35 0;
+#X coords 0 0 1 1 310 75 2 -320 30;

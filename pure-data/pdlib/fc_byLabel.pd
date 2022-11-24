@@ -1,12 +1,46 @@
-#N canvas 590 380 450 300 12;
-#X obj 110 10 inlet;
-#X obj 10 100 fc_process;
-#X obj 70 160 outlet;
-#X obj 10 10 inlet;
-#X obj 10 130 t b a;
-#X obj 10 160 outlet;
-#X msg 10 40 list bylabel;
-#X obj 10 70 list append \$1;
+#N canvas 627 291 474 364 12;
+#X obj 110 40 inlet;
+#X obj 10 130 fc_process;
+#X obj 70 240 outlet;
+#X obj 10 40 inlet;
+#X obj 10 210 t b a;
+#X obj 10 240 outlet;
+#X msg 10 70 list bylabel;
+#X obj 10 100 list append \$1;
+#X text 111 14 label;
+#X text 10 263 done;
+#X text 72 262 object;
+#X text 15 17 go;
+#X text -170 4 Autogen GUI >>>;
+#X obj -170 34 cnv 2 10 2 empty empty empty 20 12 0 14 #000000 #404040
+0;
+#X obj -170 36 cnv 10 75 10 empty empty go 5 6 0 8 #000000 #ffffff
+0;
+#X obj -20 34 cnv 2 10 2 empty empty empty 20 12 0 14 #000000 #404040
+0;
+#X obj -85 36 cnv 10 75 10 empty empty label 5 6 0 8 #000000 #ffffff
+0;
+#X obj -125 49 cnv 6 10 15 empty empty fc_byLabel 5 8 0 12 #ffffff
+#000000 0;
+#X obj -165 69 cnv 1 150 20 empty \$0-argsdisplay empty 10 14 0 12
+#e0e0e0 #404040 0;
+#X obj -165 69 cnv 1 1 1 empty empty args: 0 6 0 8 #e0e0e0 #404040
+0;
+#X obj -170 119 loadbang;
+#X msg -170 149 args;
+#X obj -170 179 pdcontrol;
+#X obj -170 209 l2s;
+#X msg -170 239 label \$1;
+#X obj -170 269 s \$0-argsdisplay;
+#X obj -170 107 cnv 2 10 2 empty empty empty 20 12 0 14 #000000 #404040
+0;
+#X obj -170 97 cnv 10 75 10 empty empty done 5 6 0 8 #000000 #ffffff
+0;
+#X obj -20 107 cnv 2 10 2 empty empty empty 20 12 0 14 #000000 #404040
+0;
+#X obj -85 97 cnv 10 75 10 empty empty object 5 6 0 8 #000000 #ffffff
+0;
+#X text -170 299 <<< Autogen GUI;
 #X connect 0 0 7 1;
 #X connect 1 0 4 0;
 #X connect 3 0 6 0;
@@ -14,3 +48,9 @@
 #X connect 4 1 2 0;
 #X connect 6 0 7 0;
 #X connect 7 0 1 0;
+#X connect 20 0 21 0;
+#X connect 21 0 22 0;
+#X connect 22 0 23 0;
+#X connect 23 0 24 0;
+#X connect 24 0 25 0;
+#X coords 0 0 1 1 160 75 2 -170 34;
