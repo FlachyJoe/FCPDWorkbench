@@ -1,0 +1,16 @@
+#N canvas 829 315 450 325 12;
+#X obj 20 40 inlet;
+#X obj 20 160 outlet;
+#X obj 20 80 route Vector Pos;
+#X obj 110 160 outlet;
+#X msg 20 120 bang;
+#X msg 110 120 bang;
+#X text 22 19 value;
+#X text 22 188 True;
+#X text 115 187 False;
+#X connect 0 0 2 0;
+#X connect 2 0 4 0;
+#X connect 2 1 4 0;
+#X connect 2 2 5 0;
+#X connect 4 0 1 0;
+#X connect 5 0 3 0;

@@ -1,0 +1,6 @@
+#N canvas 595 381 450 300 12;
+#X obj 40 20 inlet;
+#X obj 40 79 s fc_input;
+#X msg 40 50 0 recompute;
+#X connect 0 0 2 0;
+#X connect 2 0 1 0;
