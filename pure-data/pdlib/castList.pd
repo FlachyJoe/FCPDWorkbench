@@ -1,23 +1,37 @@
-#N canvas 861 164 734 537 12;
-#X obj 130 100 list;
-#X obj 190 100 list;
-#X obj 130 10 inlet;
-#X obj 130 490 outlet;
-#X msg 190 420 \$1 \$2 \$3;
-#X obj 130 40 t a a a;
-#X obj 190 220 list;
-#X obj 250 220 list;
-#X obj 190 130 t a a a;
-#X obj 190 390 list trim;
-#X obj 190 160 list trim;
-#X obj 310 360 list;
-#X obj 370 360 list;
-#X obj 310 270 t a a a;
-#X obj 310 300 list trim;
-#X obj 130 70 isList;
-#X obj 190 190 isVector;
-#X obj 310 330 isRotation;
-#X obj 190 450 fcList;
+#N canvas 479 74 734 726 12;
+#X obj 160 150 list;
+#X obj 220 150 list;
+#X obj 160 30 inlet;
+#X obj 160 620 outlet;
+#X msg 220 530 \$1 \$2 \$3;
+#X obj 160 60 t a a a;
+#X obj 220 300 list;
+#X obj 280 300 list;
+#X obj 220 180 t a a a;
+#X obj 220 500 list trim;
+#X obj 220 210 list trim;
+#X obj 340 470 list;
+#X obj 400 470 list;
+#X obj 340 350 t a a a;
+#X obj 340 380 list trim;
+#X obj 160 90 isList;
+#X obj 220 240 isVector;
+#X obj 340 410 isRotation;
+#X obj 220 560 fcList;
+#X text 164 8 value;
+#X text 163 648 FC list;
+#X text 25 8 Autogen GUI >>>;
+#X obj 25 38 cnv 2 10 2 empty empty empty 20 12 0 14 #000000 #404040
+0;
+#X obj 25 40 cnv 10 75 10 empty empty value 5 6 0 8 #000000 #ffffff
+0;
+#X obj 39 53 cnv 6 10 15 empty empty castList 5 8 0 12 #ffffff #000000
+0;
+#X obj 25 81 cnv 2 10 2 empty empty empty 20 12 0 14 #000000 #404040
+0;
+#X obj 25 71 cnv 10 75 10 empty empty FC\\\ list 5 6 0 8 #000000 #ffffff
+0;
+#X text 25 113 <<< Autogen GUI;
 #X connect 0 0 3 0;
 #X connect 1 0 8 0;
 #X connect 2 0 5 0;
@@ -45,3 +59,4 @@
 #X connect 17 0 11 0;
 #X connect 17 1 12 0;
 #X connect 18 0 3 0;
+#X coords 0 0 1 1 85 45 2 25 38;

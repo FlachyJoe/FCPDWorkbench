@@ -1,15 +1,47 @@
 #N canvas 889 296 450 350 12;
 #X obj 10 120 list prepend Object \$1 \$2;
 #X obj 70 30 inlet;
-#X obj 70 210 outlet;
+#X obj 70 262 outlet;
 #X obj 10 30 inlet;
 #X obj 10 90 list;
-#X obj 10 180 t b a;
-#X obj 10 210 outlet;
+#X obj 10 232 t b a;
+#X obj 10 262 outlet;
 #X text 10 10 go;
-#X text 10 230 done;
+#X text 10 282 done;
 #X obj 10 150 fc_process 1;
 #X obj 10 60 b;
+#X text 70 10 type \, properties;
+#X text 71 282 object;
+#X text -170 0 Autogen GUI >>>;
+#X obj -170 30 cnv 2 10 2 empty empty empty 20 12 0 14 #000000 #404040
+0;
+#X obj -170 32 cnv 10 75 10 empty empty go 5 6 0 8 #000000 #ffffff
+0;
+#X obj -20 30 cnv 2 10 2 empty empty empty 20 12 0 14 #000000 #404040
+0;
+#X obj -85 32 cnv 10 75 10 empty empty type\\\ \\\,\\\ properties 5
+6 0 8 #000000 #ffffff 0;
+#X obj -132 45 cnv 6 10 15 empty empty fc_addObject 5 8 0 12 #ffffff
+#000000 0;
+#X obj -165 65 cnv 1 150 20 empty \$0-argsdisplay empty 10 14 0 12
+#e0e0e0 #404040 0;
+#X obj -165 65 cnv 1 1 1 empty empty args: 0 6 0 8 #e0e0e0 #404040
+0;
+#X obj -170 115 loadbang;
+#X msg -170 145 args;
+#X obj -170 175 pdcontrol;
+#X obj -170 205 l2s;
+#X msg -170 235 label \$1;
+#X obj -170 265 s \$0-argsdisplay;
+#X obj -170 103 cnv 2 10 2 empty empty empty 20 12 0 14 #000000 #404040
+0;
+#X obj -170 93 cnv 10 75 10 empty empty done 5 6 0 8 #000000 #ffffff
+0;
+#X obj -20 103 cnv 2 10 2 empty empty empty 20 12 0 14 #000000 #404040
+0;
+#X obj -85 93 cnv 10 75 10 empty empty object 5 6 0 8 #000000 #ffffff
+0;
+#X text -170 295 <<< Autogen GUI;
 #X connect 0 0 9 0;
 #X connect 1 0 4 1;
 #X connect 3 0 10 0;
@@ -18,3 +50,9 @@
 #X connect 5 1 2 0;
 #X connect 9 0 5 0;
 #X connect 10 0 4 0;
+#X connect 21 0 22 0;
+#X connect 22 0 23 0;
+#X connect 23 0 24 0;
+#X connect 24 0 25 0;
+#X connect 25 0 26 0;
+#X coords 0 0 1 1 160 75 2 -170 30;

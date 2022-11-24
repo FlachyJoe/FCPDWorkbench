@@ -1,15 +1,32 @@
 #N canvas 565 325 450 325 12;
 #X obj 110 30 inlet;
 #X obj 10 30 inlet;
-#X obj 110 110 *;
-#X obj 140 110 *;
-#X obj 170 110 *;
-#X obj 110 180 outlet;
+#X obj 110 130 *;
+#X obj 140 130 *;
+#X obj 170 130 *;
+#X obj 110 260 outlet;
 #X text 110 10 vector;
 #X text 10 10 scalar;
 #X obj 10 60 t f f f;
 #X obj 110 60 vectorXYZ;
-#X obj 110 150 XYZvector;
+#X obj 110 170 XYZvector;
+#X text 113 286 vector;
+#X text -170 0 Autogen GUI >>>;
+#X obj -170 30 cnv 2 10 2 empty empty empty 20 12 0 14 #000000 #404040
+0;
+#X obj -170 32 cnv 10 75 10 empty empty scalar 5 6 0 8 #000000 #ffffff
+0;
+#X obj -20 30 cnv 2 10 2 empty empty empty 20 12 0 14 #000000 #404040
+0;
+#X obj -85 32 cnv 10 75 10 empty empty vector 5 6 0 8 #000000 #ffffff
+0;
+#X obj -125 45 cnv 6 10 15 empty empty vectorMult 5 8 0 12 #ffffff
+#000000 0;
+#X obj -170 73 cnv 2 10 2 empty empty empty 20 12 0 14 #000000 #404040
+0;
+#X obj -170 63 cnv 10 75 10 empty empty vector 5 6 0 8 #000000 #ffffff
+0;
+#X text -170 105 <<< Autogen GUI;
 #X connect 0 0 9 0;
 #X connect 1 0 8 0;
 #X connect 2 0 10 0;
@@ -22,3 +39,4 @@
 #X connect 9 1 3 1;
 #X connect 9 2 4 1;
 #X connect 10 0 5 0;
+#X coords 0 0 1 1 160 45 2 -170 30;

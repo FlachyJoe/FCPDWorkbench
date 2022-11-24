@@ -1,25 +1,58 @@
 #N canvas 595 381 450 325 12;
-#X obj 10 170 fc_process;
-#X msg 220 100 remobserver;
-#X obj 70 230 outlet;
-#X obj 200 10 closebang;
-#X obj 130 10 inlet;
-#X obj 10 10 loadbang;
-#X obj 130 60 t a b;
-#X obj 10 40 list prepend \$1;
-#X obj 10 200 t b a;
-#X obj 10 230 outlet;
-#X text 10 250 done;
-#X obj 30 100 list prepend onMove;
-#X text 70 250 placement;
+#X obj 10 200 fc_process;
+#X msg 220 130 remobserver;
+#X obj 70 260 outlet;
+#X obj 200 40 closebang;
+#X obj 130 40 inlet;
+#X obj 10 40 loadbang;
+#X obj 130 90 t a b;
+#X obj 10 70 list prepend \$1;
+#X obj 10 230 t b a;
+#X obj 10 260 outlet;
+#X obj 30 130 list prepend onMove;
+#X text 70 280 placement;
+#X text 130 16 object;
+#X text -170 6 Autogen GUI >>>;
+#X obj -170 36 cnv 2 10 2 empty empty empty 20 12 0 14 #000000 #404040
+0;
+#X obj -170 38 cnv 10 75 10 empty empty object 5 6 0 8 #000000 #ffffff
+0;
+#X obj -121 51 cnv 6 10 15 empty empty fc_onMove 5 8 0 12 #ffffff #000000
+0;
+#X obj -165 71 cnv 1 150 20 empty \$0-argsdisplay empty 10 14 0 12
+#e0e0e0 #404040 0;
+#X obj -165 71 cnv 1 1 1 empty empty args: 0 6 0 8 #e0e0e0 #404040
+0;
+#X obj -170 121 loadbang;
+#X msg -170 151 args;
+#X obj -170 181 pdcontrol;
+#X obj -170 211 l2s;
+#X msg -170 241 label \$1;
+#X obj -170 271 s \$0-argsdisplay;
+#X obj -170 109 cnv 2 10 2 empty empty empty 20 12 0 14 #000000 #404040
+0;
+#X obj -170 99 cnv 10 75 10 empty empty bang 5 6 0 8 #000000 #ffffff
+0;
+#X obj -20 109 cnv 2 10 2 empty empty empty 20 12 0 14 #000000 #404040
+0;
+#X obj -85 99 cnv 10 75 10 empty empty placement 5 6 0 8 #000000 #ffffff
+0;
+#X text -170 301 <<< Autogen GUI;
+#X text 10 280 bang;
 #X connect 0 0 8 0;
 #X connect 1 0 0 0;
 #X connect 3 0 1 0;
 #X connect 4 0 6 0;
 #X connect 5 0 7 0;
-#X connect 6 0 11 0;
+#X connect 6 0 10 0;
 #X connect 6 1 1 0;
-#X connect 7 0 11 0;
+#X connect 7 0 10 0;
 #X connect 8 0 9 0;
 #X connect 8 1 2 0;
-#X connect 11 0 0 0;
+#X connect 10 0 0 0;
+#X connect 19 0 20 0;
+#X connect 20 0 21 0;
+#X connect 21 0 22 0;
+#X connect 22 0 23 0;
+#X connect 23 0 24 0;
+#X coords 0 0 1 1 160 75 2 -170 36;

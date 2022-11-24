@@ -1,0 +1,12 @@
+#N canvas 750 350 500 500 12;#X text 10 10 ustr;
+#X obj 10 30 inlet;
+#X obj 10 300 list prepend Draft string_encode_coin;
+#X obj 10 330 fc_process 1;
+#X obj 10 360 route ERROR;
+#X obj 10 390 print FreeCAD Error;
+#X obj 120 390 outlet;
+#X connect 1 0 2 0;
+#X connect 2 0 3 0;
+#X connect 3 0 4 0;
+#X connect 4 0 5 0;
+#X connect 4 1 6 0;

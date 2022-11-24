@@ -1,5 +1,4 @@
-#N struct draw-image-struct float x float y float w float h;
-#N canvas 586 205 795 429 12;
+#N canvas 236 100 1261 615 12;
 #X obj 10 30 inlet;
 #X obj 220 30 inlet;
 #X text 10 10 go;
@@ -7,22 +6,22 @@
 #X obj 10 140 spigot 1;
 #X obj 10 170 fc_addObject \$1 \$2;
 #X obj 80 140 spigot 0;
-#X obj 180 240 fc_setObjectProperties;
-#X obj 210 330 any;
-#X obj 210 360 outlet;
-#X obj 30 360 outlet;
-#X text 30 380 done;
-#X text 210 380 object;
-#X obj 180 270 t b b;
+#X obj 110 297 fc_setObjectProperties;
+#X obj 210 410 any;
+#X obj 210 440 outlet;
+#X obj 30 440 outlet;
+#X text 30 460 done;
+#X text 210 460 object;
+#X obj 112 351 t b b;
 #X obj 370 30 inlet;
 #X text 370 10 delete;
-#X obj 370 240 fc_delete;
+#X obj 370 300 fc_delete;
 #X obj 370 110 spigot 0;
 #X obj 370 140 t b b;
 #X obj 430 80 tgl 15 0 empty empty empty 17 7 0 10 #fcfcfc #000000
 #000000 0 1;
 #X obj 70 110 tgl 15 0 empty empty empty 17 7 0 10 #fcfcfc #000000
-#000000 1 1;
+#000000 0 1;
 #X obj 140 110 tgl 15 0 empty empty empty 17 7 0 10 #fcfcfc #000000
 #000000 0 1;
 #X obj 480 50 r \$0-switch;
@@ -31,29 +30,67 @@
 #X obj 140 80 init 0;
 #X obj 430 50 init 0;
 #X obj 410 170 s \$0-switch;
-#X obj 10 240 s \$0-switch;
-#X obj 10 200 t b b b;
-#X obj 430 210 r \$0-theObject;
-#X obj 310 210 r \$0-theObject;
-#X obj 230 300 r \$0-theObject;
-#X obj 370 270 b;
-#X obj 370 300 s \$0-theObject;
-#X obj 130 200 s \$0-theObject;
+#X obj 10 300 s \$0-switch;
+#X obj 10 260 t b b b;
+#X obj 448 243 r \$0-theObject;
+#X obj 294 240 r \$0-theObject;
+#X obj 230 380 r \$0-theObject;
+#X obj 370 350 b;
+#X obj 370 380 s \$0-theObject;
+#X obj 130 260 s \$0-theObject;
 #X obj 600 30 inlet;
 #X text 600 10 object;
 #X obj 600 90 fc_isObject;
-#X obj 670 120 T-F;
-#X obj 600 150 spigot 0;
-#X obj 600 180 any;
-#X obj 600 370 s \$0-theObject;
-#X obj 670 280 T-F;
-#X obj 600 310 spigot 0;
-#X obj 600 340 any;
-#X obj 600 250 fc_isType;
-#X obj 600 210 t b a;
-#X obj 670 210 init \$1;
-#X obj 730 210 init \$2;
+#X obj 670 150 T-F;
+#X obj 600 180 spigot 0;
+#X obj 600 210 any;
+#X obj 600 430 s \$0-theObject;
+#X obj 670 340 T-F;
+#X obj 600 370 spigot 0;
+#X obj 600 400 any;
+#X obj 600 280 fc_isType;
+#X obj 600 240 t b a;
+#X obj 670 240 init \$1;
+#X obj 730 240 init \$2;
 #X obj 600 60 t b a a a;
+#X text -320 0 Autogen GUI >>>;
+#X obj -320 30 cnv 2 10 2 empty empty empty 20 12 0 14 #000000 #404040
+0;
+#X obj -320 32 cnv 10 75 10 empty empty go 5 6 0 8 #000000 #ffffff
+0;
+#X obj -220 30 cnv 2 10 2 empty empty empty 20 12 0 14 #000000 #404040
+0;
+#X obj -241 32 cnv 10 75 10 empty empty properties 5 6 0 8 #000000
+#ffffff 0;
+#X obj -120 30 cnv 2 10 2 empty empty empty 20 12 0 14 #000000 #404040
+0;
+#X obj -163 32 cnv 10 75 10 empty empty delete 5 6 0 8 #000000 #ffffff
+0;
+#X obj -20 30 cnv 2 10 2 empty empty empty 20 12 0 14 #000000 #404040
+0;
+#X obj -85 32 cnv 10 75 10 empty empty object 5 6 0 8 #000000 #ffffff
+0;
+#X obj -196 45 cnv 6 10 15 empty empty fc_object 5 8 0 12 #ffffff #000000
+0;
+#X obj -315 65 cnv 1 300 20 empty \$0-argsdisplay empty 10 14 0 12
+#e0e0e0 #404040 0;
+#X obj -315 65 cnv 1 1 1 empty empty args: 0 6 0 8 #e0e0e0 #404040
+0;
+#X obj -320 115 loadbang;
+#X msg -320 145 args;
+#X obj -320 175 pdcontrol;
+#X obj -320 205 l2s;
+#X msg -320 235 label \$1;
+#X obj -320 265 s \$0-argsdisplay;
+#X obj -320 103 cnv 2 10 2 empty empty empty 20 12 0 14 #000000 #404040
+0;
+#X obj -320 93 cnv 10 75 10 empty empty done 5 6 0 8 #000000 #ffffff
+0;
+#X obj -20 103 cnv 2 10 2 empty empty empty 20 12 0 14 #000000 #404040
+0;
+#X obj -85 93 cnv 10 75 10 empty empty object 5 6 0 8 #000000 #ffffff
+0;
+#X text -320 295 <<< Autogen GUI;
 #X connect 0 0 4 0;
 #X connect 0 0 6 0;
 #X connect 1 0 5 1;
@@ -107,3 +144,9 @@
 #X connect 50 1 38 1;
 #X connect 50 2 41 1;
 #X connect 50 3 45 1;
+#X connect 63 0 64 0;
+#X connect 64 0 65 0;
+#X connect 65 0 66 0;
+#X connect 66 0 67 0;
+#X connect 67 0 68 0;
+#X coords 0 0 1 1 310 75 2 -320 30;

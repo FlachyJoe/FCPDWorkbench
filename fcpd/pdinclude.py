@@ -32,6 +32,7 @@ from PySide import QtCore
 import FreeCAD as App
 import FreeCADGui as Gui
 
+import fcpd
 import fcpdwb_locator as locator
 
 DEBUG = True
@@ -103,12 +104,10 @@ class PDInclude:
     def startEdit(self):
         if not self.isOpen:
             sFile = self.object.PDFile
-            FCPD = locator.getFCPDCore()
-            self.pdServer = FCPD.pdServer
             if sFile:
-                if not self.pdServer.isAvailable():
-                    self.pdServer.run()
-                    FCPD.runPD()
+                if not fcpd.pdServer.isAvailable():
+                    fcpd.pdServer.run()
+                    fcpd.runPD()
 
                 _, self.tmpFile = tempfile.mkstemp()
                 shutil.copyfile(sFile, self.tmpFile)
@@ -116,7 +115,7 @@ class PDInclude:
 
                 updateCloseDetection(self.tmpFile)
 
-                self.pdServer.send('0 pd open %s %s' % (fileName, dirName))
+                fcpd.pdServer.send('0 pd open %s %s' % (fileName, dirName))
                 self.isOpen = True
                 self.skipChange = 0
 

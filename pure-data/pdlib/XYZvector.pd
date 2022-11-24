@@ -2,12 +2,50 @@
 #X obj 110 50 inlet;
 #X obj 168 50 inlet;
 #X obj 227 51 inlet;
-#X obj 117 174 outlet;
+#X obj 113 148 outlet;
 #X msg 113 115 Vector \$1 \$2 \$3;
-#X obj 114 82 pack \$1 \$2 \$3;
+#X obj 113 83 pack \$1 \$2 \$3;
+#X text 114 27 X;
+#X text 172 27 Y;
+#X text 233 27 Z;
+#X text 113 169 vector;
+#X text -145 17 Autogen GUI >>>;
+#X obj -145 47 cnv 2 10 2 empty empty empty 20 12 0 14 #000000 #404040
+0;
+#X obj -145 49 cnv 10 75 10 empty empty X 5 6 0 8 #000000 #ffffff 0
+;
+#X obj -32 47 cnv 2 10 2 empty empty empty 20 12 0 14 #000000 #404040
+0;
+#X obj -65 49 cnv 10 75 10 empty empty Y 5 6 0 8 #000000 #ffffff 0
+;
+#X obj 80 47 cnv 2 10 2 empty empty empty 20 12 0 14 #000000 #404040
+0;
+#X obj 15 49 cnv 10 75 10 empty empty Z 5 6 0 8 #000000 #ffffff 0;
+#X obj -59 62 cnv 6 10 15 empty empty XYZvector 5 8 0 12 #ffffff #000000
+0;
+#X obj -140 82 cnv 1 225 20 empty \$0-argsdisplay empty 10 14 0 12
+#e0e0e0 #404040 0;
+#X obj -140 82 cnv 1 1 1 empty empty args: 0 6 0 8 #e0e0e0 #404040
+0;
+#X obj -145 132 loadbang;
+#X msg -145 162 args;
+#X obj -145 192 pdcontrol;
+#X obj -145 222 l2s;
+#X msg -145 252 label \$1;
+#X obj -145 282 s \$0-argsdisplay;
+#X obj -145 120 cnv 2 10 2 empty empty empty 20 12 0 14 #000000 #404040
+0;
+#X obj -145 110 cnv 10 75 10 empty empty vector 5 6 0 8 #000000 #ffffff
+0;
+#X text -145 312 <<< Autogen GUI;
 #X connect 0 0 5 0;
 #X connect 1 0 5 1;
 #X connect 2 0 5 2;
 #X connect 4 0 3 0;
 #X connect 5 0 4 0;
-#X coords 0 0 1 1 85 60 0;
+#X connect 20 0 21 0;
+#X connect 21 0 22 0;
+#X connect 22 0 23 0;
+#X connect 23 0 24 0;
+#X connect 24 0 25 0;
+#X coords 0 0 1 1 235 75 2 -145 47;
