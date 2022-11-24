@@ -22,20 +22,6 @@
 #
 #
 
-DEBUG = True
-
-if DEBUG:
-    import sys
-    def eprint(*args, **kwargs):
-        print(*args, file=sys.stderr, **kwargs)
-else:
-    def eprint(*args, **kwargs): pass
-
-
-def MULTILINE_ERROR(lineNumber):
-    return ValueError(f"Error line {lineNumber}: \';\' found.\n"
-                      "Only one object can be converted. Please split before convert.")
-
 
 def unescape(source: str) -> str:
     '''
@@ -117,8 +103,6 @@ class FileLine:
     def checkAndSplit(self):
         if self.endswith(';'):
             self.string = self.string[:-1]
-        if ';' in self.string:
-            raise MULTILINE_ERROR(self.lineNumber)
         return self.string.split()
 
 
@@ -161,7 +145,7 @@ class Object(Definition):
         a PureData object
         see https://puredata.info/docs/developer/PdFileFormat#r36
     '''
-    def __init__(self, x: int, y: int, index: int, type: str, args):
+    def __init__(self, x: int, y: int, type: str, index=-1, args=""):
         super().__init__(x, y, index, type)
         if not isinstance(args, list):
             args = [args]
@@ -177,7 +161,7 @@ class Object(Definition):
         if words[1] != 'obj':
             raise ValueError('This is not an object definition.')
 
-        return Object(words[2], words[3], int(code), words[4], [unescape(s) for s in words[5:]])
+        return Object(words[2], words[3], words[4], int(code), [unescape(s) for s in words[5:]])
 
 
 class Coords:
@@ -296,7 +280,6 @@ class Connect:
 
         return Connect(int(code), words[2], words[3], words[4], words[5])
 
-
 class Patch:
     '''
         a PureData patch
@@ -310,6 +293,14 @@ class Patch:
         self.canvas = canvas
         self.subPatches = subPatches
         self.arrays = arrays
+
+        self.reindex()
+
+    def reindex(self):
+        # Reindex definitions and subpatches
+        #  as puredata doesn't refer to linenumber but definition order
+        for i, obj in enumerate(sorted(self.definitions + self.subPatches, key=byLine)):
+            obj.index = i
 
     def __str__(self):
         contents = ([self.canvas] + self.structs
@@ -326,9 +317,18 @@ class Patch:
 
     def addDef(self, obj: Definition) -> Definition:
         if obj.index < 0:
-            obj.index = max([o.index for o in self.definitions])
+            obj.index = max([o.index for o in self.definitions]) + 1
         self.definitions.append(obj)
         return obj
+
+    def connect(self, obj1, outlet, obj2, inlet):
+        obj = Connect(max([o.index for o in self.connects]) + 1, int(obj1), outlet, int(obj2), inlet)
+        self.connects.append(obj)
+        return obj
+
+    def chainConnect(self, objList):
+        for i, obj1 in enumerate(objList[:-1]):
+            self.connect(obj1, 0, objList[i + 1], 0)
 
     @staticmethod
     def fromLines(code: list[FileLine]):
@@ -582,5 +582,5 @@ class Canvas (Object):
                  boxSize=15, width=100, height=60, send='empty', receive='empty',
                  text='empty', dX=20, dY=12, font=0, textSize=14,
                  background="#e0e0e0", foreground="#404040"):
-        super().__init__(x, y, index, "cnv", [boxSize, width, height, send, receive,
+        super().__init__(x, y, "cnv", index, [boxSize, width, height, send, receive,
                          escape(text), dX, dY, font, textSize, background, foreground])

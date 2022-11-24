@@ -26,7 +26,7 @@ from os import path
 from os.path import dirname, basename, splitext, join
 import argparse
 
-from PdParser import Patch, Object, Canvas, Coords, byX, byY, Text
+from PdParser import *
 
 # where to look for text around sockets
 MAX_TEXT_DISTANCE = 50
@@ -49,6 +49,8 @@ def cnvLabel(x, y, text):
                   text=text, textSize=8, boxSize=LABEL_HEIGHT,
                   background="#000000", foreground="#ffffff")
 
+def eprint(*args, **kwargs):
+    print(*args, file=sys.stderr, **kwargs)
 
 # process the input file and print the result in stdout
 def main():
@@ -61,29 +63,31 @@ def main():
 
     filename: str = args.input
     patch = Patch.fromFile(filename)
+    title, _ = splitext(basename(filename))
+
+    if patch.coords and int(patch.coords[0].gop) > 0:
+        eprint("GOP already set, pass.")
+        return 0
 
     # retrieve objects
     allTexts = patch.getDefOfType("text")
     inlets = patch.getDefOfType("inlet") + patch.getDefOfType("inlet~")
     outlets = patch.getDefOfType("outlet") + patch.getDefOfType("outlet~")
 
-    # look for icon
-    if args.icon:
-        icon = args.icon
-    else:
-        icon = path.splitext(filename)[0] + ".gif"
-
-    if not path.exists(icon):
-        icon = False
+    if (not allTexts
+    or (not inlets and not outlets)):
+        eprint("nothing to show, pass.")
+        return 0
 
     # GraphOnParent dimensions
-    gopWidth = LABEL_WIDTH * max(len(inlets), len(outlets)) + 10
-    gopHeight = 2 * LABEL_HEIGHT + TITLE_HEIGHT + (34 if icon else 10)
+    gopWidth = max(len(title)*7 + 16, LABEL_WIDTH * max(len(inlets), len(outlets)) + 10)
+    gopHeight = 2 * LABEL_HEIGHT + TITLE_HEIGHT + 10
 
     gopLeft = min(patch.definitions, key=byX).x - gopWidth - 20
     gopTop = min(patch.definitions, key=byY).y + 20
 
-    patch.addDef(Text(x=gopLeft, y=gopTop - 10, value="Autogen GUI >>>"))
+    # FIRST
+    patch.addDef(Text(x=gopLeft, y=gopTop - 30, value="Autogen GUI >>>"))
 
     # beautify inlets
     labelDeltaX = ((gopWidth - LABEL_WIDTH) / (len(inlets) - 1)) if len(inlets) > 1 else 0
@@ -99,6 +103,43 @@ def main():
 
         patch.addDef(cnvSocket(gopLeft + socketDeltaX*i, gopTop))
         patch.addDef(cnvLabel(gopLeft + labelDeltaX*i, gopTop + SOCKET_HEIGHT, comment))
+
+
+    # set title
+    patch.addDef(Canvas(x=gopLeft + (gopWidth - len(title)*7)/2,
+                        y=gopTop + LABEL_HEIGHT+5,
+                        width=10, height=TITLE_HEIGHT,
+                        dX=5, dY=8,
+                        text=title, textSize=12,
+                        boxSize=6, background="#ffffff", foreground="#000000"))
+
+    # add args display if almost one arg is used
+    argsTop = gopTop + gopHeight + 30
+    lastTop = argsTop
+    if (patch.getDefOfType("\$1")
+        or any(['\$1' in str(arg)
+                for obj in patch.definitions
+                if isinstance(obj, Object)
+                for arg in obj.args])
+        ):
+        gopHeight += 30
+        # display
+        patch.addDef(Canvas(x=gopLeft + 5, y=gopTop + LABEL_HEIGHT + TITLE_HEIGHT + 10,
+                            width=gopWidth - 10, height=20, boxSize=1,
+                            textSize=12, dX=10, dY=14,
+                            receive='\\$0-argsdisplay'))
+        patch.addDef(Canvas(x=gopLeft + 5, y=gopTop + LABEL_HEIGHT + TITLE_HEIGHT + 10,
+                            width=1, height=1, boxSize=1,
+                            text='args:', textSize=8, dX=0, dY=6))
+        # code
+        patch.chainConnect([patch.addDef(Object(gopLeft, argsTop + 10, type='loadbang')),
+                            patch.addDef(Message(gopLeft, argsTop + 40, value='args')),
+                            patch.addDef(Object(gopLeft, argsTop + 70, type='pdcontrol')),
+                            patch.addDef(Object(gopLeft, argsTop + 100, type='l2s')),
+                            patch.addDef(Message(gopLeft, argsTop + 130, value='label \\$1')),
+                            patch.addDef(Object(gopLeft, argsTop + 160, type='s \\$0-argsdisplay'))
+                            ])
+        lastTop = argsTop + 190
 
     # beautify outlets
     labelDeltaX = ((gopWidth - LABEL_WIDTH) / (len(outlets) - 1)) if len(outlets) > 1 else 0
@@ -117,23 +158,8 @@ def main():
                               gopTop + gopHeight - LABEL_HEIGHT - SOCKET_HEIGHT,
                               comment))
 
-    # set title
-    title, _ = splitext(basename(filename))
-    patch.addDef(Canvas(x=gopLeft + (gopWidth - len(title)*7)/2,
-                        y=gopTop + LABEL_HEIGHT+5,
-                        width=80, height=TITLE_HEIGHT,
-                        dX=5, dY=8,
-                        text=title, textSize=12,
-                        boxSize=6, background="#ffffff", foreground="#000000"))
-
-    # set icon
-    if icon:
-        patch.addDef(Object(x=gopLeft + gopWidth / 2,
-                            y=gopTop + LABEL_HEIGHT + TITLE_HEIGHT + 19,
-                            type="ggee/image",
-                            args=icon))
-
-    patch.addDef(Text(x=gopLeft, y=gopTop + gopHeight + 10, value="<<< Autogen GUI"))
+    # LAST
+    patch.addDef(Text(x=gopLeft, y=lastTop, value="<<< Autogen GUI"))
 
     # set GraphOnParent
     patch.setCoords(left=gopLeft, top=gopTop, width=gopWidth, height=gopHeight)
