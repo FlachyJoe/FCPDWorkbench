@@ -22,6 +22,18 @@
 #
 #
 
+DEBUG = False
+
+if DEBUG:
+    import sys
+    def eprint(*args, **kwargs):
+        print(*args, file=sys.stderr, **kwargs)
+else:
+    def eprint(*args, **kwargs): pass
+
+
+MULTILINE_ERROR = ValueError('\';\' found. Only one object can be convert. \
+ Please split before convert.')
 
 def unescape(source: str) -> str:
     '''

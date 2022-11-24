@@ -51,7 +51,7 @@
 #X text 30 411 door closed if already connected;
 #X obj 525 107 route 0;
 #X obj 525 77 t a b;
-#X text 62 221 Change switch \; to follow connection status;
+#X text 62 221 Change switch \; to follow connection status;
 #X obj 460 522 closebang;
 #X obj 599 263 list split 1;
 #X obj 599 324 list;

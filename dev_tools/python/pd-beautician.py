@@ -104,7 +104,6 @@ def main():
         patch.addDef(cnvSocket(gopLeft + socketDeltaX*i, gopTop))
         patch.addDef(cnvLabel(gopLeft + labelDeltaX*i, gopTop + SOCKET_HEIGHT, comment))
 
-
     # set title
     patch.addDef(Canvas(x=gopLeft + (gopWidth - len(title)*7)/2,
                         y=gopTop + LABEL_HEIGHT+5,
