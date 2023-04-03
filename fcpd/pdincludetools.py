@@ -35,22 +35,24 @@ Err = App.Console.PrintError
 
 
 def registerToolList(pdServer):
-    toolList = [("endedit", pdEndEdit)
-                ]
+    toolList = [("endedit", pdEndEdit)]
     for word, func in toolList:
         pdServer.registerMessageHandler([word], func)
 
 
 def pdEndEdit(pdServer, words):
     # find pdinclude object which use the given filename
-    pyObjects = App.ActiveDocument.findObjects('App::FeaturePython')
+    pyObjects = App.ActiveDocument.findObjects("App::FeaturePython")
     try:
-        obj = [o for o in pyObjects if (hasattr(o, 'Proxy')
-                                        and hasattr(o.Proxy, 'tmpFile')
-                                        and o.Proxy.tmpFile.endswith(words[2])
-                                        )][0]
+        obj = [
+            o
+            for o in pyObjects
+            if (
+                hasattr(o, "Proxy")
+                and hasattr(o.Proxy, "tmpFile")
+                and o.Proxy.tmpFile.endswith(words[2])
+            )
+        ][0]
         obj.Proxy.endEdit()
     except IndexError:
         return "ERROR given filename is not valid %s" % words[2]
-
-

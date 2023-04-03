@@ -36,7 +36,6 @@ Err = App.Console.PrintError
 
 class PDControler:
     def __init__(self, obj, controlerInput, controlerOutput):
-
         obj.Proxy = self
         self.Type = "PDControler"
 
@@ -44,17 +43,16 @@ class PDControler:
         self.controlerOutput = controlerOutput
 
         obj.Group = [self.controlerInput, self.controlerOutput]
-        obj.setPropertyStatus('Group', 'ReadOnly')
+        obj.setPropertyStatus("Group", "ReadOnly")
 
     def onChanged(self, obj, prop):
-        if str(prop) == 'Group':
-            if (hasattr(self, "controlerInput") and
-               hasattr(self, "controlerOutput")):
+        if str(prop) == "Group":
+            if hasattr(self, "controlerInput") and hasattr(self, "controlerOutput"):
                 obj.Group = [self.controlerInput, self.controlerOutput]
 
     def resetIncommingProperties(self):
         for ind in range(20):
-            name = 'DataFlow_%i' % ind
+            name = "DataFlow_%i" % ind
             # Check existence
             if hasattr(App.ActiveDocument.IncommingData, name):
                 App.ActiveDocument.IncommingData.removeProperty(name)
@@ -63,7 +61,7 @@ class PDControler:
 
     def resetOutgoingProperties(self):
         for ind in range(20):
-            name = 'DataFlow_%i' % ind
+            name = "DataFlow_%i" % ind
             # Check existence
             if hasattr(App.ActiveDocument.OutgoingData, name):
                 App.ActiveDocument.OutgoingData.removeProperty(name)
@@ -71,43 +69,43 @@ class PDControler:
                 break
 
     def setIncommingPropertyType(self, ind, typ):
-        name = 'DataFlow_%i' % ind
+        name = "DataFlow_%i" % ind
         if ind >= 20:
-            raise(AttributeError('Too many properties, maximum is 20.'))
+            raise (AttributeError("Too many properties, maximum is 20."))
 
         # Check existence
         if hasattr(App.ActiveDocument.IncommingData, name):
             App.ActiveDocument.IncommingData.removeProperty(name)
 
         # App:PropertyRotation doesn't exist so store it in a placement
-        if typ == 'rotation':
-            typ = 'App::PropertyPlacement'
+        if typ == "rotation":
+            typ = "App::PropertyPlacement"
 
-        self.controlerInput.addProperty(typ, name, '', 'IncommingDataFlow')
-        self.controlerInput.setPropertyStatus(name, 'ReadOnly')
+        self.controlerInput.addProperty(typ, name, "", "IncommingDataFlow")
+        self.controlerInput.setPropertyStatus(name, "ReadOnly")
 
     def setOutgoingPropertyType(self, ind, typ):
-        name = 'DataFlow_%i' % ind
+        name = "DataFlow_%i" % ind
         if ind >= 20:
-            raise(AttributeError('Too many properties, maximum is 20.'))
+            raise (AttributeError("Too many properties, maximum is 20."))
 
         # Check existence
         if hasattr(App.ActiveDocument.OutgoingData, name):
             App.ActiveDocument.OutgoingData.removeProperty(name)
 
         # App:PropertyRotation doesn't exist so store it in a placement
-        if typ == 'rotation':
-            typ = 'App::PropertyPlacement'
+        if typ == "rotation":
+            typ = "App::PropertyPlacement"
 
-        self.controlerOutput.addProperty(typ, name, '', 'OutgoingDataFlow')
+        self.controlerOutput.addProperty(typ, name, "", "OutgoingDataFlow")
 
     def setProperty(self, ind, typ, value):
-        name = 'DataFlow_%i' % ind
+        name = "DataFlow_%i" % ind
 
         Log("setProperty %i %s %s\n" % (ind, typ, str(value)))
 
         # App:PropertyRotation doesn't exist so store it in a placement
-        if typ == 'rotation':
+        if typ == "rotation":
             value = App.Placement(App.Vector(0, 0, 0), value)
 
         if not hasattr(self.controlerInput, name):
@@ -134,7 +132,7 @@ class PDControlerViewProvider:
         self.Object = vobj.Object
 
     def getIcon(self):
-        return locator.icon('insert-link.png')
+        return locator.icon("insert-link.png")
 
     def __getstate__(self):
         return None
@@ -142,7 +140,6 @@ class PDControlerViewProvider:
 
 class PDControlerInput:
     def __init__(self, obj):
-
         obj.Proxy = self
         self.Object = obj
         self.Type = "PDControlerInput"
@@ -153,7 +150,6 @@ class PDControlerInput:
 
 class PDControlerOutput:
     def __init__(self, obj, pdServer, dollarZero):
-
         obj.Proxy = self
         self.Type = "PDControlerOutput"
 
@@ -163,7 +159,7 @@ class PDControlerOutput:
         self.propToSend = []
 
     def onChanged(self, obj, prop):
-        if not prop[:8] == 'DataFlow':
+        if not prop[:8] == "DataFlow":
             return
         self.propToSend.append(prop)
 
@@ -179,7 +175,7 @@ class PDControlerOutput:
 
 
 def isPDControler(obj):
-    if hasattr(obj, 'Proxy') and hasattr(obj.Proxy, 'Type'):
+    if hasattr(obj, "Proxy") and hasattr(obj.Proxy, "Type"):
         return obj.Proxy.Type == "PDControler"
     return False
 
@@ -189,17 +185,19 @@ def create(pdServer, dollarZero):
     if hasattr(App.ActiveDocument, "OutgoingData"):
         pdOut = App.ActiveDocument.OutgoingData
     else:
-        pdOut = App.ActiveDocument.addObject('App::FeaturePython', 'OutgoingData')
+        pdOut = App.ActiveDocument.addObject("App::FeaturePython", "OutgoingData")
 
     if hasattr(App.ActiveDocument, "IncommingData"):
         pdIn = App.ActiveDocument.IncommingData
     else:
-        pdIn = App.ActiveDocument.addObject('App::FeaturePython', 'IncommingData')
+        pdIn = App.ActiveDocument.addObject("App::FeaturePython", "IncommingData")
 
     if hasattr(App.ActiveDocument, "PDControler"):
         obj = App.ActiveDocument.PDControler
     else:
-        obj = App.ActiveDocument.addObject('App::DocumentObjectGroupPython', 'PDControler')
+        obj = App.ActiveDocument.addObject(
+            "App::DocumentObjectGroupPython", "PDControler"
+        )
 
     if not hasattr(pdIn, "Proxy"):
         PDControlerInput(pdIn)
