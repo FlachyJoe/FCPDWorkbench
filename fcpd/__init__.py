@@ -37,7 +37,7 @@ import fcpdwb_locator as locator
 from . import pdserver
 from . import pdtools, pdcontrolertools, pdincludetools, pdrawtools, pdgeometrictools
 
-TRY2EMBED = True
+TRY2EMBED = False
 
 pdProcess = QProcess()
 pdServer = pdserver.PureDataServer()
