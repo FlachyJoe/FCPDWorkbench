@@ -18,5 +18,7 @@
             <tag>developers</tag>
             <version>0.2.0</version>
         </workbench>
+
+        <depend optional="true" type="python">ikpy</depend>
     </content>
 </package>
