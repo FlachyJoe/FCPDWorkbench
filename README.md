@@ -43,7 +43,7 @@ Please see [FCPDWorkbench_Samples](https://github.com/FlachyJoe/FCPDWorkbench_Sa
 
 ## Requirements
 
-The PySide2 Python bindings for Qt5 Network is required. Linux users can install python3-pyside2.qtnetwork package.
+The PySide2 (or PySide6) Python bindings for Qt5 (or Qt6) Network is required. Linux users can install python3-pyside2.qtnetwork (or python3-pyside6.qtnetwork) package.
 
 External libraries are needed for Pure-Data :
 * [list-abs](https://puredata.info/downloads/list-abs)

@@ -1,11 +1,9 @@
-#N struct display-struct symbol text float background float width float
-height;
 #N canvas 631 249 530 304 12;
 #X obj 0 0 fc_client localhost 8888 8889 1;
 #X text 10 90 This patch is auto-created by FCPD Workbench don't close
 it.;
 #X text 10 120 help :;
-#X obj 60 120 helplink FCPD;
+#X obj 60 120 pddp/helplink FCPD;
 #N canvas 605 383 568 400 giveme 0;
 #X obj 40 110 fc_giveme;
 #X obj 36 76 commandline;

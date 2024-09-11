@@ -44,7 +44,7 @@
    <item row="1" column="1">
     <widget class="Gui::PrefLineEdit" name="lineEdit">
      <property name="text">
-      <string>localhost</string>
+      <string>127.0.0.1</string>
      </property>
      <property name="prefEntry" stdset="0">
       <cstring>fc_listenaddress</cstring>

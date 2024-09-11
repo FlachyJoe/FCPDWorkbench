@@ -303,8 +303,8 @@ def pdGiveMe(pdServer, words):
     else:
         paramCount = -1
 
-    pdLibPath = os.path.join(locator.PATH, 'pdautogen')
-    pdHelpPath = os.path.join(locator.PATH, 'pdautogenhelp')
+    pdLibPath = os.path.join(locator.PD_PATH, 'pdautogen')
+    pdHelpPath = os.path.join(locator.PD_PATH, 'pdautogenhelp')
     modulePath = os.path.join(pdLibPath, objectName.lower())
     moduleHelpPath = os.path.join(pdHelpPath, objectName.lower())
     filePath = os.path.join(modulePath, funcName)

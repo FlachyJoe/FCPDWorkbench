@@ -3,4 +3,4 @@
 #X text 10 90 This patch is auto-created by FCPD Workbench don't close
 it.;
 #X text 10 120 help :;
-#X obj 60 120 helplink FCPD;
+#X obj 60 120 pddp/helplink FCPD;

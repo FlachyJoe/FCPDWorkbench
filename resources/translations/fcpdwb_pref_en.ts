@@ -25,7 +25,7 @@
     </message>
     <message>
         <location filename="../FCPDwb_pref.ui" line="47"/>
-        <source>localhost</source>
+        <source>127.0.0.1</source>
         <translation></translation>
     </message>
     <message>

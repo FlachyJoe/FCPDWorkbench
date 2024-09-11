@@ -29,8 +29,13 @@
 
 import sys
 
-from PySide2 import QtCore
-from PySide2.QtNetwork import QTcpServer, QTcpSocket, QHostAddress
+from QtVersionControl import getQtVersion
+if getQtVersion() == 6:
+    from PySide6 import QtCore
+    from PySide6.QtNetwork import QTcpServer, QTcpSocket, QHostAddress
+else:
+    from PySide2 import QtCore
+    from PySide2.QtNetwork import QTcpServer, QTcpSocket, QHostAddress
 
 import FreeCAD as App
 
@@ -58,7 +63,7 @@ class PureDataServer(QtCore.QObject):
         self.isRunning = False
         self.isWaiting = True
         self.remoteAddress = ""
-        self.listenAddress = "localhost"
+        self.listenAddress = "127.0.0.1"
         self.listenPort = 8888
         self.messageHandlerList = {}
         self.readBuffer = ""

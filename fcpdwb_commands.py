@@ -52,8 +52,8 @@ class FCPD_CommandLaunch():
 
     def Activated(self):
         if not fcpd.pdIsRunning():
-            fcpd.runPD()
             FreeCADGui.runCommand('FCPD_Run')
+            fcpd.runPD()
         else:
             Log(QT_TRANSLATE_NOOP("FCPD_Launch", "Pure-Data is already running.\n"))
         return
@@ -75,7 +75,7 @@ class FCPD_CommandRun():
     def Activated(self):
         serv = fcpd.pdServer
         if not serv.isRunning:
-            serv.setConnectParameters(fcpd.userPref.GetString('fc_listenaddress', 'localhost'),
+            serv.setConnectParameters(fcpd.userPref.GetString('fc_listenaddress', '127.0.0.1'),
                                       fcpd.userPref.GetInt('fc_listenport', 8888))
             serv.run()
         return
@@ -133,7 +133,13 @@ class FCPD_CommandAddPopulatedInclude():
 
     def Activated(self):
         from fcpd import pdinclude
-        from PySide2.QtWidgets import QFileDialog
+
+        from QtVersionControl import getQtVersion
+        if getQtVersion() == 6:
+            from PySide6.QtWidgets import QFileDialog
+        else:
+            from PySide2.QtWidgets import QFileDialog
+
         fileName = QFileDialog.getOpenFileName(None, QT_TRANSLATE_NOOP("FCPD_AddPopulatedInclude", "Open a Pure-Data file"), "",
                                                QT_TRANSLATE_NOOP("FCPD_AddPopulatedInclude", "Pure-Data Files (*.pd)"))
         if fileName:

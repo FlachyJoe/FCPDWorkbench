@@ -27,8 +27,14 @@ import os
 import sys
 import time
 
-from PySide2 import QtGui, QtWidgets
-from PySide2.QtCore import QProcess
+from QtVersionControl import getQtVersion
+
+if getQtVersion() == 6:
+    from PySide6 import QtGui, QtWidgets
+    from PySide6.QtCore import QProcess
+else:
+    from PySide2 import QtGui, QtWidgets
+    from PySide2.QtCore import QProcess
 
 import FreeCAD
 import FreeCADGui as Gui
