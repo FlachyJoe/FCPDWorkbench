@@ -3,7 +3,7 @@
 #
 #  __init__.py
 #
-#  Copyright 2021 Florian Foinant-Willig <ffw@2f2v.fr>
+#  Copyright 2025 Florian Foinant-Willig <ffw@2f2v.fr>
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -27,14 +27,8 @@ import os
 import sys
 import time
 
-from QtVersionControl import getQtVersion
-
-if getQtVersion() == 6:
-    from PySide6 import QtGui, QtWidgets
-    from PySide6.QtCore import QProcess
-else:
-    from PySide2 import QtGui, QtWidgets
-    from PySide2.QtCore import QProcess
+from PySide import QtGui, QtWidgets
+from PySide.QtCore import QProcess
 
 import FreeCAD
 import FreeCADGui as Gui
@@ -57,57 +51,70 @@ pdgeometrictools.registerToolList(pdServer)
 
 userPref = FreeCAD.ParamGet("User parameter:BaseApp/Preferences/Mod/FCPD")
 
+
 def pdIsRunning():
     return pdProcess.state() != QProcess.NotRunning
 
+
 def runPD():
     if not pdIsRunning():
-        pdBin = userPref.GetString('pd_path')
+        pdBin = userPref.GetString("pd_path")
 
-        pdArgs = ['-path', os.path.join(locator.PD_PATH, 'pdlib'),
-                  '-helppath', os.path.join(locator.PD_PATH, 'pdhelp')]
+        pdArgs = [
+            "-path",
+            os.path.join(locator.PD_PATH, "pdlib"),
+            "-helppath",
+            os.path.join(locator.PD_PATH, "pdhelp"),
+        ]
 
-        if userPref.GetBool('fc_allowRaw', False):
+        if userPref.GetBool("fc_allowRaw", False):
             clientTemplate = "client_raw.pdtemplate"
-            pdArgs += ['-path', os.path.join(locator.PD_PATH, 'pdautogen'),
-                       '-helppath', os.path.join(locator.PD_PATH, 'pdautogenhelp')]
+            pdArgs += [
+                "-path",
+                os.path.join(locator.PD_PATH, "pdautogen"),
+                "-helppath",
+                os.path.join(locator.PD_PATH, "pdautogenhelp"),
+            ]
         else:
             clientTemplate = "client.pdtemplate"
 
-        with open(os.path.join(locator.PD_PATH, clientTemplate), 'r') as f:
+        with open(os.path.join(locator.PD_PATH, clientTemplate), "r") as f:
             clientContents = f.read()
-        clientContents = clientContents.replace('%FCLISTEN%',
-                                                str(userPref.GetInt('fc_listenport')))
-        clientContents = clientContents.replace('%PDLISTEN%',
-                                                str(userPref.GetInt('pd_defaultport')))
+        clientContents = clientContents.replace(
+            "%FCLISTEN%", str(userPref.GetInt("fc_listenport"))
+        )
+        clientContents = clientContents.replace(
+            "%PDLISTEN%", str(userPref.GetInt("pd_defaultport"))
+        )
 
-        clientFilePath = os.path.join(locator.PD_PATH, 'client.pd')
-        with open(clientFilePath, 'w') as f:
+        clientFilePath = os.path.join(locator.PD_PATH, "client.pd")
+        with open(clientFilePath, "w") as f:
             f.write(clientContents)
 
-        pdProcess.startDetached(pdBin, pdArgs + ['-open', clientFilePath])
+        pdProcess.startDetached(pdBin, pdArgs + ["-open", clientFilePath])
         if TRY2EMBED:
             time.sleep(1)
             embedPD()
 
+
 def embedPD():
-    '''
+    """
     Try to embed the pd window(s) in FreeCAD
     return True in success
     only implemented for PureData and PlugData on Linux platform
-    '''
-    if not sys.platform.startswith('linux'):
+    """
+    if not sys.platform.startswith("linux"):
         return False
 
-    exe = userPref.GetString('pd_path').lower()
-    if 'plugdata' in exe:
+    exe = userPref.GetString("pd_path").lower()
+    if "plugdata" in exe:
         wName = ['"PlugData"']
-    elif ('pd' in exe or 'puredata' in exe):
+    elif "pd" in exe or "puredata" in exe:
         wName = ['"Pd"', '"PatchWindow"']
     else:
         return False
 
-    #if not pdIsRunning():
+    # if not pdIsRunning():
     #    #runPD()
     #    return False
 
@@ -115,11 +122,11 @@ def embedPD():
     mdi = mw.findChild(QtWidgets.QMdiArea)
     isOk = False
     for w in wName:
-        cl = f'xwininfo -root -tree | grep \'{w}\' | cut -f9 -d" "'
+        cl = f"xwininfo -root -tree | grep '{w}' | cut -f9 -d\" \""
         print(cl)
         cliP = QProcess()
-        cliP.start('bash', ['-c', cl])
-        cliP.waitForReadyRead();
+        cliP.start("bash", ["-c", cl])
+        cliP.waitForReadyRead()
         winid, _ = cliP.readAllStandardOutput().toInt(16)
         print(winid)
         if winid:

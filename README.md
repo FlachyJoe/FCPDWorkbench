@@ -1,5 +1,4 @@
 ## PureData connection workbench for FreeCAD
-[![Total alerts](https://img.shields.io/lgtm/alerts/g/FlachyJoe/FCPDWorkbench.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/FlachyJoe/FCPDWorkbench/alerts/) [![Language grade: Python](https://img.shields.io/lgtm/grade/python/g/FlachyJoe/FCPDWorkbench.svg?logo=lgtm&logoWidth=18)](https://lgtm.com/projects/g/FlachyJoe/FCPDWorkbench/context:python)
 
 The [FCPD](https://github.com/FlachyJoe/FCPD) workbench bridges [FreeCAD](https://github.com/FreeCAD/FreeCAD) (FC), an open source CAD program with [Pure-Data](https://github.com/pure-data/pure-data) (PD), a real-time computer music system.
 
@@ -49,14 +48,16 @@ External libraries are needed for Pure-Data :
 * [list-abs](https://puredata.info/downloads/list-abs)
 * [iemlib](https://puredata.info/downloads/iemlib)
 
-See Pure-Data documentation to install them or use an already populated distribution as [Purr-Data](http://l2ork.music.vt.edu/main/make-your-own-l2ork/software/).
+See Pure-Data documentation to install them with the Deken package system
+or install a system package from your distribution repository (e.g. `sudo apt install pd-list-abs pd-iemlib`)
+or use an already populated software as [Purr-Data](http://l2ork.music.vt.edu/main/make-your-own-l2ork/software/).
 
 Inverse kinematic features request [ikpy](https://github.com/Phylliade/ikpy).
 
 =======
 ## License
 
-Copyright 2020 @flachyjoe and other contributors
+Copyright 2020-2025 @flachyjoe and other contributors
 
 This program is free software; you can redistribute it and/or modify
 it under the terms of the GNU General Public License as published by

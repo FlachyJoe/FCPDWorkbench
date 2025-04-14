@@ -1,7 +1,7 @@
 # -*- coding: utf-8 -*-
 ###################################################################################
 #
-#  pdincludetools.py
+#  utils.py
 #
 #  Copyright 2025 Florian Foinant-Willig <ffw@2f2v.fr>
 #
@@ -23,36 +23,9 @@
 #
 ###################################################################################
 
-# this module translate pd message to action for PDInclude
-
-import FreeCAD as App
-
-# shortcuts of FreeCAD console
-Log = App.Console.PrintLog
-Msg = App.Console.PrintMessage
-Wrn = App.Console.PrintWarning
-Err = App.Console.PrintError
+# this module share helper functions
 
 
-def registerToolList(pdServer):
-    toolList = [("endedit", pdEndEdit)]
-    for word, func in toolList:
-        pdServer.registerMessageHandler([word], func)
-
-
-def pdEndEdit(pdServer, words):
-    # find pdinclude object which use the given filename
-    pyObjects = App.ActiveDocument.findObjects("App::FeaturePython")
-    try:
-        obj = [
-            o
-            for o in pyObjects
-            if (
-                hasattr(o, "Proxy")
-                and hasattr(o.Proxy, "tmpFile")
-                and o.Proxy.tmpFile.endswith(words[2])
-            )
-        ][0]
-        obj.Proxy.endEdit()
-    except IndexError:
-        return f"ERROR given filename is not valid {words[2]}"
+def _S(*args):
+    """Convert arguments to a space separated string"""
+    return " ".join(map(str, args))

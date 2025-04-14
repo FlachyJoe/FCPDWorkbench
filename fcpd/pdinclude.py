@@ -3,7 +3,7 @@
 #
 #  pdinclude.py
 #
-#  Copyright 2021 Florian Foinant-Willig <ffw@2f2v.fr>
+#  Copyright 2025 Florian Foinant-Willig <ffw@2f2v.fr>
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -38,36 +38,39 @@ import fcpdwb_locator as locator
 DEBUG = True
 
 # shortcuts of FreeCAD console
-Log = App.Console.PrintLog if DEBUG else lambda *args : None
+Log = App.Console.PrintLog if DEBUG else lambda *args: None
 Msg = App.Console.PrintMessage
 Wrn = App.Console.PrintWarning
 Err = App.Console.PrintError
 
+
 def createPDFile(filePath):
-    with open(filePath, 'w') as fd:
+    with open(filePath, "w") as fd:
         fd.writelines("#N canvas 200 200 450 300 12;\n")
 
 
 def addCloseDetection(filePath):
-    '''Add a [fc_isIncluded] in a .pd file to send endedit message on close'''
+    """Add a [fc_isIncluded] in a .pd file to send endedit message on close"""
     _, fileName = os.path.split(filePath)
-    with open(filePath, 'r+') as fd:
+    with open(filePath, "r+") as fd:
         contents = fd.readlines()
         # add onClose subpatch
-        onClose = "#X obj 10 10 fc_isIncluded %s;\n" % fileName
+        onClose = f"#X obj 10 10 fc_isIncluded {fileName};\n"
         # find last connect line bottom to top
         for lineNumber, line in reversed(list(enumerate(contents))):
             if not line.startswith("#X connect "):
                 break
-        newContents = contents[:lineNumber+1] + [onClose] + contents[lineNumber+1:]
+        newContents = (
+            contents[: lineNumber + 1] + [onClose] + contents[lineNumber + 1 :]
+        )
         fd.seek(0)
         fd.writelines(newContents)
-    Log ('close detection added\n')
+    Log("close detection added\n")
 
 
 def hasCloseDetection(filePath):
-    '''check the existence of [fc_isIncluded] in a .pd file'''
-    with open(filePath, 'r+') as fd:
+    """check the existence of [fc_isIncluded] in a .pd file"""
+    with open(filePath, "r+") as fd:
         contents = fd.readlines()
         # find first subpatch line
         for lineNumber, line in enumerate(contents):
@@ -75,27 +78,29 @@ def hasCloseDetection(filePath):
                 return lineNumber
     return False
 
+
 def updateCloseDetection(filePath):
-    '''update [fc_isIncluded] argument to the correct filename'''
+    """update [fc_isIncluded] argument to the correct filename"""
     _, fileName = os.path.split(filePath)
     lineNumber = hasCloseDetection(filePath)
     if lineNumber:
-        with open(filePath, 'r+') as fd:
+        with open(filePath, "r+") as fd:
             contents = fd.readlines()
-            onClose = "#X obj 10 10 fc_isIncluded %s;\n" % fileName
-            newContents = contents[:lineNumber] + [onClose] + contents[lineNumber+1:]
+            onClose = f"#X obj 10 10 fc_isIncluded {fileName};\n"
+            newContents = contents[:lineNumber] + [onClose] + contents[lineNumber + 1 :]
             fd.seek(0)
             fd.writelines(newContents)
-            Log ('close detection updated\n')
+            Log("close detection updated\n")
     else:
         addCloseDetection(filePath)
+
 
 class PDInclude:
     def __init__(self, obj):
         obj.Proxy = self
         self.object = obj
         self.Type = "PDInclude"
-        obj.addProperty('App::PropertyFileIncluded', 'PDFile', '', '')
+        obj.addProperty("App::PropertyFileIncluded", "PDFile", "", "")
         self.isOpen = False
         self.docObserver = None
         self.skipChange = 0
@@ -115,7 +120,7 @@ class PDInclude:
 
                 updateCloseDetection(self.tmpFile)
 
-                fcpd.pdServer.send('0 pd open %s %s' % (fileName, dirName))
+                fcpd.pdServer.send(f"0 pd open {fileName} {dirName}")
                 self.isOpen = True
                 self.skipChange = 0
 
@@ -132,8 +137,8 @@ class PDInclude:
 
                     def slotStartSaveDocument(self, doc, label):
                         if doc == self.target_doc:
-                            Log('Ask PD to save\n')
-                            self.caller.pdServer.send('0 pd-%s menusave;' % self.fileName)
+                            Log("Ask PD to save\n")
+                            self.caller.pdServer.send("0 pd-{self.fileName} menusave;")
                             Gui.updateGui()
                             # give PD 500ms to save
                             time.sleep(0.5)
@@ -149,15 +154,15 @@ class PDInclude:
         if self.skipChange > 0:
             self.skipChange -= 1
         elif os.path.exists(self.tmpFile):
-            Log("%s changed\n" % self.tmpFile)
+            Log(f"{self.tmpFile} changed\n")
             self.object.PDFile = self.tmpFile
             App.ActiveDocument.recompute()
         else:
-            Log("%s deleted\n" % self.tmpFile)
+            Log(f"{self.tmpFile} deleted\n")
 
     def endEdit(self):
-        Log("%s closed\n" % self.tmpFile)
-        try :
+        Log(f"{self.tmpFile} closed\n")
+        try:
             os.remove(self.tmpFile)
             os.remove(self.tmpFile + "_")
             del self.fs_watcher
@@ -186,10 +191,11 @@ class PDIncludeViewProvider:
 
 
 def create():
-    obj = App.ActiveDocument.addObject('App::FeaturePython', 'PDInclude')
+    obj = App.ActiveDocument.addObject("App::FeaturePython", "PDInclude")
     PDInclude(obj)
     PDIncludeViewProvider(obj.ViewObject, obj)
     return obj
+
 
 def createWithEmpty():
     obj = create()

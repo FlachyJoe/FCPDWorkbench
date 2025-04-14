@@ -3,7 +3,7 @@
 #
 #  fcpdwb_locator.py
 #
-#  Copyright 2021 Florian Foinant-Willig <ffw@2f2v.fr>
+#  Copyright 2025 Florian Foinant-Willig <ffw@2f2v.fr>
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -27,17 +27,19 @@ import os
 import FreeCADGui
 
 PATH = os.path.dirname(__file__)
-RESOURCES_PATH = os.path.join(PATH, 'resources')
-ICONS_PATH = os.path.join(RESOURCES_PATH, 'icons')
-TRANSLATIONS_PATH = os.path.join(RESOURCES_PATH, 'translations')
-PD_PATH = os.path.join(PATH, 'pure-data')
+RESOURCES_PATH = os.path.join(PATH, "resources")
+ICONS_PATH = os.path.join(RESOURCES_PATH, "icons")
+TRANSLATIONS_PATH = os.path.join(RESOURCES_PATH, "translations")
+PD_PATH = os.path.join(PATH, "pure-data")
 
 
 def icon(filename):
     return os.path.join(ICONS_PATH, filename)
 
+
 def resource(filename):
     return os.path.join(RESOURCES_PATH, filename)
 
+
 def getFCPDWorkbench():
-    return FreeCADGui.getWorkbench('FCPDWorkbench')
+    return FreeCADGui.getWorkbench("FCPDWorkbench")

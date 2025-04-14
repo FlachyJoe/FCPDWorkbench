@@ -3,7 +3,7 @@
 #
 #  InitGui.py
 #
-#  Copyright 2020 Florian Foinant-Willig <ffw@2f2v.fr>
+#  Copyright 2025 Florian Foinant-Willig <ffw@2f2v.fr>
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -33,29 +33,39 @@ class FCPDWorkbench(Workbench):
 
     MenuText = "FCPD"
     ToolTip = QT_TRANSLATE_NOOP("FCPDWorkbench", "Pure-Data connection")
-    Icon = locator.icon('FCPDLogo.svg')
+    Icon = locator.icon("FCPDLogo.svg")
 
     def Initialize(self):
         import fcpd
 
         import fcpdwb_locator as locator
+
         FreeCADGui.addLanguagePath(locator.TRANSLATIONS_PATH)
         FreeCADGui.updateLocale()
 
         # command list
         import fcpdwb_commands
-        self.commandList = ["FCPD_Run", "FCPD_Stop", "FCPD_Launch", "FCPD_AddInclude", "FCPD_AddPopulatedInclude"]
-        self.appendToolbar("FCPD", self.commandList)   # creates a new toolbar
-        self.appendMenu("FCPD", self.commandList)      # creates a new menu
+
+        self.commandList = [
+            "FCPD_Run",
+            "FCPD_Stop",
+            "FCPD_Launch",
+            "FCPD_AddInclude",
+            "FCPD_AddPopulatedInclude",
+        ]
+        self.appendToolbar("FCPD", self.commandList)  # creates a new toolbar
+        self.appendMenu("FCPD", self.commandList)  # creates a new menu
 
         # prefs UI
         FreeCADGui.addIconPath(locator.ICONS_PATH)
         FreeCADGui.addPreferencePage(locator.resource("FCPDwb_pref.ui"), "FCPD")
 
-
     def ContextMenu(self, recipient):
         if recipient == "tree":
-            self.appendContextMenu("FCPD", ["FCPD_AddInclude", "FCPD_AddPopulatedInclude"])   # add commands to the context menu
+            # add commands to the context menu
+            self.appendContextMenu(
+                "FCPD", ["FCPD_AddInclude", "FCPD_AddPopulatedInclude"]
+            )
 
     def GetClassName(self):
         return "Gui::PythonWorkbench"

@@ -26,27 +26,34 @@ DEBUG = False
 
 if DEBUG:
     import sys
+
     def eprint(*args, **kwargs):
         print(*args, file=sys.stderr, **kwargs)
+
 else:
-    def eprint(*args, **kwargs): pass
+
+    def eprint(*args, **kwargs):
+        pass
 
 
-MULTILINE_ERROR = ValueError('\';\' found. Only one object can be convert. \
- Please split before convert.')
+MULTILINE_ERROR = ValueError(
+    "';' found. Only one object can be convert. \
+ Please split before convert."
+)
+
 
 def unescape(source: str) -> str:
-    '''
-        remove PD escape characters from a string
-    '''
-    return str(source).replace(r'\ ', ' ')
+    """
+    remove PD escape characters from a string
+    """
+    return str(source).replace(r"\ ", " ")
 
 
 def escape(source: str) -> str:
-    '''
-        add PD escape characters to a string
-    '''
-    return unescape(source).replace(' ', r'\ ')
+    """
+    add PD escape characters to a string
+    """
+    return unescape(source).replace(" ", r"\ ")
 
 
 # helpers for sorting
@@ -63,10 +70,11 @@ def byLine(o):
 
 
 class FileLine:
-    '''
-        Represents a line of a PD file
-        acts as string or int depend on context
-    '''
+    """
+    Represents a line of a PD file
+    acts as string or int depend on context
+    """
+
     def __init__(self, numberedLine: tuple[int, str]):
         self.lineNumber = numberedLine[0]
         self.string = numberedLine[1]
@@ -113,16 +121,17 @@ class FileLine:
         return getattr(self.string, attr)
 
     def checkAndSplit(self):
-        if self.endswith(';'):
+        if self.endswith(";"):
             self.string = self.string[:-1]
         return self.string.split()
 
 
 class Definition:
-    '''
-        Represents a PD 'box'
-    '''
-    def __init__(self, x: int, y: int, index: int=-1, type: str='nothing'):
+    """
+    Represents a PD 'box'
+    """
+
+    def __init__(self, x: int, y: int, index: int = -1, type: str = "nothing"):
         self.index = index
         self.x = int(x)
         self.y = int(y)
@@ -132,31 +141,31 @@ class Definition:
         return self.index
 
     def inRect(self, xMin, xMax, yMin, yMax) -> bool:
-        return (self.x in range(xMin, xMax)
-                and self.y in range(yMin, yMax))
+        return self.x in range(xMin, xMax) and self.y in range(yMin, yMax)
 
     @staticmethod
     def fromLine(code: FileLine):
         words = code.split()
-        if words[1] == 'obj':
+        if words[1] == "obj":
             return Object.fromLine(code)
-        if words[1] == 'msg':
+        if words[1] == "msg":
             return Message.fromLine(code)
-        if words[1] == 'text':
+        if words[1] == "text":
             return Text.fromLine(code)
-        if words[1] == 'floatatom':
+        if words[1] == "floatatom":
             return FloatAtom.fromLine(code)
-        if words[1] == 'symbolatom':
+        if words[1] == "symbolatom":
             return SymbolAtom.fromLine(code)
 
-        raise ValueError(f'not an object definition : {str(code)}')
+        raise ValueError(f"not an object definition : {str(code)}")
 
 
 class Object(Definition):
-    '''
-        a PureData object
-        see https://puredata.info/docs/developer/PdFileFormat#r36
-    '''
+    """
+    a PureData object
+    see https://puredata.info/docs/developer/PdFileFormat#r36
+    """
+
     def __init__(self, x: int, y: int, type: str, index=-1, args=""):
         super().__init__(x, y, index, type)
         if not isinstance(args, list):
@@ -164,23 +173,28 @@ class Object(Definition):
         self.args = args
 
     def __str__(self):
-        return (f"#X obj {self.x} {self.y} {self.type}"
-                f"{' ' if self.args else ''}{' '.join([escape(s) for s in self.args])};")
+        return (
+            f"#X obj {self.x} {self.y} {self.type}"
+            f"{' ' if self.args else ''}{' '.join([escape(s) for s in self.args])};"
+        )
 
     @staticmethod
     def fromLine(code: FileLine):
         words = code.checkAndSplit()
-        if words[1] != 'obj':
-            raise ValueError('This is not an object definition.')
+        if words[1] != "obj":
+            raise ValueError("This is not an object definition.")
 
-        return Object(words[2], words[3], words[4], int(code), [unescape(s) for s in words[5:]])
+        return Object(
+            words[2], words[3], words[4], int(code), [unescape(s) for s in words[5:]]
+        )
 
 
 class Coords:
-    '''
-        the visual range of a frameset
-        see https://puredata.info/docs/developer/PdFileFormat#r33
-    '''
+    """
+    the visual range of a frameset
+    see https://puredata.info/docs/developer/PdFileFormat#r33
+    """
+
     def __init__(self, xFrom, yTo, xTo, yFrom, width, height, gop, left=0, top=0):
         self.xFrom = xFrom
         self.yTo = yTo
@@ -193,25 +207,28 @@ class Coords:
         self.top = top
 
     def __str__(self):
-        return (f"#X coords {self.xFrom} {self.yTo} {self.xTo} {self.yFrom}"
-                f" {self.width} {self.height} {self.gop} {self.left} {self.top};")
+        return (
+            f"#X coords {self.xFrom} {self.yTo} {self.xTo} {self.yFrom}"
+            f" {self.width} {self.height} {self.gop} {self.left} {self.top};"
+        )
 
     @staticmethod
     def fromLine(code: FileLine):
         words = code.checkAndSplit()
-        if words[1] != 'coords':
-            raise ValueError('This is not a coords definition.')
+        if words[1] != "coords":
+            raise ValueError("This is not a coords definition.")
 
         return Coords(*words[2:])
 
 
 class Message(Definition):
-    '''
-        a PureData message
-        see https://puredata.info/docs/developer/PdFileFormat#r35
-    '''
-    def __init__(self, x: int, y: int, index: int=-1, value: str='empty'):
-        super().__init__(x, y, index, 'msg')
+    """
+    a PureData message
+    see https://puredata.info/docs/developer/PdFileFormat#r35
+    """
+
+    def __init__(self, x: int, y: int, index: int = -1, value: str = "empty"):
+        super().__init__(x, y, index, "msg")
         self.value = value
 
     def __str__(self):
@@ -220,20 +237,20 @@ class Message(Definition):
     @staticmethod
     def fromLine(code: FileLine):
         words = code.checkAndSplit()
-        if words[1] != 'msg':
-            raise ValueError('This is not a message definition.')
+        if words[1] != "msg":
+            raise ValueError("This is not a message definition.")
 
-        return Message(words[2], words[3], int(code), ' '.join(words[4:]))
+        return Message(words[2], words[3], int(code), " ".join(words[4:]))
 
 
 class Text(Definition):
-    '''
-        a PureData comment
-        see https://puredata.info/docs/developer/PdFileFormat#r3B
-    '''
+    """
+    a PureData comment
+    see https://puredata.info/docs/developer/PdFileFormat#r3B
+    """
 
-    def __init__(self, x: int, y: int, index: int=-1, value: str='empty'):
-        super().__init__(x, y, index, 'text')
+    def __init__(self, x: int, y: int, index: int = -1, value: str = "empty"):
+        super().__init__(x, y, index, "text")
         self.value = value
 
     def __str__(self):
@@ -242,16 +259,17 @@ class Text(Definition):
     @staticmethod
     def fromLine(code: FileLine):
         words = code.checkAndSplit()
-        if words[1] != 'text':
-            raise ValueError('This is not a text definition.')
+        if words[1] != "text":
+            raise ValueError("This is not a text definition.")
 
-        return Text(words[2], words[3], int(code), ' '.join(words[4:]))
+        return Text(words[2], words[3], int(code), " ".join(words[4:]))
 
 
 class Struct:
-    '''
-        a PureData structure definition
-    '''
+    """
+    a PureData structure definition
+    """
+
     def __init__(self, index: int, name: str, args: str):
         self.index = index
         self.name = name
@@ -263,17 +281,18 @@ class Struct:
     @staticmethod
     def fromLine(code: FileLine):
         words = code.checkAndSplit()
-        if words[1] != 'struct':
-            raise ValueError('This is not a struct definition.')
+        if words[1] != "struct":
+            raise ValueError("This is not a struct definition.")
 
-        return Struct(int(code), words[2], ' '.join(words[3:]))
+        return Struct(int(code), words[2], " ".join(words[3:]))
 
 
 class Connect:
-    '''
-        a PureData wire
-        see https://puredata.info/docs/developer/PdFileFormat#r32
-    '''
+    """
+    a PureData wire
+    see https://puredata.info/docs/developer/PdFileFormat#r32
+    """
+
     def __init__(self, index: int, obj1: int, outlet: int, obj2: int, inlet: int):
         self.index = index
         self.firstObject = obj1
@@ -287,17 +306,20 @@ class Connect:
     @staticmethod
     def fromLine(code: FileLine):
         words = code.checkAndSplit()
-        if words[1] != 'connect':
-            raise ValueError('This is not a connect definition.')
+        if words[1] != "connect":
+            raise ValueError("This is not a connect definition.")
 
         return Connect(int(code), words[2], words[3], words[4], words[5])
 
-class Patch:
-    '''
-        a PureData patch
-    '''
 
-    def __init__(self, definitions, connects, structs, coords, canvas, subPatches, arrays):
+class Patch:
+    """
+    a PureData patch
+    """
+
+    def __init__(
+        self, definitions, connects, structs, coords, canvas, subPatches, arrays
+    ):
         self.definitions = definitions
         self.connects = connects
         self.structs = structs
@@ -315,13 +337,27 @@ class Patch:
             obj.index = i
 
     def __str__(self):
-        contents = ([self.canvas] + self.structs
-                    + sorted(self.definitions + self.subPatches , key=byLine)
-                    + self.connects + self.coords)
-        return '\n'.join([str(s) for s in contents])
+        contents = (
+            [self.canvas]
+            + self.structs
+            + sorted(self.definitions + self.subPatches, key=byLine)
+            + self.connects
+            + self.coords
+        )
+        return "\n".join([str(s) for s in contents])
 
-    def setCoords(self, xFrom=0, yTo=0, xTo=1, yFrom=1,
-                  width=100, height=100, gop=2, left=0, top=0):
+    def setCoords(
+        self,
+        xFrom=0,
+        yTo=0,
+        xTo=1,
+        yFrom=1,
+        width=100,
+        height=100,
+        gop=2,
+        left=0,
+        top=0,
+    ):
         self.coords = [Coords(xFrom, yTo, xTo, yFrom, width, height, gop, left, top)]
 
     def getDefOfType(self, type: str) -> list[Definition]:
@@ -334,7 +370,13 @@ class Patch:
         return obj
 
     def connect(self, obj1, outlet, obj2, inlet):
-        obj = Connect(max([o.index for o in self.connects]) + 1, int(obj1), outlet, int(obj2), inlet)
+        obj = Connect(
+            max([o.index for o in self.connects]) + 1,
+            int(obj1),
+            outlet,
+            int(obj2),
+            inlet,
+        )
         self.connects.append(obj)
         return obj
 
@@ -345,40 +387,47 @@ class Patch:
     @staticmethod
     def fromLines(code: list[FileLine]):
 
-        mainStructs = {l for l in code if l.startswith('#N struct')}
+        mainStructs = {l for l in code if l.startswith("#N struct")}
 
         # Split subpatches and arrays
         subPatchesLinesNumber = []
         currentLevel = 0
         arraysLinesNumber = []
         for l in sorted(code, key=lambda l: l.lineNumber):
-            if l.startswith('#X array'):
+            if l.startswith("#X array"):
                 arraysLinesNumber.append(int(l))
-            if l.startswith('#N canvas'):
+            if l.startswith("#N canvas"):
                 subPatchesLinesNumber.append((currentLevel, int(l), len(code)))
                 currentLevel += 1
-            if l.startswith('#X restore'):
+            if l.startswith("#X restore"):
                 if currentLevel > 0:
                     currentLevel -= 1
-                    subPatchesLinesNumber[-1] = (subPatchesLinesNumber[-1][0],
-                                                 subPatchesLinesNumber[-1][1],
-                                                 int(l)+1)
+                    subPatchesLinesNumber[-1] = (
+                        subPatchesLinesNumber[-1][0],
+                        subPatchesLinesNumber[-1][1],
+                        int(l) + 1,
+                    )
                 else:
-                    raise ValueError('Error in subpatch definition.')
+                    raise ValueError("Error in subpatch definition.")
 
         firstLine = int(code[0])
 
         # sub-patches
-        subPatchesCode = [code[start - firstLine:end - firstLine]
-                          for lvl, start, end in subPatchesLinesNumber
-                          if lvl == 1]
+        subPatchesCode = [
+            code[start - firstLine : end - firstLine]
+            for lvl, start, end in subPatchesLinesNumber
+            if lvl == 1
+        ]
         subPatchesLines = set(l for lines in subPatchesCode for l in lines)
         subPatches = []
         for lines in subPatchesCode:
             subPatches.append(SubPatch.fromLines(lines))
 
         # arrays
-        arraysCode = [code[start - firstLine:start - firstLine + 2] for start in arraysLinesNumber]
+        arraysCode = [
+            code[start - firstLine : start - firstLine + 2]
+            for start in arraysLinesNumber
+        ]
         arraysLines = set(l for lines in arraysCode for l in lines)
         arrays = []
         for lines in arraysCode:
@@ -387,11 +436,13 @@ class Patch:
         # main patch
         main = set(code) - subPatchesLines - arraysLines
         mainCanvas = list(sorted(main))[0]
-        mainConnects = {l for l in main if l.startswith('#X connect')}
-        mainCoords = {l for l in main if l.startswith('#X coords')}
-        mainObjects = {l for l in main if l.startswith('#X')} - mainConnects - mainCoords
+        mainConnects = {l for l in main if l.startswith("#X connect")}
+        mainCoords = {l for l in main if l.startswith("#X coords")}
+        mainObjects = (
+            {l for l in main if l.startswith("#X")} - mainConnects - mainCoords
+        )
 
-        canvas = mainCanvas + ';'
+        canvas = mainCanvas + ";"
         structs = [Struct.fromLine(l) for l in mainStructs]
         definitions = [Definition.fromLine(l) for l in mainObjects]
         connects = [Connect.fromLine(l) for l in mainConnects]
@@ -401,8 +452,8 @@ class Patch:
 
     @staticmethod
     def fromFile(filename: str):
-        with open(filename, 'r') as hFile:
-            contents = PdFile(hFile.read().split(';\n'))
+        with open(filename, "r") as hFile:
+            contents = PdFile(hFile.read().split(";\n"))
 
         if not contents.isValid():
             raise ValueError(f"{filename} is not in a valid Pure-Data format.")
@@ -411,13 +462,24 @@ class Patch:
 
 
 class SubPatch(Definition):
-    '''
-        a PureData sub-patch
-    '''
+    """
+    a PureData sub-patch
+    """
 
-    def __init__(self, x: int, y: int, index: int, width: int, height: int,
-                 winX: int, winY: int, name: str, args: str, contents: Patch):
-        super().__init__(x, y, index, 'subpatch')
+    def __init__(
+        self,
+        x: int,
+        y: int,
+        index: int,
+        width: int,
+        height: int,
+        winX: int,
+        winY: int,
+        name: str,
+        args: str,
+        contents: Patch,
+    ):
+        super().__init__(x, y, index, "subpatch")
         self.width = width
         self.height = height
         self.winX = winX
@@ -431,7 +493,9 @@ class SubPatch(Definition):
         if self.name == "graph":
             footer = f"#X restore {self.x} {self.y} graph;"
         else:
-            footer = f"#X restore {self.x} {self.y} pd {self.name} {' '.join(self.args)};"
+            footer = (
+                f"#X restore {self.x} {self.y} pd {self.name} {' '.join(self.args)};"
+            )
         return f"{header}\n{str(self.contents)}\n{footer}"
 
     @staticmethod
@@ -440,32 +504,51 @@ class SubPatch(Definition):
         footer = code[-1]
         contents = code[1:-1]
 
-        if header.endswith(';'):
+        if header.endswith(";"):
             header = header[:-1]
-        if footer.endswith(';'):
+        if footer.endswith(";"):
             footer = footer[:-1]
 
         hWords = header.split()
         fWords = footer.split()
-        if hWords[1] != 'canvas' or fWords[1] != 'restore':
-            raise ValueError('This is not a subpatch definition.')
+        if hWords[1] != "canvas" or fWords[1] != "restore":
+            raise ValueError("This is not a subpatch definition.")
 
         defContents = Patch.fromLines(contents)
 
-        if len(fWords)>5:
-            return SubPatch(fWords[2], fWords[3], int(code[0]),
-                            hWords[2], hWords[3], hWords[4], hWords[5],
-                            fWords[5], fWords[6:], defContents)
+        if len(fWords) > 5:
+            return SubPatch(
+                fWords[2],
+                fWords[3],
+                int(code[0]),
+                hWords[2],
+                hWords[3],
+                hWords[4],
+                hWords[5],
+                fWords[5],
+                fWords[6:],
+                defContents,
+            )
         # graph case, only 5 words
-        return SubPatch(fWords[2], fWords[3], int(code[0]),
-                        hWords[2], hWords[3], hWords[4], hWords[5],
-                        'graph', None, defContents)
+        return SubPatch(
+            fWords[2],
+            fWords[3],
+            int(code[0]),
+            hWords[2],
+            hWords[3],
+            hWords[4],
+            hWords[5],
+            "graph",
+            None,
+            defContents,
+        )
 
 
 class PdFile:
-    '''
-        a PureData file
-    '''
+    """
+    a PureData file
+    """
+
     def __init__(self, code: list[str]):
         self.contents = [FileLine(l) for l in enumerate(code)]
 
@@ -476,22 +559,45 @@ class PdFile:
         return self.contents
 
     def isValid(self):
-        return (self.contents[0].startswith('#N struct ')
-                or self.contents[0].startswith('#N canvas '))
+        return self.contents[0].startswith("#N struct ") or self.contents[0].startswith(
+            "#N canvas "
+        )
 
     def __len__(self):
         return len(self.contents)
 
 
 class FloatAtom(Definition):
-    '''
-        a floatatom
-        see https://puredata.info/docs/developer/PdFileFormat#r34
-    '''
-    def __init__(self, x, y, index=-1, width=5, lowerLimit=0, upperLimit=0, labelPos=0,
-                 label='-', receive='-', send='-', size='0'):
-        super().__init__(x, y, index, 'floatatom')
-        self.values = [width, lowerLimit, upperLimit, labelPos, label, receive, send, size]
+    """
+    a floatatom
+    see https://puredata.info/docs/developer/PdFileFormat#r34
+    """
+
+    def __init__(
+        self,
+        x,
+        y,
+        index=-1,
+        width=5,
+        lowerLimit=0,
+        upperLimit=0,
+        labelPos=0,
+        label="-",
+        receive="-",
+        send="-",
+        size="0",
+    ):
+        super().__init__(x, y, index, "floatatom")
+        self.values = [
+            width,
+            lowerLimit,
+            upperLimit,
+            labelPos,
+            label,
+            receive,
+            send,
+            size,
+        ]
 
     def __str__(self):
         return f"#X floatatom {self.x} {self.y} {' '.join(self.values)};"
@@ -499,21 +605,43 @@ class FloatAtom(Definition):
     @staticmethod
     def fromLine(code: FileLine):
         words = code.checkAndSplit()
-        if words[1] != 'floatatom':
-            raise ValueError('This is not a FloatAtom definition.')
+        if words[1] != "floatatom":
+            raise ValueError("This is not a FloatAtom definition.")
 
         return FloatAtom(words[2], words[3], int(code), *words[4:])
 
 
 class SymbolAtom(Definition):
-    '''
-        a symbolatom
-        see https://puredata.info/docs/developer/PdFileFormat#r3A
-    '''
-    def __init__(self, x, y, index=-1, width=10, lowerLimit=0, upperLimit=0, labelPos=0,
-                 label='-', receive='-', send='-', size='0'):
-        super().__init__(x, y, index, 'symbolatom')
-        self.values = [width, lowerLimit, upperLimit, labelPos, label, receive, send, size]
+    """
+    a symbolatom
+    see https://puredata.info/docs/developer/PdFileFormat#r3A
+    """
+
+    def __init__(
+        self,
+        x,
+        y,
+        index=-1,
+        width=10,
+        lowerLimit=0,
+        upperLimit=0,
+        labelPos=0,
+        label="-",
+        receive="-",
+        send="-",
+        size="0",
+    ):
+        super().__init__(x, y, index, "symbolatom")
+        self.values = [
+            width,
+            lowerLimit,
+            upperLimit,
+            labelPos,
+            label,
+            receive,
+            send,
+            size,
+        ]
 
     def __str__(self):
         return f"#X symbolatom {self.x} {self.y} {' '.join(self.values)};"
@@ -521,21 +649,43 @@ class SymbolAtom(Definition):
     @staticmethod
     def fromLine(code: FileLine):
         words = code.checkAndSplit()
-        if words[1] != 'symbolatom':
-            raise ValueError('This is not a SymbolAtom definition.')
+        if words[1] != "symbolatom":
+            raise ValueError("This is not a SymbolAtom definition.")
 
         return SymbolAtom(words[2], words[3], int(code), *words[4:])
 
 
 class ListBox(Definition):
-    '''
-        a listbox
-        see https://puredata.info/docs/developer/PdFileFormat#r3A
-    '''
-    def __init__(self, x, y, index=-1, width=20, lowerLimit=0, upperLimit=0, labelPos=0,
-                 label='-', receive='-', send='-', size='0'):
-        super().__init__(x, y, index, 'listbox')
-        self.values = [width, lowerLimit, upperLimit, labelPos, label, receive, send, size]
+    """
+    a listbox
+    see https://puredata.info/docs/developer/PdFileFormat#r3A
+    """
+
+    def __init__(
+        self,
+        x,
+        y,
+        index=-1,
+        width=20,
+        lowerLimit=0,
+        upperLimit=0,
+        labelPos=0,
+        label="-",
+        receive="-",
+        send="-",
+        size="0",
+    ):
+        super().__init__(x, y, index, "listbox")
+        self.values = [
+            width,
+            lowerLimit,
+            upperLimit,
+            labelPos,
+            label,
+            receive,
+            send,
+            size,
+        ]
 
     def __str__(self):
         return f"#X listbox {self.x} {self.y} {' '.join(self.values)};"
@@ -543,16 +693,17 @@ class ListBox(Definition):
     @staticmethod
     def fromLine(code: FileLine):
         words = code.checkAndSplit()
-        if words[1] != 'symbolatom':
-            raise ValueError('This is not a SymbolAtom definition.')
+        if words[1] != "symbolatom":
+            raise ValueError("This is not a SymbolAtom definition.")
 
         return SymbolAtom(words[2], words[3], int(code), *words[4:])
 
+
 class Array:
-    '''
-        an array
-        see https://puredata.info/docs/developer/PdFileFormat#r31
-    '''
+    """
+    an array
+    see https://puredata.info/docs/developer/PdFileFormat#r31
+    """
 
     def __init__(self, index: int, name: str, size: int, saveFlag: int, datas: list):
         self.index = index
@@ -562,8 +713,9 @@ class Array:
         self.datas = datas
 
     def __str__(self):
-        lines = (f"#X array {self.name} {self.size} float {self.saveFlag};\n#A"
-                ' '.join(self.datas))
+        lines = f"#X array {self.name} {self.size} float {self.saveFlag};\n#A" " ".join(
+            self.datas
+        )
         return lines
 
     @staticmethod
@@ -571,28 +723,61 @@ class Array:
         header = code[0]
         contents = code[1:]
 
-        if header.endswith(';'):
+        if header.endswith(";"):
             header = header[:-1]
-        if contents[-1].endswith(';'):
+        if contents[-1].endswith(";"):
             contents[-1] = contents[-1][:-1]
 
         hWords = header.split()
-        if hWords[1] != 'array':
-            raise ValueError('This is not an array definition.')
+        if hWords[1] != "array":
+            raise ValueError("This is not an array definition.")
 
         datas = [l for line in contents for l in str(line).split()]
-        datas.remove('#A')
+        datas.remove("#A")
 
         return Array(int(code[0]), hWords[2], hWords[3], hWords[5], datas)
 
 
-class Canvas (Object):
-    '''
-        helper for canvas creation
-    '''
-    def __init__(self, x=100, y=100, index=-1,
-                 boxSize=15, width=100, height=60, send='empty', receive='empty',
-                 text='empty', dX=20, dY=12, font=0, textSize=14,
-                 background="#e0e0e0", foreground="#404040"):
-        super().__init__(x, y, "cnv", index, [boxSize, width, height, send, receive,
-                         escape(text), dX, dY, font, textSize, background, foreground])
+class Canvas(Object):
+    """
+    helper for canvas creation
+    """
+
+    def __init__(
+        self,
+        x=100,
+        y=100,
+        index=-1,
+        boxSize=15,
+        width=100,
+        height=60,
+        send="empty",
+        receive="empty",
+        text="empty",
+        dX=20,
+        dY=12,
+        font=0,
+        textSize=14,
+        background="#e0e0e0",
+        foreground="#404040",
+    ):
+        super().__init__(
+            x,
+            y,
+            "cnv",
+            index,
+            [
+                boxSize,
+                width,
+                height,
+                send,
+                receive,
+                escape(text),
+                dX,
+                dY,
+                font,
+                textSize,
+                background,
+                foreground,
+            ],
+        )

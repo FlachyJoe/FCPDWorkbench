@@ -3,7 +3,7 @@
 #
 #  pdmsgtranslator.py
 #
-#  Copyright 2021 Florian Foinant-Willig <ffw@2f2v.fr>
+#  Copyright 2025 Florian Foinant-Willig <ffw@2f2v.fr>
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -37,24 +37,47 @@ Err = App.Console.PrintError
 
 
 class PDMsgTranslator:
-    NOT_SET = ''
-    FLOAT = 'App::PropertyFloat'
-    INT = 'App::PropertyInteger'
-    VECTOR = 'App::PropertyVector'
-    ROTATION = 'rotation'
-    PLACEMENT = 'App::PropertyPlacement'
-    LIST = 'list'
-    BOOL = 'App::PropertyBool'
-    STRING = 'App::PropertyString'
-    OBJECT = 'App::PropertyLink'
-    QUANTITY = 'App::PropertyQuantity'
-    ANGLE = 'App::PropertyAngle'
-    FC_TYPES = [NOT_SET, FLOAT, INT, VECTOR, ROTATION, PLACEMENT, LIST, BOOL,
-                STRING, OBJECT, QUANTITY, ANGLE]
-    SHORT_TYPES = ['0', 'f', 'i', 'v', 'r', 'p', 'l', 'b',
-                   's', 'o', 'q', 'a']
-    LONG_TYPES = ['empty', 'float', 'integer', 'vector', 'rotation', 'placement', 'list', 'boolean',
-                  'string', 'object', 'quantity', 'angle']
+    NOT_SET = ""
+    FLOAT = "App::PropertyFloat"
+    INT = "App::PropertyInteger"
+    VECTOR = "App::PropertyVector"
+    ROTATION = "rotation"
+    PLACEMENT = "App::PropertyPlacement"
+    LIST = "list"
+    BOOL = "App::PropertyBool"
+    STRING = "App::PropertyString"
+    OBJECT = "App::PropertyLink"
+    QUANTITY = "App::PropertyQuantity"
+    ANGLE = "App::PropertyAngle"
+    FC_TYPES = [
+        NOT_SET,
+        FLOAT,
+        INT,
+        VECTOR,
+        ROTATION,
+        PLACEMENT,
+        LIST,
+        BOOL,
+        STRING,
+        OBJECT,
+        QUANTITY,
+        ANGLE,
+    ]
+    SHORT_TYPES = ["0", "f", "i", "v", "r", "p", "l", "b", "s", "o", "q", "a"]
+    LONG_TYPES = [
+        "empty",
+        "float",
+        "integer",
+        "vector",
+        "rotation",
+        "placement",
+        "list",
+        "boolean",
+        "string",
+        "object",
+        "quantity",
+        "angle",
+    ]
 
     objectsStore = []  # store binary untextable objects to get them back by reference
 
@@ -66,33 +89,34 @@ class PDMsgTranslator:
     def strFromValue(cls, val):
         if isinstance(val, list):
             if len(val) > 1:
-                string = "list %i" % len(val)
+                string = f"list {len(val)}"
                 for v in val:
-                    string += " %s" % cls.strFromValue(v)
+                    string += f" {cls.strFromValue(v)}"
             elif len(val) == 1:
                 # don't send list with one element
                 string = cls.strFromValue(val[0])
             else:
                 # empty list
-                string = 'None'
-        elif (isinstance(val, numbers.Number) or
-              isinstance(val, bool) or
-              isinstance(val, App.Vector) or
-              isinstance(val, App.Rotation) or
-              isinstance(val, App.Placement)
-             ):
+                string = "None"
+        elif (
+            isinstance(val, numbers.Number)
+            or isinstance(val, bool)
+            or isinstance(val, App.Vector)
+            or isinstance(val, App.Rotation)
+            or isinstance(val, App.Placement)
+        ):
             string = str(val)
         elif isinstance(val, str):
             string = val
         else:
             # store this object and return a ref
             try:
-                return "^%i" % cls.objectsStore.index(val)
+                return f"^{cls.objectsStore.index(val)}"
             except ValueError:
                 cls.objectsStore.append(val)
-                return "^%i" % (len(cls.objectsStore)-1)
+                return f"^{len(cls.objectsStore)-1}"
 
-        return string.translate(str.maketrans(',=', '  ', ';()[]{}"\''))
+        return string.translate(str.maketrans(",=", "  ", ";()[]{}\"'"))
 
     ## Return a value from a PureData message
     #  @param self
@@ -118,7 +142,9 @@ class PDMsgTranslator:
                 usedWords = 1
             except ValueError:
                 if words[0] in ["Vector", "Pos"]:
-                    retValue = App.Vector(float(words[1]), float(words[2]), float(words[3]))
+                    retValue = App.Vector(
+                        float(words[1]), float(words[2]), float(words[3])
+                    )
                     retType = cls.VECTOR
                     usedWords = 4
                 elif words[0] == "Ox":
@@ -134,12 +160,16 @@ class PDMsgTranslator:
                     retType = cls.VECTOR
                     usedWords = 1
                 elif words[0] in ["Rotation", "Yaw-Pitch-Roll", "Rot"]:
-                    retValue = App.Rotation(float(words[1]), float(words[2]), float(words[3]))
+                    retValue = App.Rotation(
+                        float(words[1]), float(words[2]), float(words[3])
+                    )
                     retType = cls.ROTATION
                     usedWords = 4
                 elif words[0] == "Placement":
-                    retValue = App.Placement(cls.valueFromStr(words[1:5])[0].value,
-                                             cls.valueFromStr(words[5:])[0].value)
+                    retValue = App.Placement(
+                        cls.valueFromStr(words[1:5])[0].value,
+                        cls.valueFromStr(words[5:])[0].value,
+                    )
                     retType = cls.PLACEMENT
                     usedWords = 9
                 elif words[0] == "list":
@@ -165,11 +195,13 @@ class PDMsgTranslator:
                 elif words[0].startswith('"'):
                     # String
                     # find closing quote
-                    strLen = [i for (i, w) in enumerate(words)
-                              if isinstance(w, str) and w.endswith('"')
-                              ][0] + 1
+                    strLen = [
+                        i
+                        for (i, w) in enumerate(words)
+                        if isinstance(w, str) and w.endswith('"')
+                    ][0] + 1
                     # create the string
-                    retValue = ' '.join(map(str, words[:strLen])).replace('"', '')
+                    retValue = " ".join(map(str, words[:strLen])).replace('"', "")
                     retType = cls.STRING
                     usedWords = strLen
                 elif words[0].startswith("^"):
@@ -177,9 +209,11 @@ class PDMsgTranslator:
                     index = int(words[0][1:])
                     retValue = cls.objectsStore[index]
                     retType = cls.OBJECT
-                    Log("%s refers to %s\n" % (words[0], str(retValue)))
+                    Log(f"{words[0]} refers to {str(retValue)}\n")
                     usedWords = 1
-                elif App.ActiveDocument is not None and App.ActiveDocument.getObject(words[0]):
+                elif App.ActiveDocument is not None and App.ActiveDocument.getObject(
+                    words[0]
+                ):
                     # ActiveDocument Object
                     retValue = App.ActiveDocument.getObject(words[0])
                     retType = cls.OBJECT

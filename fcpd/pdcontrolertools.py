@@ -3,7 +3,7 @@
 #
 #  pdcontrolertools.py
 #
-#  Copyright 2021 Florian Foinant-Willig <ffw@2f2v.fr>
+#  Copyright 2025 Florian Foinant-Willig <ffw@2f2v.fr>
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -29,6 +29,7 @@ import FreeCAD as App
 from . import pdcontroler
 
 from . import pdmsgtranslator
+
 PDMsgTranslator = pdmsgtranslator.PDMsgTranslator
 
 # shortcuts of FreeCAD console
@@ -39,9 +40,7 @@ Err = App.Console.PrintError
 
 
 def registerToolList(pdServer):
-    toolList = [("ctrlr", pdCtrlr),
-                ("newctrlr", pdNewCtrlr)
-                ]
+    toolList = [("ctrlr", pdCtrlr), ("newctrlr", pdNewCtrlr)]
 
     for word, func in toolList:
         pdServer.registerMessageHandler([word], func)
@@ -51,9 +50,9 @@ def pdCtrlr(pdServer, words):
     pdControler = pdcontroler.create(pdServer, words[0])
     _, values = PDMsgTranslator.popValues(words[2:])
     # create a list of (ind, ROValue)
-    duplet = [(values[i].value, values[i+1]) for i in range(0, len(values), 2)]
+    duplet = [(values[i].value, values[i + 1]) for i in range(0, len(values), 2)]
 
-    for (ind, val) in duplet:
+    for ind, val in duplet:
         pdControler.Proxy.setProperty(ind, val.type, val.value)
 
 
@@ -63,11 +62,11 @@ def pdNewCtrlr(pdServer, words):
     pdControler.Proxy.resetOutgoingProperties()
 
     try:
-        outStart = words.index('|')
+        outStart = words.index("|")
     except ValueError:
         outStart = len(words)
     inTyp = [PDMsgTranslator.fcType(w) for w in words[2:outStart]]
-    outTyp = [PDMsgTranslator.fcType(w) for w in words[outStart+1:]]
+    outTyp = [PDMsgTranslator.fcType(w) for w in words[outStart + 1 :]]
 
     for ind, t in enumerate(inTyp):
         pdControler.Proxy.setIncommingPropertyType(ind, t)

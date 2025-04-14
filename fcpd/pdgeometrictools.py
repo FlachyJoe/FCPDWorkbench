@@ -3,7 +3,7 @@
 #
 #  pdgeometrictools.py
 #
-#  Copyright 2020 Florian Foinant-Willig <ffw@2f2v.fr>
+#  Copyright 2025 Florian Foinant-Willig <ffw@2f2v.fr>
 #
 #  This program is free software; you can redistribute it and/or modify
 #  it under the terms of the GNU General Public License as published by
@@ -28,6 +28,7 @@ from scipy.spatial.transform import Rotation
 import FreeCAD as App
 
 from . import pdmsgtranslator
+
 PDMsgTranslator = pdmsgtranslator.PDMsgTranslator
 
 # shortcuts of FreeCAD console
@@ -38,13 +39,14 @@ Err = App.Console.PrintError
 
 
 def registerToolList(pdServer):
-    toolList = [("matrixPlacement", pdMatrixPlacement),
-                ("ypr2rpy", pdYPRtoRPY),
-                ("rotationadd", pdRotationAdd),
-                ("rotationminus", pdRotationMinus),
-                ("placementadd", pdPlacementAdd),
-                ("placementminus", pdPlacementMinus),
-                ]
+    toolList = [
+        ("matrixPlacement", pdMatrixPlacement),
+        ("ypr2rpy", pdYPRtoRPY),
+        ("rotationadd", pdRotationAdd),
+        ("rotationminus", pdRotationMinus),
+        ("placementadd", pdPlacementAdd),
+        ("placementminus", pdPlacementMinus),
+    ]
     for word, func in toolList:
         pdServer.registerMessageHandler([word], func)
 
@@ -54,7 +56,7 @@ def pdMatrixPlacement(pdServer, words):
     # or numpy.matrix -> Placement
     val, _ = PDMsgTranslator.valueFromStr(words[2:])
     val = val.value
-    if hasattr(val, 'flatten'):
+    if hasattr(val, "flatten"):
         # numpy array case
         return App.Placement(App.Matrix(*val.flatten()))
     return App.Placement(App.Matrix(*val))
@@ -66,7 +68,7 @@ def pdYPRtoRPY(pdServer, words):
     val, _ = PDMsgTranslator.valueFromStr(words[2:])
     fcRot = val.value
     scipyRot = Rotation.from_quat(fcRot.Q)
-    return list(scipyRot.as_euler('xyz'))
+    return list(scipyRot.as_euler("xyz"))
 
 
 def pdRotationAdd(pdServer, words):
@@ -74,7 +76,7 @@ def pdRotationAdd(pdServer, words):
     _, val = PDMsgTranslator.popValues(words[2:], 2)
     r1 = val[0].value
     r2 = val[1].value
-    return r1*r2
+    return r1 * r2
 
 
 def pdRotationMinus(pdServer, words):
@@ -82,7 +84,7 @@ def pdRotationMinus(pdServer, words):
     _, val = PDMsgTranslator.popValues(words[2:], 2)
     r1 = val[0].value
     r2 = val[1].value
-    return r1*r2.inverted()
+    return r1 * r2.inverted()
 
 
 def pdPlacementAdd(pdServer, words):
@@ -90,7 +92,7 @@ def pdPlacementAdd(pdServer, words):
     _, val = PDMsgTranslator.popValues(words[2:], 2)
     p1 = val[0].value
     p2 = val[1].value
-    return p1*p2
+    return p1 * p2
 
 
 def pdPlacementMinus(pdServer, words):
@@ -98,4 +100,4 @@ def pdPlacementMinus(pdServer, words):
     _, val = PDMsgTranslator.popValues(words[2:], 2)
     p1 = val[0].value
     p2 = val[1].value
-    return p2.inverse()*p1
+    return p2.inverse() * p1
