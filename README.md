@@ -49,12 +49,11 @@ External libraries are needed for Pure-Data :
 * [iemlib](https://puredata.info/downloads/iemlib)
 
 See Pure-Data documentation to install them with the Deken package system
-or install a system package from your distribution repository (e.g. `sudo apt install pd-list-abs pd-iemlib`)
-or use an already populated software as [Purr-Data](http://l2ork.music.vt.edu/main/make-your-own-l2ork/software/).
+**OR** install a system package from your distribution repository (e.g. `sudo apt install pd-list-abs pd-iemlib`)
+**OR** use an already populated Pure-Data clone as [Purr-Data](http://l2ork.music.vt.edu/main/make-your-own-l2ork/software/) or [PlugData](https://plugdata.org/).
 
 Inverse kinematic features request [ikpy](https://github.com/Phylliade/ikpy).
 
-=======
 ## License
 
 Copyright 2020-2025 @flachyjoe and other contributors
@@ -77,5 +76,5 @@ The Pure-Data part is coded in Pure-Data language. Thus it require some extra-li
 
 As FUDI protocol can only deal with text, all the FreeCAD data are converted to be usable in Pure-Data. Some objects are still not string-representable. These ones are simply keeped in FreeCAD and Pure-Data can refer to them by reference indexes.
 
-Due to the latency in client/server communication and FreeCAD stuff, *fcpd_** Pure-Data objects are **asynchronous**. So you can't know when outlets trigger. Nevertheless outlets are still triggered right to left.
+Due to the latency in client/server communication and FreeCAD stuff, `fc_` Pure-Data objects are **asynchronous**. So you can't know when outlets trigger. Nevertheless outlets are still triggered right to left.
 This breaks the usual PD codding and require some more work to let other objects wait for FC datas.
