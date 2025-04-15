@@ -190,7 +190,7 @@ class PureDataServer(QtCore.QObject):
             self.isWaiting = True
             Log(f"PDServer : Listening on port {self.listenPort}\r\n")
         else:
-            Err(f"PDServer : unable to listen port {self.listenPort}")
+            Err(f"PDServer : unable to listen port {self.listenPort}\r\n")
 
     ## Ask the server to terminate
     #  @param self

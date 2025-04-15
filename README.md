@@ -50,7 +50,7 @@ External libraries are needed for Pure-Data :
 
 See Pure-Data documentation to install them with the Deken package system
 or install a system package from your distribution repository (e.g. `sudo apt install pd-list-abs pd-iemlib`)
-or use an already populated software as [Purr-Data](http://l2ork.music.vt.edu/main/make-your-own-l2ork/software/).
+or use an already populated Pure-Data clone as [Purr-Data](http://l2ork.music.vt.edu/main/make-your-own-l2ork/software/) or [PlugData](https://plugdata.org/).
 
 Inverse kinematic features request [ikpy](https://github.com/Phylliade/ikpy).
 
