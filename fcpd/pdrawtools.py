@@ -69,7 +69,7 @@ def canvas(x, y, width, height, label, background, foreground):
 
 
 def triggerAB(x, y, count):
-    return f"#X obj {x} {y} t a {"b " * count};\n"
+    return f"#X obj {x} {y} t a {'b ' * count};\n"
 
 
 def connect(id1, outlet, id2, inlet):

@@ -47,8 +47,6 @@ class FCPDWorkbench(Workbench):
         import fcpdwb_commands
 
         self.commandList = [
-            "FCPD_Run",
-            "FCPD_Stop",
             "FCPD_Launch",
             "FCPD_AddInclude",
             "FCPD_AddPopulatedInclude",
