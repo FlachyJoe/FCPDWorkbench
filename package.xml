@@ -2,8 +2,8 @@
 <package format="1" xmlns="https://wiki.freecad.org/Package_Metadata">
     <name>FCPDWorkbench</name>
     <description>A FreeCAD workbench to use Pure-Data as a graphical macro langage.</description>
-    <version>0.3.1</version>
-    <date>2025-04-14</date>
+    <version>0.4.0</version>
+    <date>2025-04-16</date>
     <maintainer email="ffw@2f2v.fr">Florian Foinant-Willig</maintainer>
     <license file="LICENSE">GPL-3.0-or-later</license>
     <url type="repository" branch="main">https://github.com/FlachyJoe/FCPDWorkbench</url>
@@ -17,7 +17,7 @@
             <subdirectory>./</subdirectory>
             <icon>resources/icons/FCPDLogo.svg</icon>
             <tag>developers</tag>
-            <version>0.3.1</version>
+            <version>0.4.0</version>
         </workbench>
 
         <depend optional="true" type="python">ikpy</depend>
