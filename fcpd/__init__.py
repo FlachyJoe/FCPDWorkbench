@@ -26,6 +26,7 @@
 import os
 import sys
 import time
+import shutil
 
 from PySide import QtGui, QtWidgets
 from PySide.QtCore import QProcess
@@ -60,23 +61,30 @@ def runPD():
     if not pdIsRunning():
         pdBin = userPref.GetString("pd_path")
 
+        if not shutil.which(pdBin):
+            FreeCAD.Console.PrintError(
+                f"Unable to find {pdBin}.\r\nPlease check the pure-data client binary path in the Edit menu/Preferences…/FCPD page."
+            )
+            return
+
+        pdlib = "pdlib"
+        if not userPref.GetBool("pd_useExtend", True):
+            pdlib = "pdlib.light"
+
         pdArgs = [
             "-path",
-            os.path.join(locator.PD_PATH, "pdlib"),
+            os.path.join(locator.PD_PATH, pdlib),
             "-helppath",
             os.path.join(locator.PD_PATH, "pdhelp"),
         ]
 
-        if userPref.GetBool("fc_allowRaw", False):
-            clientTemplate = "client_raw.pdtemplate"
-            pdArgs += [
-                "-path",
-                os.path.join(locator.PD_PATH, "pdautogen"),
-                "-helppath",
-                os.path.join(locator.PD_PATH, "pdautogenhelp"),
-            ]
-        else:
-            clientTemplate = "client.pdtemplate"
+        clientTemplate = "client_raw.pdtemplate"
+        pdArgs += [
+            "-path",
+            os.path.join(locator.PD_PATH, "pdautogen"),
+            "-helppath",
+            os.path.join(locator.PD_PATH, "pdautogenhelp"),
+        ]
 
         with open(os.path.join(locator.PD_PATH, clientTemplate), "r") as f:
             clientContents = f.read()
@@ -92,6 +100,7 @@ def runPD():
             f.write(clientContents)
 
         pdProcess.startDetached(pdBin, pdArgs + ["-open", clientFilePath])
+
         if TRY2EMBED:
             time.sleep(1)
             embedPD()

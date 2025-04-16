@@ -48,6 +48,7 @@ class FCPDWorkbench(Workbench):
 
         self.commandList = [
             "FCPD_Launch",
+            "FCPD_Stop",
             "FCPD_AddInclude",
             "FCPD_AddPopulatedInclude",
         ]
@@ -67,6 +68,9 @@ class FCPDWorkbench(Workbench):
 
     def GetClassName(self):
         return "Gui::PythonWorkbench"
+
+    def __del__(self):
+        self.statusWidget.deleteLater()
 
 
 Gui.addWorkbench(FCPDWorkbench())

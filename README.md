@@ -42,19 +42,30 @@ Please see [FCPDWorkbench_Samples](https://github.com/FlachyJoe/FCPDWorkbench_Sa
 
 ## Requirements
 
-The PySide2 (or PySide6) Python bindings for Qt5 (or Qt6) Network is required. Linux users can install python3-pyside2.qtnetwork (or python3-pyside6.qtnetwork) package.
-
-External libraries are needed for Pure-Data :
+These external Pure-Data libraries are mandatory:
 * [list-abs](https://puredata.info/downloads/list-abs)
 * [iemlib](https://puredata.info/downloads/iemlib)
+* [iemguts](https://puredata.info/downloads/iemguts)
 
-See Pure-Data documentation to install them with the Deken package system
-or install a system package from your distribution repository (e.g. `sudo apt install pd-list-abs pd-iemlib`)
-or use an already populated Pure-Data clone as [Purr-Data](http://l2ork.music.vt.edu/main/make-your-own-l2ork/software/) or [PlugData](https://plugdata.org/).
+These external Pure-Data libraries are optional:
+* [pddp](https://puredata.info/downloads/pddp) used in documentation only
 
-Inverse kinematic features request [ikpy](https://github.com/Phylliade/ikpy).
 
-=======
+See Pure-Data documentation to install them with the Deken package system\
+**OR** install a system package from your distribution repository\
+**OR** use an already populated Pure-Data clone as [Purr-Data](http://l2ork.music.vt.edu/main/make-your-own-l2ork/software/) or [PlugData](https://plugdata.org/).
+
+These python libraries are optional:
+* [ikpy](https://github.com/Phylliade/ikpy) for inverse kinematic features
+
+### Debian like install
+
+For debian like linux distributions (Debian, Ubuntu, Mint, …) these command lines install all the needed:
+```bash
+sudo apt install puredata pd-list-abs pd-iemlib pd-iemguts
+sudo apt install pd-pddp
+```
+
 ## License
 
 Copyright 2020-2025 @flachyjoe and other contributors
@@ -77,5 +88,5 @@ The Pure-Data part is coded in Pure-Data language. Thus it require some extra-li
 
 As FUDI protocol can only deal with text, all the FreeCAD data are converted to be usable in Pure-Data. Some objects are still not string-representable. These ones are simply keeped in FreeCAD and Pure-Data can refer to them by reference indexes.
 
-Due to the latency in client/server communication and FreeCAD stuff, *fcpd_** Pure-Data objects are **asynchronous**. So you can't know when outlets trigger. Nevertheless outlets are still triggered right to left.
+Due to the latency in client/server communication and FreeCAD stuff, `fc_` Pure-Data objects are **asynchronous**. So you can't know when outlets trigger. Nevertheless outlets are still triggered right to left.
 This breaks the usual PD codding and require some more work to let other objects wait for FC datas.

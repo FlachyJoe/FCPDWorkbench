@@ -11,7 +11,7 @@
    </rect>
   </property>
   <property name="windowTitle">
-   <string>Form</string>
+   <string>Réglages FCPD</string>
   </property>
   <layout class="QFormLayout" name="formLayout">
    <item row="0" column="0">
@@ -22,9 +22,9 @@
     </widget>
    </item>
    <item row="0" column="1">
-    <widget class="Gui::PrefFileChooser" name="fileChooser">
-     <property name="fileName">
-      <string>purr-data</string>
+    <widget class="Gui::PrefFileChooser" name="fileChooser" native="true">
+     <property name="fileName" stdset="0">
+      <string>puredata</string>
      </property>
      <property name="prefEntry" stdset="0">
       <cstring>pd_path</cstring>
@@ -110,15 +110,18 @@
     </widget>
    </item>
    <item row="4" column="1">
-    <widget class="Gui::PrefCheckBox" name="ckAllowRaw">
+    <widget class="Gui::PrefCheckBox" name="ckExtend">
      <property name="toolTip">
-      <string>Si coché le serveur interne accepte toutes les commandes python et non seulement celles codées dans l'atelier.</string>
+      <string>Si coché utilise les objets PureData étendus, affichant plus d'informations.</string>
      </property>
      <property name="text">
-      <string>Autoriser toutes les commandes python</string>
+      <string>Utiliser les objets étendus</string>
+     </property>
+     <property name="checked">
+      <bool>true</bool>
      </property>
      <property name="prefEntry" stdset="0">
-      <cstring>fc_allowRaw</cstring>
+      <cstring>pd_useExtend</cstring>
      </property>
      <property name="prefPath" stdset="0">
       <cstring>Mod/FCPD</cstring>

@@ -328,7 +328,7 @@ def pdRaw(pdServer, words):
                 className = ".".join(modFunc[:-2])
                 exec("import %s" % className)
             except ModuleNotFoundError as e:
-                Wrn(f"Error : {e}\n")
+                Wrn("FCPD", f"Error : {e}\n")
                 return f"ERROR module not found {className}"
     obj = eval(objectName)
     func = getattr(obj, funcName)
@@ -360,25 +360,25 @@ def pdGiveMe(pdServer, words):
     filePath = os.path.join(modulePath, funcName)
 
     if not os.path.isfile(filePath):
-        Log(f"PDServer : add {filePath}\n")
+        Log("FCPD", f"PDServer : add {filePath}\n")
         try:
-            Log(f"PDServer : try to import {moduleName}\n")
+            Log("FCPD", f"PDServer : try to import {moduleName}\n")
             exec(f"import {moduleName}")
-            Log("PDServer : import ok\n")
+            Log("FCPD", "PDServer : import ok\n")
         except ModuleNotFoundError:
             if args[:-2]:
                 try:
                     className = ".".join(args[:-2])
-                    Log(f"PDServer : try to import {className}\n")
+                    Log("FCPD", f"PDServer : try to import {className}\n")
                     exec(f"import {className}")
-                    Log("PDServer : import ok\n")
+                    Log("FCPD", "PDServer : import ok\n")
                 except ModuleNotFoundError as e:
-                    Wrn(f"Error : {e}\n")
+                    Wrn("FCPD", f"Error : {e}\n")
                     return f"ERROR module not found {className}"
         try:
             obj = eval(moduleName)
         except Exception as e:
-            Wrn(f"Error : {e}\n")
+            Wrn("FCPD", f"Error : {e}\n")
         if hasattr(obj, funcName):
             func = getattr(obj, funcName)
             if not generate(func, words[2], modulePath, paramCount):
