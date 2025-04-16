@@ -62,7 +62,9 @@ def runPD():
         pdBin = userPref.GetString("pd_path")
 
         if not shutil.which(pdBin):
-            FreeCAD.Console.PrintError(f"Unable to find {pdBin}.\r\nPlease check the pure-data client binary path in the Edit menu/Preferences…/FCPD page.")
+            FreeCAD.Console.PrintError(
+                f"Unable to find {pdBin}.\r\nPlease check the pure-data client binary path in the Edit menu/Preferences…/FCPD page."
+            )
             return
 
         pdlib = "pdlib"

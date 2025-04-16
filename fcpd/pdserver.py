@@ -103,7 +103,6 @@ class PureDataServer(QtCore.QObject):
         """can be overwriten"""
         return f"ERROR {sys.exc_info()[1]}"
 
-
     ## stores a message processing function for specific first words
     #  @param self
     #  @param first_words list of first words for which the function is called
@@ -137,17 +136,20 @@ class PureDataServer(QtCore.QObject):
                     self.isWaiting = False
                     Log(
                         "FCPD",
-                        f"PDServer : Callback initialized to {self.remoteAddress.toString()}:{words[1]}\n"
+                        f"PDServer : Callback initialized to {self.remoteAddress.toString()}:{words[1]}\n",
                     )
                     if self.writeBuffer:
-                        Wrn("FCPD", "PDServer : The data previously stored are now sent\n")
+                        Wrn(
+                            "FCPD",
+                            "PDServer : The data previously stored are now sent\n",
+                        )
                         self.outputSocket.write(bytes(self.writeBuffer, "utf8"))
                         Log("FCPD", f"PDServer : >>> {self.writeBuffer}\r\n")
                         self.writeBuffer = ""
                 else:
                     Log(
                         "FCPD",
-                        f"PDServer : ERROR during callback initialization\n{self.outputSocket.error()}\n"
+                        f"PDServer : ERROR during callback initialization\n{self.outputSocket.error()}\n",
                     )
             elif words[0] == "close":
                 self.terminate()
@@ -183,7 +185,7 @@ class PureDataServer(QtCore.QObject):
             Wrn(
                 "FCPD",
                 "WARNING : Data are sent to PDServer but Pure-Data is not connected.\n"
-                "The data will be kept until connection.\n"
+                "The data will be kept until connection.\n",
             )
 
     ## launch the server
@@ -216,7 +218,7 @@ class PureDataServer(QtCore.QObject):
         self.remoteAddress = self.inputSocket.peerAddress()
         Log(
             "FCPD",
-            f"PDServer : Connection from {self.remoteAddress.toString()}:{self.inputSocket.peerPort()}\r\n"
+            f"PDServer : Connection from {self.remoteAddress.toString()}:{self.inputSocket.peerPort()}\r\n",
         )
         Notif("FCPD", "The server is now connected.")
 
@@ -239,7 +241,7 @@ class PureDataServer(QtCore.QObject):
     def remoteClose(self):
         Log(
             "FCPD",
-            f"PDServer : {self.inputSocket.peerAddress().toString()} close connection\r\n"
+            f"PDServer : {self.inputSocket.peerAddress().toString()} close connection\r\n",
         )
         if self.isRunning:
             self.terminate()

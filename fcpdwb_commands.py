@@ -180,8 +180,8 @@ class FCPD_CommandAddPopulatedInclude:
         return True
 
 
-FreeCADGui.addCommand('FCPD_Run', FCPD_CommandRun())
-FreeCADGui.addCommand('FCPD_Stop', FCPD_CommandStop())
+FreeCADGui.addCommand("FCPD_Run", FCPD_CommandRun())
+FreeCADGui.addCommand("FCPD_Stop", FCPD_CommandStop())
 FreeCADGui.addCommand("FCPD_Launch", FCPD_CommandLaunch())
 FreeCADGui.addCommand("FCPD_AddInclude", FCPD_CommandAddInclude())
 FreeCADGui.addCommand("FCPD_AddPopulatedInclude", FCPD_CommandAddPopulatedInclude())
