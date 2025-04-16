@@ -51,8 +51,8 @@ These external Pure-Data libraries are optional:
 * [pddp](https://puredata.info/downloads/pddp) used in documentation only
 
 
-See Pure-Data documentation to install them with the Deken package system
-**OR** install a system package from your distribution repository
+See Pure-Data documentation to install them with the Deken package system\
+**OR** install a system package from your distribution repository\
 **OR** use an already populated Pure-Data clone as [Purr-Data](http://l2ork.music.vt.edu/main/make-your-own-l2ork/software/) or [PlugData](https://plugdata.org/).
 
 These python libraries are optional:

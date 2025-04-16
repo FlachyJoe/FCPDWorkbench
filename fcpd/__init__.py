@@ -26,6 +26,7 @@
 import os
 import sys
 import time
+import shutil
 
 from PySide import QtGui, QtWidgets
 from PySide.QtCore import QProcess
@@ -60,6 +61,10 @@ def runPD():
     if not pdIsRunning():
         pdBin = userPref.GetString("pd_path")
 
+        if not shutil.which(pdBin):
+            FreeCAD.Console.PrintError(f"Unable to find {pdBin}.\r\nPlease check the pure-data client binary path in the Edit menu/Preferences…/FCPD page.")
+            return
+
         pdArgs = [
             "-path",
             os.path.join(locator.PD_PATH, "pdlib"),
@@ -92,6 +97,7 @@ def runPD():
             f.write(clientContents)
 
         pdProcess.startDetached(pdBin, pdArgs + ["-open", clientFilePath])
+
         if TRY2EMBED:
             time.sleep(1)
             embedPD()
