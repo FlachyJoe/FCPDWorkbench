@@ -36,6 +36,8 @@ import FreeCADGui as Gui
 import fcpdwb_locator as locator
 from . import pdserver
 from . import pdtools, pdcontrolertools, pdincludetools, pdrawtools, pdgeometrictools
+#my tests
+from . import fc_exceptions;
 
 TRY2EMBED = False
 
