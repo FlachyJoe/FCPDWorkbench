@@ -65,7 +65,7 @@ def addCloseDetection(filePath):
         )
         fd.seek(0)
         fd.writelines(newContents)
-    Log("close detection added\n")
+    Log("FCPD", "close detection added\n")
 
 
 def hasCloseDetection(filePath):
@@ -90,7 +90,7 @@ def updateCloseDetection(filePath):
             newContents = contents[:lineNumber] + [onClose] + contents[lineNumber + 1 :]
             fd.seek(0)
             fd.writelines(newContents)
-            Log("close detection updated\n")
+            Log("FCPD", "close detection updated\n")
     else:
         addCloseDetection(filePath)
 
@@ -137,7 +137,7 @@ class PDInclude:
 
                     def slotStartSaveDocument(self, doc, label):
                         if doc == self.target_doc:
-                            Log("Ask PD to save\n")
+                            Log("FCPD", "Ask PD to save\n")
                             self.caller.pdServer.send("0 pd-{self.fileName} menusave;")
                             Gui.updateGui()
                             # give PD 500ms to save
@@ -154,14 +154,14 @@ class PDInclude:
         if self.skipChange > 0:
             self.skipChange -= 1
         elif os.path.exists(self.tmpFile):
-            Log(f"{self.tmpFile} changed\n")
+            Log("FCPD", f"{self.tmpFile} changed\n")
             self.object.PDFile = self.tmpFile
             App.ActiveDocument.recompute()
         else:
-            Log(f"{self.tmpFile} deleted\n")
+            Log("FCPD", f"{self.tmpFile} deleted\n")
 
     def endEdit(self):
-        Log(f"{self.tmpFile} closed\n")
+        Log("FCPD", f"{self.tmpFile} closed\n")
         try:
             os.remove(self.tmpFile)
             os.remove(self.tmpFile + "_")

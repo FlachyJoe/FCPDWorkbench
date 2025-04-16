@@ -209,7 +209,7 @@ class PDMsgTranslator:
                     index = int(words[0][1:])
                     retValue = cls.objectsStore[index]
                     retType = cls.OBJECT
-                    Log(f"{words[0]} refers to {str(retValue)}\n")
+                    Log("FCPD", f"{words[0]} refers to {str(retValue)}\n")
                     usedWords = 1
                 elif App.ActiveDocument is not None and App.ActiveDocument.getObject(
                     words[0]
