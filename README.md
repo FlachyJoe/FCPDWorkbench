@@ -42,17 +42,29 @@ Please see [FCPDWorkbench_Samples](https://github.com/FlachyJoe/FCPDWorkbench_Sa
 
 ## Requirements
 
-The PySide2 (or PySide6) Python bindings for Qt5 (or Qt6) Network is required. Linux users can install python3-pyside2.qtnetwork (or python3-pyside6.qtnetwork) package.
-
-External libraries are needed for Pure-Data :
+These external Pure-Data libraries are mandatory:
 * [list-abs](https://puredata.info/downloads/list-abs)
 * [iemlib](https://puredata.info/downloads/iemlib)
+* [iemguts](https://puredata.info/downloads/iemguts)
+
+These external Pure-Data libraries are optional:
+* [pddp](https://puredata.info/downloads/pddp) used in documentation only
+
 
 See Pure-Data documentation to install them with the Deken package system
-**OR** install a system package from your distribution repository (e.g. `sudo apt install pd-list-abs pd-iemlib`)
+**OR** install a system package from your distribution repository
 **OR** use an already populated Pure-Data clone as [Purr-Data](http://l2ork.music.vt.edu/main/make-your-own-l2ork/software/) or [PlugData](https://plugdata.org/).
 
-Inverse kinematic features request [ikpy](https://github.com/Phylliade/ikpy).
+These python libraries are optional:
+* [ikpy](https://github.com/Phylliade/ikpy) for inverse kinematic features
+
+### Debian like install
+
+For debian like linux distributions (Debian, Ubuntu, Mint, …) these command lines install all the needed:
+```bash
+sudo apt install puredata pd-list-abs pd-iemlib pd-iemguts
+sudo apt install pd-pddp
+```
 
 ## License
 
