@@ -195,9 +195,11 @@ class PureDataServer(QtCore.QObject):
     ## Ask the server to terminate
     #  @param self
     def terminate(self):
-        self.outputSocket.write(b"0 close;")
-        self.outputSocket.disconnectFromHost()
-        self.inputSocket.disconnectFromHost()
+        if self.outputSocket:
+            self.outputSocket.write(b"0 close;")
+            self.outputSocket.disconnectFromHost()
+        if self.inputSocket:
+            self.inputSocket.disconnectFromHost()
         self.isRunning = False
 
     def newConnection(self):
