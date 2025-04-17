@@ -2,7 +2,7 @@
 #X obj 10 200 fc_process;
 #X msg 220 130 remobserver;
 #X obj 70 260 outlet;
-#X obj 200 40 closebang;
+#X obj 200 40 iemguts/closebang;
 #X obj 130 40 inlet;
 #X obj 10 40 loadbang;
 #X obj 130 90 t a b;
