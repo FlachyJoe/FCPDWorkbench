@@ -6,7 +6,7 @@
 #X obj 100 150 f;
 #X obj 130 150 + 1;
 #X obj 100 90 - 1;
-#X obj 90 520 sendcanvas 1;
+#X obj 90 520 iemguts/sendcanvas 1;
 #X obj 100 20 inlet;
 #X text 470 220 fc_process index;
 #X obj 100 50 t f b;
@@ -67,19 +67,19 @@
 #X obj 190 410 until;
 #X obj 190 440 f;
 #X obj 220 440 + 1;
-#X obj 190 690 sendcanvas 1;
+#X obj 190 690 iemguts/sendcanvas 1;
 #X obj 190 10 inlet;
 #X obj 150 530 * 200;
 #X obj 190 470 t f f f f b;
 #X obj 230 560 +;
-#X obj 346 460 sendcanvas 1;
+#X obj 346 460 iemguts/sendcanvas 1;
 #X text 310 310 last id + 1;
 #X msg 370 140 0 1 2 3 4 5 6 7 8 9 10 11 12 13 14 15 16 17 18 19 20
 ;
 #X obj 410 170 list split;
 #X obj 346 400 pack f f;
 #X obj 410 229 list trim;
-#X obj 410 260 sendcanvas 1;
+#X obj 410 260 iemguts/sendcanvas 1;
 #X text 280 520 last id + 2;
 #X obj 150 560 + 500;
 #X text 300 630 x outlet_number new_outlet_id route_index;

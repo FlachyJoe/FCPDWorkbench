@@ -15,7 +15,7 @@
 #X text 490 140 last obj index;
 #X obj 280 0 initbang;
 #X obj 300 100 - 1;
-#X obj 220 620 sendcanvas 1;
+#X obj 220 620 iemguts/sendcanvas 1;
 #X obj 300 370 + 250;
 #X obj 380 370 + 0;
 #X obj 410 370 + 1;
@@ -46,7 +46,7 @@
 #X msg 440 580 connect \$5 0 \$4 0;
 #X obj 730 190 spigot;
 #X text 730 100 only one inlet;
-#X obj 730 249 sendcanvas 1;
+#X obj 730 249 iemguts/sendcanvas 1;
 #X obj 730 130 t b f;
 #X obj 280 60 t f f b f;
 #X obj 90 340 spigot;
