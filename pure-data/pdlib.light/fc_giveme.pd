@@ -4,7 +4,7 @@
 #X obj 10 100 route ERROR;
 #X obj 10 210 symbol;
 #X obj 10 11 inlet;
-#X obj 10 290 sendcanvas 1;
+#X obj 10 290 iemguts/sendcanvas 1;
 #X obj 90 130 t a b;
 #X obj 120 160 outlet;
 #X text 70 210 create and select and cut the object in this patch;

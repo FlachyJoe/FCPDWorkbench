@@ -3,7 +3,7 @@
 #X obj 100 120 fc_process;
 #X msg 200 80 remobserver;
 #X obj 190 230 outlet;
-#X obj 200 50 closebang;
+#X obj 200 50 iemguts/closebang;
 #X obj 100 50 loadbang;
 #X obj 100 150 route OK None;
 #X obj 150 190 b;
